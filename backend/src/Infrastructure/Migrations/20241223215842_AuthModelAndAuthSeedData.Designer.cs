@@ -3,6 +3,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(NotesContext))]
-    partial class NotesContextModelSnapshot : ModelSnapshot
+    [Migration("20241223215842_AuthModelAndAuthSeedData")]
+    partial class AuthModelAndAuthSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,14 +97,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("UserPK");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserPK = 1,
-                            PasswordHash = "password123",
-                            Username = "admin"
-                        });
                 });
 #pragma warning restore 612, 618
         }
