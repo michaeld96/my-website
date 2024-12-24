@@ -50,6 +50,33 @@ public class NotesContext : DbContext
             new Note
             {
                 NotePK = 4,
+                School = "UM",
+                Subject = "EECS 281: Data Structures and Algorithms",
+                Title = "Lecture 1: Stack, Queue, and Priority Queue ADTs",
+                Content = "# Lecture 1: Stack, Queue, and Priority Queue ADTs\n\nTest test test...",
+                Tags = "data-structures, algorithms"
+            },
+            new Note
+            {
+                NotePK = 5,
+                School = "UM",
+                Subject = "EECS 281: Data Structures and Algorithms",
+                Title = "Lecture 2: Complexity Analysis, Math Foundations",
+                Content = "# Lecture 2: Complexity Analysis, Math Foundations\n\nTest test test...",
+                Tags = "data-structures, algorithms"
+            },
+            new Note
+            {
+                NotePK = 6,
+                School = "UM",
+                Subject = "EECS 281: Data Structures and Algorithms",
+                Title = "Lecture 3: Measuring Performance and Analysis Tools",
+                Content = "# Lecture 3: Measuring Performance and Analysis Tools\n\nTest test test...",
+                Tags = "data-structures, algorithms"
+            },
+            new Note
+            {
+                NotePK = 7,
                 School = "GT",
                 Subject = "CS 6200: Intro to Operating Systems",
                 Title = "Overview",
@@ -58,7 +85,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 5,
+                NotePK = 8,
                 School = "GT",
                 Subject = "CS 6210: Advanced Operating Systems",
                 Title = "Overview",
@@ -67,7 +94,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 6,
+                NotePK = 9,
                 School = "GT",
                 Subject = "CS 7210: Distributed Computing",
                 Title = "Overview",
