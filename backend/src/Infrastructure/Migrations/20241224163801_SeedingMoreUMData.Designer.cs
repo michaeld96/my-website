@@ -3,6 +3,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(NotesContext))]
-    partial class NotesContextModelSnapshot : ModelSnapshot
+    [Migration("20241224163801_SeedingMoreUMData")]
+    partial class SeedingMoreUMData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,24 +91,6 @@ namespace Infrastructure.Migrations
                             School = "GT",
                             Subject = "CS 6200: Intro to Operating Systems",
                             Tags = "operating-systems",
-                            Title = "Overview"
-                        },
-                        new
-                        {
-                            NotePK = 5,
-                            Content = "# Advanced Operating Systems\n\nThis is a test for the overview of CS 6210.",
-                            School = "GT",
-                            Subject = "CS 6210: Advanced Operating Systems",
-                            Tags = "operating-systems",
-                            Title = "Overview"
-                        },
-                        new
-                        {
-                            NotePK = 6,
-                            Content = "# Distributed Computing\n\nThis is a test for the overview of CS 7210.",
-                            School = "GT",
-                            Subject = "CS 7210: Distributed Computing",
-                            Tags = "distributed-systems",
                             Title = "Overview"
                         });
                 });

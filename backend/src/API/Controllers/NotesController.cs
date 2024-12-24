@@ -27,5 +27,17 @@ namespace API.Controllers
 
             return Ok(schools);
         }
+        // GET /api/notes/{school}/subjects
+        [HttpGet("{school}/subjects")]
+        public async Task<IActionResult> GetSubjects(string school)
+        {
+            var subjects = await _context.Notes
+                .Where(n => n.School == school)
+                .Select(n => n.Subject)
+                .Distinct()
+                .ToListAsync();
+            
+            return Ok(subjects);
+        }
     }
 }
