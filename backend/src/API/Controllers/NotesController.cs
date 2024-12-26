@@ -86,5 +86,14 @@ namespace API.Controllers
             }
             return Ok(content);
         }
+
+        
+        // POST /api/notes/{school}/{subject}/{title}
+        [Authorize]
+        [HttpPost("{school}/{subject}/{title}")]
+        public async Task<IActionResult> CreateContent(string school, string subject, string title)
+        {
+            throw new NotImplementedException("Not yet implemented.");
+        }
     }
 }
