@@ -33,12 +33,12 @@ namespace API.Controllers
             bool isPasswordValid;
             if (_env.IsDevelopment())
             {
-                // In development, compare the plain text password directly
+                // In development, compare the plain text password directly.
                 isPasswordValid = request.Password == user?.PasswordHash;
             }
             else
             {
-                // In other environments, use BCrypt to verify the password
+                // In other environments, use BCrypt to verify the password.
                 isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user?.PasswordHash);
             }
 

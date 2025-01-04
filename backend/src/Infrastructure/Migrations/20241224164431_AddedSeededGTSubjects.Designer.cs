@@ -3,6 +3,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(NotesContext))]
-    partial class NotesContextModelSnapshot : ModelSnapshot
+    [Migration("20241224164431_AddedSeededGTSubjects")]
+    partial class AddedSeededGTSubjects
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,7 +59,7 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            NotePK = -1,
+                            NotePK = 1,
                             Content = "# Elementary Programming Concepts\n\nThis is a test for the overview of EECS 183.",
                             School = "UM",
                             Subject = "EECS 183: Elementary Programming Concepts",
@@ -65,7 +68,7 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            NotePK = -2,
+                            NotePK = 2,
                             Content = "# Programming and Intro Data Structures\n\nThis is a test for the overview of EECS 280.",
                             School = "UM",
                             Subject = "EECS 280: Programming and Intro Data Structures",
@@ -74,7 +77,7 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            NotePK = -3,
+                            NotePK = 3,
                             Content = "# Data Structures and Algorithms\n\nThis is a test for the overview of EECS 281.",
                             School = "UM",
                             Subject = "EECS 281: Data Structures and Algorithms",
@@ -83,34 +86,7 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            NotePK = -4,
-                            Content = "# Lecture 1: Stack, Queue, and Priority Queue ADTs\n\nTest test test...",
-                            School = "UM",
-                            Subject = "EECS 281: Data Structures and Algorithms",
-                            Tags = "data-structures, algorithms",
-                            Title = "Lecture 1: Stack, Queue, and Priority Queue ADTs"
-                        },
-                        new
-                        {
-                            NotePK = -5,
-                            Content = "# Lecture 2: Complexity Analysis, Math Foundations\n\nTest test test...",
-                            School = "UM",
-                            Subject = "EECS 281: Data Structures and Algorithms",
-                            Tags = "data-structures, algorithms",
-                            Title = "Lecture 2: Complexity Analysis, Math Foundations"
-                        },
-                        new
-                        {
-                            NotePK = -6,
-                            Content = "# Lecture 3: Measuring Performance and Analysis Tools\n\nTest test test...",
-                            School = "UM",
-                            Subject = "EECS 281: Data Structures and Algorithms",
-                            Tags = "data-structures, algorithms",
-                            Title = "Lecture 3: Measuring Performance and Analysis Tools"
-                        },
-                        new
-                        {
-                            NotePK = -7,
+                            NotePK = 4,
                             Content = "# Intro to Operating Systems\n\nThis is a test for the overview of CS 6200.",
                             School = "GT",
                             Subject = "CS 6200: Intro to Operating Systems",
@@ -119,7 +95,7 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            NotePK = -8,
+                            NotePK = 5,
                             Content = "# Advanced Operating Systems\n\nThis is a test for the overview of CS 6210.",
                             School = "GT",
                             Subject = "CS 6210: Advanced Operating Systems",
@@ -128,7 +104,7 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            NotePK = -9,
+                            NotePK = 6,
                             Content = "# Distributed Computing\n\nThis is a test for the overview of CS 7210.",
                             School = "GT",
                             Subject = "CS 7210: Distributed Computing",
