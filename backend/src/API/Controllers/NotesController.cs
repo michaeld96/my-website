@@ -1,3 +1,4 @@
+using Core.Models;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -89,11 +90,30 @@ namespace API.Controllers
 
         
         // POST /api/notes/{school}/{subject}/{title}
-        [Authorize]
+        // [Authorize]
         [HttpPost("{school}/{subject}/{title}")]
-        public async Task<IActionResult> CreateContent(string school, string subject, string title)
+        public async Task<IActionResult> CreateContent(string school, string subject, string title, [FromBody] Note note)
         {
-            throw new NotImplementedException("Not yet implemented.");
+            if (note == null)
+            {
+                return BadRequest("Note data is invalid.");
+            }
+
+            try
+            {
+                note.School = school;
+                note.Subject = subject;
+                note.Title = subject;
+
+                _context.Notes.Add(note);
+                await _context.SaveChangesAsync();
+
+                return Ok(note);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

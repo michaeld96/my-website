@@ -22,7 +22,7 @@ public class NotesContext : DbContext
         modelBuilder.Entity<Note>().HasData(
             new Note
             {
-                NotePK = 1,
+                NotePK = -1,
                 School = "UM",
                 Subject = "EECS 183: Elementary Programming Concepts",
                 Title = "Overview",
@@ -31,7 +31,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 2,
+                NotePK = -2,
                 School = "UM",
                 Subject = "EECS 280: Programming and Intro Data Structures",
                 Title = "Overview",
@@ -40,7 +40,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 3,
+                NotePK = -3,
                 School = "UM",
                 Subject = "EECS 281: Data Structures and Algorithms",
                 Title = "Overview",
@@ -49,7 +49,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 4,
+                NotePK = -4,
                 School = "UM",
                 Subject = "EECS 281: Data Structures and Algorithms",
                 Title = "Lecture 1: Stack, Queue, and Priority Queue ADTs",
@@ -58,7 +58,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 5,
+                NotePK = -5,
                 School = "UM",
                 Subject = "EECS 281: Data Structures and Algorithms",
                 Title = "Lecture 2: Complexity Analysis, Math Foundations",
@@ -67,7 +67,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 6,
+                NotePK = -6,
                 School = "UM",
                 Subject = "EECS 281: Data Structures and Algorithms",
                 Title = "Lecture 3: Measuring Performance and Analysis Tools",
@@ -76,7 +76,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 7,
+                NotePK = -7,
                 School = "GT",
                 Subject = "CS 6200: Intro to Operating Systems",
                 Title = "Overview",
@@ -85,7 +85,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 8,
+                NotePK = -8,
                 School = "GT",
                 Subject = "CS 6210: Advanced Operating Systems",
                 Title = "Overview",
@@ -94,7 +94,7 @@ public class NotesContext : DbContext
             },
             new Note
             {
-                NotePK = 9,
+                NotePK = -9,
                 School = "GT",
                 Subject = "CS 7210: Distributed Computing",
                 Title = "Overview",
