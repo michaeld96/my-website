@@ -6,7 +6,8 @@ import rehypeHighlight from 'rehype-highlight';
 import axios from 'axios';
 
 import 'katex/dist/katex.min.css';
-import 'highlight.js/styles/github.css';
+import 'highlight.js/styles/atom-one-dark.css';
+
 
 const App: React.FC = () => {
     const [markdown, setMarkdown] = useState<string>('');
