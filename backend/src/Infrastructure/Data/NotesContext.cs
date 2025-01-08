@@ -109,7 +109,7 @@ public class NotesContext : DbContext
             {
                 UserPK = 1,
                 Username = "admin",
-                PasswordHash = "password123"
+                PasswordHash = "michaeldickisthecoolestkidwownice"
             }
         );
     }
