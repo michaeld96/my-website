@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import rehypeHighlight from 'rehype-highlight';
 
 const AdminHub: React.FC = () => {
     const [schools, setSchools] = useState<string[]>([]);
@@ -37,7 +40,7 @@ const AdminHub: React.FC = () => {
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh' }}>
+        <div style={{ display: 'flex', height: '100vh', width: '100vw'}}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc' }}>
                 <h3>Schools</h3>
@@ -83,7 +86,11 @@ const AdminHub: React.FC = () => {
 
             {/* Right Panel: Rendered Markdown */}
             <div style={{ width: '40%', padding: '10px' }}>
-                <ReactMarkdown>{markdown}</ReactMarkdown>
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkMath]}
+                                        rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                                    >
+                                        {markdown}</ReactMarkdown>
             </div>
         </div>
     );
