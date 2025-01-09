@@ -20,27 +20,29 @@ const App: React.FC = () => {
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Tab') {
-          e.preventDefault();
-          const textarea = e.target as HTMLTextAreaElement;
-          const start = textarea.selectionStart;
-          const end = textarea.selectionEnd;
+    if (e.key === 'Tab') 
+    {
+        e.preventDefault();
+        const textarea = e.target as HTMLTextAreaElement;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
 
-          const spaces = `\xa0\xa0\xa0\xa0\xa0\xa0\xa0`;
-  
+        const spaces = `\xa0\xa0\xa0\xa0\xa0\xa0\xa0`;
 
-          // Set textarea value to: text before caret + tab + text after caret
-          setMarkdown(markdown.substring(0, start) + spaces + markdown.substring(end));
 
-          // Put caret at right position again
-          setTimeout(() => {
-              textarea.selectionStart = textarea.selectionEnd = start + 1;
-          }, 0);
-      }
+        // Set textarea value to: text before caret + tab + text after caret
+        setMarkdown(markdown.substring(0, start) + spaces + markdown.substring(end));
+
+        // Put caret at right position again
+        setTimeout(() => {
+            textarea.selectionStart = textarea.selectionEnd = start + 1;
+        }, 0);
+    }
   };
 
     const saveNote = async () => {
-        try {
+        try 
+        {
             const response = await axios.post(`http://localhost:5003/api/notes/${school}/${subject}/${title}`, {
                 school,
                 subject,
@@ -48,7 +50,8 @@ const App: React.FC = () => {
                 content: markdown,
             });
             alert('Note saved successfully!');
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Error saving note:', error);
             alert('Failed to save the note.');
         }
