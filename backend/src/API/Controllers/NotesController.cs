@@ -88,9 +88,29 @@ namespace API.Controllers
             return Ok(content);
         }
 
+        // PUT /api/notes/{school}/{subject}/{title}
+        [HttpPut("{school}/{subject}/{title}")]
+        public async Task<IActionResult> UpdateContent(string school, string subject, string title, [FromBody] Note content)
+        {
+            // find note.
+            var foundNote = await _context.Notes
+                .FirstOrDefaultAsync(n => n.School == school && n.Subject == subject && n.Title == title);
+            
+            if (foundNote == null)
+            {
+                return NotFound("This note is not found.");
+            }
+            
+            // update the note.
+            foundNote.Content = content.Content;
+            // save change. 
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
         
         // POST /api/notes/{school}/{subject}/{title}
-        // [Authorize]
+        [Authorize]
         [HttpPost("{school}/{subject}/{title}")]
         public async Task<IActionResult> CreateContent(string school, string subject, string title, [FromBody] Note note)
         {

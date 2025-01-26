@@ -13,8 +13,7 @@ public class Note
 {
     [Key]
     public int NotePK { get; set; }
-    [StringLength(2)]
-    required public string School { get; set; } // UM, GT, NA.
+    required public string School { get; set; } // University of Michigan, Georgia Tech, .NET, Blog, ...
     required public string Subject { get; set; } // ex: "EECS 281: Data Structures and Algorithms."
     required public string Title { get; set; } // "ex: Lecture 1."
     required public string Content { get; set; } // "Markdown content."
