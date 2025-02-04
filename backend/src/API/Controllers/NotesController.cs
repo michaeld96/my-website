@@ -88,26 +88,17 @@ namespace API.Controllers
             return Ok(content);
         }
 
-        // PUT /api/notes/{school}/{subject}/{title}
-        [HttpPut("{school}/{subject}/{title}")]
-        public async Task<IActionResult> UpdateContent(string school, string subject, string title, [FromBody] Note content)
+        // TODO: Complete skeleton for the UploadImage. Need to hook up S3.
+        [HttpPost]
+        public async Task<IActionResult> ImageUpload([FromForm] IFormFile file)
         {
-            // find note.
-            var foundNote = await _context.Notes
-                .FirstOrDefaultAsync(n => n.School == school && n.Subject == subject && n.Title == title);
-            
-            if (foundNote == null)
+            if (file == null || file.Length == 0)
             {
-                return NotFound("This note is not found.");
+                return BadRequest("No file to upload");
             }
             
-            // update the note.
-            foundNote.Content = content.Content;
-            // save change. 
-            await _context.SaveChangesAsync();
-            return NoContent();
+            return null;
         }
-
         
         // POST /api/notes/{school}/{subject}/{title}
         [Authorize]
@@ -135,5 +126,26 @@ namespace API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        // PUT /api/notes/{school}/{subject}/{title}
+        [HttpPut("{school}/{subject}/{title}")]
+        public async Task<IActionResult> UpdateContent(string school, string subject, string title, [FromBody] Note content)
+        {
+            // find note.
+            var foundNote = await _context.Notes
+                .FirstOrDefaultAsync(n => n.School == school && n.Subject == subject && n.Title == title);
+            
+            if (foundNote == null)
+            {
+                return NotFound("This note is not found.");
+            }
+            
+            // update the note.
+            foundNote.Content = content.Content;
+            // save change. 
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
     }
 }
