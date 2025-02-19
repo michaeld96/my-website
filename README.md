@@ -1,5 +1,6 @@
 To run frontend
 ```
+cd frontend/src/website-frontend
 npm run dev
 ```
 

@@ -31,9 +31,9 @@ const AdminHub: React.FC = () => {
 
     const handleSchoolClick = async (school: string) => {
         setSelectedSchool(school);
-        setSubjects([]); // Clear subjects when switching schools
-        setTitles([]); // Clear titles when switching schools
-        setMarkdown(''); // Clear markdown
+        setSubjects([]); // Clear subjects when switching schools.
+        setTitles([]); // Clear titles when switching schools.
+        setMarkdown(''); // Clear markdown.
         setSelectedSubject(null);
         setSelectedTitle(null);
         const response = await axios.get(`http://localhost:5003/api/notes/${school}/subjects`);
