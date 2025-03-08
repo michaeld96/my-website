@@ -98,7 +98,7 @@ const AdminHub: React.FC = () => {
                 // the response contains the public S3 URL.
                 // const { url } = response.data;
                 const url = 'this-is-a-test';
-                // insert the markdown syntax in the markdonw file.
+                // insert the markdown syntax in the markdone file.
                 const imageMarkdown = `\n![${file.name}](${url})`;
                 setMarkdown((prev) => prev + imageMarkdown);
             }
