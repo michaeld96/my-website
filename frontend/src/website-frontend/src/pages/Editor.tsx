@@ -6,7 +6,7 @@ import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import { useDropzone } from 'react-dropzone';
 
-const AdminHub: React.FC = () => {
+const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
     const [schools, setSchools] = useState<string[]>([]);
     const [subjects, setSubjects] = useState<string[]>([]);
@@ -196,4 +196,4 @@ const AdminHub: React.FC = () => {
     );
 };
 
-export default AdminHub;
+export default Editor;

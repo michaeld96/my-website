@@ -12,7 +12,7 @@ const Login: React.FC = () => {
         const token = localStorage.getItem('token');
         if (token)
         {
-            navigate('/admin-hub');
+            navigate('/editor');
         }
     }, [navigate]);
 
@@ -25,7 +25,7 @@ const Login: React.FC = () => {
             const { token } = response.data;
             localStorage.setItem('token', token); // Save token in browser and lives past
                                                   // window being closed.
-            navigate('/admin-hub'); // Redirect to admin hub on successful login.
+            navigate('/editor'); // Redirect to admin hub on successful login.
         } catch (error) {
             setError('Invalid username or password');
         }
