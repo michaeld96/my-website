@@ -12,21 +12,31 @@
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5003",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DATABASE_CONNECTION_STRING": "Server=localhost,1433;Database=db;User Id=SA;Password=Password@1;TrustServerCertificate=True;",
+        "JWT_ISSUER": "Michael Dick",
+        "JWT_AUDIENCE": "Admin",
+        "JWT_SECRET": "ThisIsA32CharacterLongSecretKeykdkajsndkasjdna",
+        "AWS_BUCKET_NAME": "aws-myblog-images-bucket"
       }
     },
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7219;http://localhost:5003",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DATABASE_CONNECTION_STRING": "Server=localhost,1433;Database=db;User Id=SA;Password=Password@1;TrustServerCertificate=True;",
+        "JWT_ISSUER": "Michael Dick",
+        "JWT_AUDIENCE": "Admin",
+        "JWT_SECRET": "ThisIsA32CharacterLongSecretKeykdkajsndkasjdna",
+        "AWS_BUCKET_NAME": "aws-myblog-images-bucket"
       }
     },
     "IIS Express": {
