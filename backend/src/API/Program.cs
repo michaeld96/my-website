@@ -1,11 +1,14 @@
 using System.Text;
 using Amazon.S3;
 using Core.Interfaces;
+using DotNetEnv;
 using Infrastructure.Data;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
+// Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +16,15 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
 var environment = builder.Environment.EnvironmentName;
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") != "${DATABASE_CONNECTION_STRING}"
+    ? builder.Configuration.GetConnectionString("DefaultConnection")
+    : Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
+
+
 builder.Services.AddDbContext<NotesContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    opt.UseSqlServer(
+        connectionString
+    )
 );
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -26,8 +36,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"] ?? Environment.GetEnvironmentVariable("JWT_ISSUER"),
-            ValidAudience = jwtSettings["Audience"] ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+            ValidIssuer = jwtSettings["JWT_ISSUER"] ?? Environment.GetEnvironmentVariable("JWT_ISSUER"),
+            ValidAudience = jwtSettings["JWT_AUDIENCE"] ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 jwtSettings["Secret"] ?? Environment.GetEnvironmentVariable("JWT_SECRET")
                 ?? throw new ArgumentNullException("JwtSettings:Secret or JWT_SECRET environment variable is not configured")
@@ -53,7 +63,7 @@ var bucketSettings = builder.Configuration.GetSection("AWSBucket");
 builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp => 
 {
     var s3Client = sp.GetRequiredService<IAmazonS3>();
-    return new S3FileUploader(s3Client, bucketSettings["BucketName"] ?? String.Empty);
+    return new S3FileUploader(s3Client, bucketSettings["BucketName"] ?? Environment.GetEnvironmentVariable("AWS_BUCKET_NAME") ?? String.Empty);
 });
 
 builder.Services.AddControllers();
