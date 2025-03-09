@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NewNote from './pages/NewNote';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
-import AdminHub from './pages/AdminHub';
+import Editor from './pages/Editor';
 
 const App: React.FC = () => {
     return(
@@ -12,7 +12,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/new-note" element={ <NewNote/> }/>
                 <Route path="/admin-login" element={ <Login/> }/>
-                <Route path="/admin-hub" element={ <AdminHub/> }/>
+                <Route path="/editor" element={ <Editor/> }/>
             </Routes>
         </Router>
     )

@@ -6,7 +6,7 @@ const LandingPage: React.FC = () => {
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
         <h1>Welcome to the Knowledge Hub</h1>
         <p>This is the public-facing page.</p>
-        <Link to="/admin-logic" style={{ textDecoration: 'none', color: 'blue' }}>
+        <Link to="/admin-login" style={{ textDecoration: 'none', color: 'blue' }}>
             Go to Admin Login
         </Link>
     </div>

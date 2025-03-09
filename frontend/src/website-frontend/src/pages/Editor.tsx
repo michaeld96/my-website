@@ -4,9 +4,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeRaw from 'rehype-raw';
 import { useDropzone } from 'react-dropzone';
 
-const AdminHub: React.FC = () => {
+const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
     const [schools, setSchools] = useState<string[]>([]);
     const [subjects, setSubjects] = useState<string[]>([]);
@@ -92,13 +93,12 @@ const AdminHub: React.FC = () => {
                 const formData = new FormData();
                 formData.append('file', file);
 
-                // const response = await axios.put('http://localhost:5003/api/notes/', formData, {
-                //     headers: { 'Content-Type': `multipart/form-data` }
-                // });
+                const response = await axios.post('http://localhost:5003/api/notes/uploadImage', formData, {
+                    headers: { 'Content-Type': `multipart/form-data` }
+                });
                 // the response contains the public S3 URL.
-                // const { url } = response.data;
-                const url = 'this-is-a-test';
-                // insert the markdown syntax in the markdonw file.
+                const { url } = response.data;
+                // insert the markdown syntax in the markdown file.
                 const imageMarkdown = `\n![${file.name}](${url})`;
                 setMarkdown((prev) => prev + imageMarkdown);
             }
@@ -157,13 +157,8 @@ const AdminHub: React.FC = () => {
                  <div
                     {...getRootProps()}
                     style={{
-                        // TODO: Need any of this?
                         flex: 1,
-                        // padding: '10px',
                         marginBottom: '10px',
-                        // border: '2px dashed #ccc',
-                        // borderRadius: '4px',
-                        // background: isDragActive ? '#efefef' : 'transparent'
                     }}
                     >
                     {/* Keep the input hidden to accept drops, but it won't open on click */}
@@ -187,7 +182,11 @@ const AdminHub: React.FC = () => {
             <div style={{ width: '40%', padding: '10px' }}>
                 <ReactMarkdown
                     remarkPlugins={[remarkMath]}
-                    rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                    rehypePlugins={[
+                        rehypeKatex,
+                        rehypeHighlight,
+                        [rehypeRaw, { allowDangerousHtml: true }]
+                    ]}
                 >
                     {markdown}
                 </ReactMarkdown>
@@ -196,4 +195,4 @@ const AdminHub: React.FC = () => {
     );
 };
 
-export default AdminHub;
+export default Editor;
