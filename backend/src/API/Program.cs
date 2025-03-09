@@ -1,7 +1,6 @@
 using System.Text;
 using Amazon.S3;
 using Core.Interfaces;
-using DotNetEnv;
 using Infrastructure.Data;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
