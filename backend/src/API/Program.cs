@@ -49,10 +49,11 @@ var awsOptions = builder.Configuration.GetAWSOptions("AWS");
 builder.Services.AddDefaultAWSOptions(awsOptions);
 
 builder.Services.AddAWSService<IAmazonS3>();
+var bucketSettings = builder.Configuration.GetSection("AWSBucket");
 builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp => 
 {
     var s3Client = sp.GetRequiredService<IAmazonS3>();
-    return new S3FileUploader(s3Client, "aws-myblog-images-bucket");
+    return new S3FileUploader(s3Client, bucketSettings["BucketName"] ?? String.Empty);
 });
 
 builder.Services.AddControllers();
