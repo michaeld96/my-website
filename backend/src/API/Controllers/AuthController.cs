@@ -56,7 +56,8 @@ namespace API.Controllers
         private string GenerateJwtToken(string username)
         {
             var jwtSettings = _config.GetSection("JwtSettings");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]));
+            string jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? String.Empty;
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
