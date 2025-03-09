@@ -157,13 +157,8 @@ const Editor: React.FC = () => {
                  <div
                     {...getRootProps()}
                     style={{
-                        // TODO: Need any of this?
                         flex: 1,
-                        // padding: '10px',
                         marginBottom: '10px',
-                        // border: '2px dashed #ccc',
-                        // borderRadius: '4px',
-                        // background: isDragActive ? '#efefef' : 'transparent'
                     }}
                     >
                     {/* Keep the input hidden to accept drops, but it won't open on click */}
