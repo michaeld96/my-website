@@ -29,6 +29,10 @@ namespace API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
+            if (user == null)
+            {
+                return BadRequest("Auth: Cannot find user to assign JWT to.");
+            }
 
             bool isPasswordValid;
             if (_env.IsDevelopment())
