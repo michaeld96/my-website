@@ -1,3 +1,6 @@
+using Amazon;
+using Amazon.S3;
+using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -12,9 +15,11 @@ namespace API.Controllers
     public class NotesController : ControllerBase
     {
         private readonly NotesContext _context;
-        public NotesController(NotesContext context)
+        private readonly IFileUploader _fileUploader;
+        public NotesController(NotesContext context, IFileUploader fileUploader)
         {
             _context = context;
+            _fileUploader = fileUploader;
         }
         /// <summary>
         /// Gets the names of all the schools.
@@ -89,15 +94,22 @@ namespace API.Controllers
         }
 
         // TODO: Complete skeleton for the UploadImage. Need to hook up S3.
-        [HttpPost]
+        [HttpPost("uploadImage")]
         public async Task<IActionResult> ImageUpload([FromForm] IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
                 return BadRequest("No file to upload");
             }
+
+            var url = await _fileUploader.UploadAsync(file);
+
+            if (String.IsNullOrEmpty(url.ToString()))
+            {
+                return BadRequest("Failed to upload image.");
+            }
             
-            return null;
+            return Ok(new { url });
         }
         
         // POST /api/notes/{school}/{subject}/{title}

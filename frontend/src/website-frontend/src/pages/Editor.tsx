@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeRaw from 'rehype-raw';
 import { useDropzone } from 'react-dropzone';
 
 const Editor: React.FC = () => {
@@ -92,13 +93,12 @@ const Editor: React.FC = () => {
                 const formData = new FormData();
                 formData.append('file', file);
 
-                // const response = await axios.put('http://localhost:5003/api/notes/', formData, {
-                //     headers: { 'Content-Type': `multipart/form-data` }
-                // });
+                const response = await axios.post('http://localhost:5003/api/notes/uploadImage', formData, {
+                    headers: { 'Content-Type': `multipart/form-data` }
+                });
                 // the response contains the public S3 URL.
-                // const { url } = response.data;
-                const url = 'this-is-a-test';
-                // insert the markdown syntax in the markdone file.
+                const { url } = response.data;
+                // insert the markdown syntax in the markdown file.
                 const imageMarkdown = `\n![${file.name}](${url})`;
                 setMarkdown((prev) => prev + imageMarkdown);
             }
@@ -187,7 +187,11 @@ const Editor: React.FC = () => {
             <div style={{ width: '40%', padding: '10px' }}>
                 <ReactMarkdown
                     remarkPlugins={[remarkMath]}
-                    rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                    rehypePlugins={[
+                        rehypeKatex,
+                        rehypeHighlight,
+                        [rehypeRaw, { allowDangerousHtml: true }]
+                    ]}
                 >
                     {markdown}
                 </ReactMarkdown>

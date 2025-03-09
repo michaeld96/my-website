@@ -1,5 +1,8 @@
 using System.Text;
+using Amazon.S3;
+using Core.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -40,6 +43,16 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+});
+
+var awsOptions = builder.Configuration.GetAWSOptions("AWS");
+builder.Services.AddDefaultAWSOptions(awsOptions);
+
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp => 
+{
+    var s3Client = sp.GetRequiredService<IAmazonS3>();
+    return new S3FileUploader(s3Client, "aws-myblog-images-bucket");
 });
 
 builder.Services.AddControllers();
