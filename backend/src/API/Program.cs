@@ -64,6 +64,7 @@ builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp =>
 {
     var s3Client = sp.GetRequiredService<IAmazonS3>();
     return new S3FileUploader(s3Client, bucketSettings["BucketName"] ?? Environment.GetEnvironmentVariable("AWS_BUCKET_NAME") ?? String.Empty);
+
 });
 
 builder.Services.AddControllers();
