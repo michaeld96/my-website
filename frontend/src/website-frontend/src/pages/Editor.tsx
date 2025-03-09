@@ -181,7 +181,7 @@ const Editor: React.FC = () => {
             </div>
 
             {/* Right Panel: Rendered Markdown */}
-            <div style={{ width: '40%', padding: '10px' }}>
+            <div style={{ width: '40%', padding: '10px', overflow: 'scroll'}}>
                 <ReactMarkdown
                     remarkPlugins={[remarkMath]}
                     rehypePlugins={[

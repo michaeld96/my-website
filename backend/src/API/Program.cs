@@ -36,7 +36,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtSettings["JWT_ISSUER"] ?? Environment.GetEnvironmentVariable("JWT_ISSUER"),
             ValidAudience = jwtSettings["JWT_AUDIENCE"] ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                jwtSettings["Secret"] ?? Environment.GetEnvironmentVariable("JWT_SECRET")
+                Environment.GetEnvironmentVariable("JWT_SECRET")
                 ?? throw new ArgumentNullException("JwtSettings:Secret or JWT_SECRET environment variable is not configured")
             ))
         };
@@ -56,11 +56,11 @@ var awsOptions = builder.Configuration.GetAWSOptions("AWS");
 builder.Services.AddDefaultAWSOptions(awsOptions);
 
 builder.Services.AddAWSService<IAmazonS3>();
-var bucketSettings = builder.Configuration.GetSection("AWSBucket");
+var bucketSettings = Environment.GetEnvironmentVariable("AWS_BUCKET_NAME");
 builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp => 
 {
     var s3Client = sp.GetRequiredService<IAmazonS3>();
-    return new S3FileUploader(s3Client, bucketSettings["BucketName"] ?? Environment.GetEnvironmentVariable("AWS_BUCKET_NAME") ?? String.Empty);
+    return new S3FileUploader(s3Client, Environment.GetEnvironmentVariable("AWS_BUCKET_NAME") ?? String.Empty);
 
 });
 

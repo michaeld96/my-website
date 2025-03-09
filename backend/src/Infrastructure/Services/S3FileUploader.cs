@@ -20,7 +20,7 @@ public class S3FileUploader : IFileUploader
 
     public async Task<String> UploadAsync(IFormFile file)
     {
-        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+        var fileName = "images/" + Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 
         using var newMemoryStream = new MemoryStream();
         await file.CopyToAsync(newMemoryStream);

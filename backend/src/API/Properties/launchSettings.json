@@ -20,7 +20,7 @@
         "DATABASE_CONNECTION_STRING": "Server=localhost,1433;Database=db;User Id=SA;Password=Password@1;TrustServerCertificate=True;",
         "JWT_ISSUER": "Michael Dick",
         "JWT_AUDIENCE": "Admin",
-        "JWT_SECRET": "ThisIsA32CharacterLongSecretKeykdkajsndkasjdna",
+        "JWT_SECRET": "SuperSecretKeyThatIsLongEnough1234567890",
         "AWS_BUCKET_NAME": "aws-myblog-images-bucket"
       }
     },
@@ -35,7 +35,7 @@
         "DATABASE_CONNECTION_STRING": "Server=localhost,1433;Database=db;User Id=SA;Password=Password@1;TrustServerCertificate=True;",
         "JWT_ISSUER": "Michael Dick",
         "JWT_AUDIENCE": "Admin",
-        "JWT_SECRET": "ThisIsA32CharacterLongSecretKeykdkajsndkasjdna",
+        "JWT_SECRET": "ThisIsA32CharacterLongSecretKeykdkajsndkasjdnaaldkgjadoigsdogisdjg",
         "AWS_BUCKET_NAME": "aws-myblog-images-bucket"
       }
     },
