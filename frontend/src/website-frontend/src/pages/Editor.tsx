@@ -22,6 +22,8 @@ const Editor: React.FC = () => {
     const [imageName, setImageName] = useState<string>('');
     const [imageURL, setImageURL] = useState<string>('');
 
+    // const baseUrl = process.env.REACT_APP_API_URL;
+
     useEffect(() => {
         const fetchSchools = async () => {
             const response = await axios.get('http://localhost:5003/api/notes/schools');
