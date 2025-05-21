@@ -6,6 +6,7 @@ import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import { useDropzone } from 'react-dropzone';
+import './Editor.css'
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -122,7 +123,11 @@ const Editor: React.FC = () => {
                 <h3>Schools</h3>
                 <ul>
                     {schools.map((school) => (
-                        <li key={school} onClick={() => handleSchoolClick(school)}>
+                        <li 
+                        key={school}
+                        className={`list-item ${school == selectedSchool ? 'active' : ''}`}
+                        onClick={() => handleSchoolClick(school)}
+                        >
                             {school}
                         </li>
                     ))}
@@ -132,7 +137,10 @@ const Editor: React.FC = () => {
                         <h4>Subjects</h4>
                         <ul>
                             {subjects.map((subject) => (
-                                <li key={subject} onClick={() => handleSubjectClick(subject)}>
+                                <li 
+                                    key={subject} 
+                                    className={`list-item ${subject == selectedSubject ? 'active' : ''}`}
+                                    onClick={() => handleSubjectClick(subject)}>
                                     {subject}
                                 </li>
                             ))}
@@ -144,7 +152,11 @@ const Editor: React.FC = () => {
                         <h4>Titles</h4>
                         <ul>
                             {titles.map((title) => (
-                                <li key={title} onClick={() => handleTitleClick(title)}>
+                                <li 
+                                    key={title} 
+                                    onClick={() => handleTitleClick(title)}
+                                    className={`list-item ${title == selectedTitle ? 'active' : ''}`}
+                                >
                                     {title}
                                 </li>
                             ))}
