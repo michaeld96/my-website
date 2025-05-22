@@ -113,7 +113,7 @@ namespace API.Controllers
         }
         
         // POST /api/notes/{school}/{subject}/{title}
-        [Authorize]
+        // [Authorize]
         [HttpPost("{school}/{subject}/{title}")]
         public async Task<IActionResult> CreateContent(string school, string subject, string title, [FromBody] Note note)
         {
@@ -126,7 +126,7 @@ namespace API.Controllers
             {
                 note.School = school;
                 note.Subject = subject;
-                note.Title = subject;
+                note.Title = title;
 
                 _context.Notes.Add(note);
                 await _context.SaveChangesAsync();

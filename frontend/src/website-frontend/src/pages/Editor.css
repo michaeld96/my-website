@@ -10,3 +10,45 @@
     color: white;
     border-radius: 4px;
 }
+
+.editor-header-alignment
+{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.create-button
+{
+    transition: 0.3s ease;
+}
+
+.create-button:hover
+{
+    background-color: #007BFF;
+}
+
+.title-pop-up
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;   
+    gap: 12px;
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222;
+    border: 1px solid #888;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 999;
+}
+
+.title-pop-up-buttons
+{
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 10px;
+}
