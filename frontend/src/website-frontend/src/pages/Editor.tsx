@@ -15,6 +15,7 @@ const Editor: React.FC = () => {
     const [titles, setTitles] = useState<string[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
     const [showTitlePopUp, setShowTitlePopUp] = useState(false);
+    const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
     const [newTitle, setNewTitle] = useState<string>('');
 
     const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
@@ -47,6 +48,36 @@ const Editor: React.FC = () => {
         return true;
     }
 
+    async function getMarkdownAsync(school: string | null, subject: string | null, title: string | null): Promise<string>
+    {
+        try
+        {
+            const response = await axios.get(`http://localhost:5003/api/notes/${school}/${subject}/${title}`);
+            return response.data;
+        }
+        catch (error)
+        {
+            console.error("ERROR: Failed to get markdown", error);
+            alert("ERROR: Cannot get markdown!");
+            return "";
+        }
+    }
+
+    async function getAllTitlesAsync(school: string | null, subject: string | null): Promise<string[]>
+    {
+        try
+        {
+            const response = await axios.get(`http://localhost:5003/api/notes/${school}/${subject}/titles`);
+            return response.data;
+        }
+        catch (error)
+        {
+            console.error("ERROR: Cannot get all titles for this subject.");
+            alert("ERROR: Cannot get all titles for this subject.");
+            return [];   
+        }
+    }
+
     useEffect(() => {
         const fetchSchools = async () => {
             const response = await axios.get('http://localhost:5003/api/notes/schools');
@@ -71,14 +102,14 @@ const Editor: React.FC = () => {
         setTitles([]); // Clear titles when switching subjects
         setMarkdown(''); // Clear markdown
         setSelectedTitle(null);
-        const response = await axios.get(`http://localhost:5003/api/notes/${selectedSchool}/${subject}/titles`);
-        setTitles(response.data);
+        const titles = await getAllTitlesAsync(selectedSchool, subject);
+        setTitles(titles);
     };
 
     const handleTitleClick = async (title: string) => {
         setSelectedTitle(title);
-        const response = await axios.get(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${title}`);
-        setMarkdown(response.data);
+        const response = await getMarkdownAsync(selectedSchool, selectedSubject, title);
+        setMarkdown(response);
     };
 
     const updateNote = async () => {
@@ -123,8 +154,8 @@ const Editor: React.FC = () => {
                 setShowTitlePopUp(false);
                 setMarkdown('');
                 setNewTitle('');
-                const response = await axios.get(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/titles`);
-                setTitles(response.data);
+                const response = await getAllTitlesAsync(selectedSchool, selectedSubject);
+                setTitles(response);
                 
             } 
             catch (error)
@@ -132,6 +163,37 @@ const Editor: React.FC = () => {
                 console.error('ERROR: Failed to save new content.');
                 alert('Failed to save new note. Please try again');
             }
+        }
+    }
+
+    const handleDeleteNote = async () => {
+        try
+        {
+            await axios.delete(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${selectedTitle}`);
+            alert("Note has been successfully deleted!");
+            setDeleteNotePopUp(false);
+            const response = await getAllTitlesAsync(selectedSchool, selectedSubject);
+            setTitles(response);
+
+            if (response.length > 0)
+            {
+                // If there is more content, let's just set it to the first one.
+                const nextTitle = response[0];
+                setSelectedTitle(nextTitle);
+                const markdown = await getMarkdownAsync(selectedSchool, selectedSubject, nextTitle);
+                setMarkdown(markdown);
+            }
+            else
+            {
+                setSelectedTitle('');
+                setMarkdown('');
+            }
+            setTitles(response);  
+        }
+        catch (error)
+        {
+            console.error("ERROR: Failed to delete note!");
+            alert("Failed to delete note.");
         }
     }
 
@@ -188,6 +250,19 @@ const Editor: React.FC = () => {
             </div>
         </div>
     )}
+    {showDeleteNotePopUp && (
+        <div className='title-pop-up'>
+            <h2>Are you sure you want to delete this note?</h2>
+            <div className='title-pop-up-buttons'>
+                <button onClick={ handleDeleteNote }>
+                    Delete
+                </button>
+                <button onClick={() => { setDeleteNotePopUp(false) }}>
+                    Cancel
+                </button>
+            </div>
+        </div>
+    )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc' }}>
@@ -224,9 +299,25 @@ const Editor: React.FC = () => {
                             <h4>Titles</h4>
                             <button 
                                 className='create-button'
-                                onClick={() => { setShowTitlePopUp(true)} }
+                                onClick={ () => { setShowTitlePopUp(true)} }
                             >
                                 Create Note
+                            </button>
+                            <button 
+                                className='create-button'
+                                onClick={ () => {
+                                        if (!selectedTitle)
+                                        {
+                                            alert("Must select a title to delete!");    
+                                        }
+                                        else 
+                                        {
+                                            setDeleteNotePopUp(true);
+                                        }
+                                    }
+                                }
+                            >
+                                Delete Note
                             </button>
                         </div>
                         <ul>
