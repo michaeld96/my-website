@@ -30,7 +30,6 @@ public class S3FileUploader : IFileUploader
             InputStream = newMemoryStream,
             Key = fileName,
             BucketName = _bucketName
-            // CannedACL = S3CannedACL.PublicRead
         };
 
         var fileTransferUtility = new TransferUtility(_s3client);

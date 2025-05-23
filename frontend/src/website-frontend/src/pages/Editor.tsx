@@ -123,7 +123,6 @@ const Editor: React.FC = () => {
                 setShowTitlePopUp(false);
                 setMarkdown('');
                 setNewTitle('');
-                // TODO: Look into further!
                 const response = await axios.get(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/titles`);
                 setTitles(response.data);
                 

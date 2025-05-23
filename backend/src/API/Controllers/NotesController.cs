@@ -15,7 +15,11 @@ namespace API.Controllers
     public class NotesController : ControllerBase
     {
         private readonly NotesContext _context;
+        // TODO: replace NotesContext with this.
+        // private readonly NotesRepository _notes;
         private readonly IFileUploader _fileUploader;
+        // Inject our dependencies here! .NET just wants us to register our services and then
+        // the instantiation of our object .NET will inject our dependencies using their DI container.
         public NotesController(NotesContext context, IFileUploader fileUploader)
         {
             _context = context;
@@ -51,7 +55,7 @@ namespace API.Controllers
                 .Select(n => n.Subject)
                 .Distinct()
                 .ToListAsync();
-            
+
             return Ok(subjects);
         }
 
@@ -80,12 +84,12 @@ namespace API.Controllers
         public async Task<IActionResult> GetContent(string school, string subject, string title)
         {
             var content = await _context.Notes
-                .Where(n => n.School == school 
-                    && n.Subject == subject 
+                .Where(n => n.School == school
+                    && n.Subject == subject
                     && n.Title == title)
                 .Select(n => n.Content)
                 .FirstOrDefaultAsync();
-            
+
             if (content == null)
             {
                 return NotFound("Note is not found");
@@ -108,12 +112,12 @@ namespace API.Controllers
             {
                 return BadRequest("Failed to upload image.");
             }
-            
+
             return Ok(new { url });
         }
-        
+
         // POST /api/notes/{school}/{subject}/{title}
-        // [Authorize]
+        // [Authorize] TODO: Do we really Authorization here?
         [HttpPost("{school}/{subject}/{title}")]
         public async Task<IActionResult> CreateContent(string school, string subject, string title, [FromBody] Note note)
         {
@@ -146,18 +150,42 @@ namespace API.Controllers
             // find note.
             var foundNote = await _context.Notes
                 .FirstOrDefaultAsync(n => n.School == school && n.Subject == subject && n.Title == title);
-            
+
             if (foundNote == null)
             {
                 return NotFound("This note is not found.");
             }
-            
+
             // update the note.
             foundNote.Content = content.Content;
             // save change. 
             await _context.SaveChangesAsync();
             return NoContent();
         }
+        // DELETE /api/notes/{school}/{subject}/{title}
+        [HttpDelete("{school}/{subject}/{title}")]
+        public async Task<IActionResult> DeleteNote(string school, string subject, string title)
+        {
+            try
+            {
+                // First, see if the note exists.
+                var foundNote = await _context.Notes.FirstOrDefaultAsync(
+                    n => n.School == school && n.Subject == subject && n.Title == title
+                );
 
+                if (foundNote == null)
+                {
+                    return NotFound("Note not found.");
+                }
+
+                _context.Notes.Remove(foundNote);
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"DB EXCEPTION: {ex.Message}");
+            }
+        }
     }
 }
