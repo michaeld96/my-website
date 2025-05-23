@@ -14,6 +14,9 @@ const Editor: React.FC = () => {
     const [subjects, setSubjects] = useState<string[]>([]);
     const [titles, setTitles] = useState<string[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
+    const [showTitlePopUp, setShowTitlePopUp] = useState(false);
+    const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
+    const [newTitle, setNewTitle] = useState<string>('');
 
     const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
@@ -24,6 +27,56 @@ const Editor: React.FC = () => {
     const [imageURL, setImageURL] = useState<string>('');
 
     // const baseUrl = process.env.REACT_APP_API_URL;
+
+    function check_school_subject_title_selected(): boolean
+     {
+        if (!selectedSchool || !selectedSubject || !selectedTitle) 
+        {
+            alert("Please select school, subject, and title first.");
+            return false;
+        }
+        return true;
+     }
+
+    function check_school_subject_selected(): boolean
+    {
+        if (!selectedSchool || !selectedSubject) 
+        {
+            alert("Please select school and subject.");
+            return false;
+        }
+        return true;
+    }
+
+    async function getMarkdownAsync(school: string | null, subject: string | null, title: string | null): Promise<string>
+    {
+        try
+        {
+            const response = await axios.get(`http://localhost:5003/api/notes/${school}/${subject}/${title}`);
+            return response.data;
+        }
+        catch (error)
+        {
+            console.error("ERROR: Failed to get markdown", error);
+            alert("ERROR: Cannot get markdown!");
+            return "";
+        }
+    }
+
+    async function getAllTitlesAsync(school: string | null, subject: string | null): Promise<string[]>
+    {
+        try
+        {
+            const response = await axios.get(`http://localhost:5003/api/notes/${school}/${subject}/titles`);
+            return response.data;
+        }
+        catch (error)
+        {
+            console.error("ERROR: Cannot get all titles for this subject.");
+            alert("ERROR: Cannot get all titles for this subject.");
+            return [];   
+        }
+    }
 
     useEffect(() => {
         const fetchSchools = async () => {
@@ -49,39 +102,100 @@ const Editor: React.FC = () => {
         setTitles([]); // Clear titles when switching subjects
         setMarkdown(''); // Clear markdown
         setSelectedTitle(null);
-        const response = await axios.get(`http://localhost:5003/api/notes/${selectedSchool}/${subject}/titles`);
-        setTitles(response.data);
+        const titles = await getAllTitlesAsync(selectedSchool, subject);
+        setTitles(titles);
     };
 
     const handleTitleClick = async (title: string) => {
         setSelectedTitle(title);
-        const response = await axios.get(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${title}`);
-        setMarkdown(response.data);
+        const response = await getMarkdownAsync(selectedSchool, selectedSubject, title);
+        setMarkdown(response);
     };
 
     const updateNote = async () => {
-        if (!selectedSchool || !selectedSubject || !selectedTitle) 
-        {
-            alert("Please select school, subject, and title first.");
-            return;
-        }
 
-        try 
+        
+        if (check_school_subject_title_selected())
         {
-            const response = await axios.put(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${selectedTitle}`, {
-                school: selectedSchool,
-                subject: selectedSubject,
-                title: selectedTitle,
-                content: markdown,
-            });
-            alert("Note updated successfully!");
-        } 
-        catch (error) 
-        {
-            console.error('Error updating note:', error);
-            alert("Failed to update note. Please try again.");
+            try 
+            {
+                await axios.put(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${selectedTitle}`, 
+                {
+                    school: selectedSchool,
+                    subject: selectedSubject,
+                    title: selectedTitle,
+                    content: markdown,
+                });
+                alert("Note updated successfully!");
+            } 
+            catch (error) 
+            {
+                console.error('ERROR: Failed to update not.', error);
+                alert("Failed to update note. Please try again.");
+            }
         }
     };
+
+    const handleCreateNote = async () => {
+        if (check_school_subject_selected())
+        {
+            try
+            {
+                await axios.post(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${newTitle}`,
+                    {
+                        school: selectedSchool,
+                        subject: selectedSubject,
+                        title: newTitle,
+                        content: "",
+                    }
+                );
+                alert('New note saved!');
+                setSelectedTitle(newTitle);
+                setShowTitlePopUp(false);
+                setMarkdown('');
+                setNewTitle('');
+                const response = await getAllTitlesAsync(selectedSchool, selectedSubject);
+                setTitles(response);
+                
+            } 
+            catch (error)
+            {
+                console.error('ERROR: Failed to save new content.');
+                alert('Failed to save new note. Please try again');
+            }
+        }
+    }
+
+    const handleDeleteNote = async () => {
+        try
+        {
+            await axios.delete(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${selectedTitle}`);
+            alert("Note has been successfully deleted!");
+            setDeleteNotePopUp(false);
+            const response = await getAllTitlesAsync(selectedSchool, selectedSubject);
+            setTitles(response);
+
+            if (response.length > 0)
+            {
+                // If there is more content, let's just set it to the first one.
+                const nextTitle = response[0];
+                setSelectedTitle(nextTitle);
+                const markdown = await getMarkdownAsync(selectedSchool, selectedSubject, nextTitle);
+                setMarkdown(markdown);
+            }
+            else
+            {
+                setSelectedTitle('');
+                setMarkdown('');
+            }
+            setTitles(response);  
+        }
+        catch (error)
+        {
+            console.error("ERROR: Failed to delete note!");
+            alert("Failed to delete note.");
+        }
+    }
 
     // ---------------------------- //
     // Drag-and-Drop for Images     //
@@ -117,6 +231,38 @@ const Editor: React.FC = () => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: true });
 
     return (
+    <>
+    {showTitlePopUp && (
+        <div className='title-pop-up'>
+            <input
+                type='text'
+                value={newTitle}
+                onChange={(e) => { setNewTitle(e.target.value) }}
+                placeholder="Enter new note title."
+            />
+            <div className='title-pop-up-buttons'>
+                <button onClick={ handleCreateNote }>
+                    Create
+                </button>
+                <button onClick={() => { setShowTitlePopUp(false) }}>
+                    Cancel
+                </button>
+            </div>
+        </div>
+    )}
+    {showDeleteNotePopUp && (
+        <div className='title-pop-up'>
+            <h2>Are you sure you want to delete this note?</h2>
+            <div className='title-pop-up-buttons'>
+                <button onClick={ handleDeleteNote }>
+                    Delete
+                </button>
+                <button onClick={() => { setDeleteNotePopUp(false) }}>
+                    Cancel
+                </button>
+            </div>
+        </div>
+    )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc' }}>
@@ -149,7 +295,31 @@ const Editor: React.FC = () => {
                 )}
                 {selectedSubject && (
                     <>
-                        <h4>Titles</h4>
+                        <div className='editor-header-alignment'>
+                            <h4>Titles</h4>
+                            <button 
+                                className='create-button'
+                                onClick={ () => { setShowTitlePopUp(true)} }
+                            >
+                                Create Note
+                            </button>
+                            <button 
+                                className='create-button'
+                                onClick={ () => {
+                                        if (!selectedTitle)
+                                        {
+                                            alert("Must select a title to delete!");    
+                                        }
+                                        else 
+                                        {
+                                            setDeleteNotePopUp(true);
+                                        }
+                                    }
+                                }
+                            >
+                                Delete Note
+                            </button>
+                        </div>
                         <ul>
                             {titles.map((title) => (
                                 <li 
@@ -206,7 +376,9 @@ const Editor: React.FC = () => {
                 </ReactMarkdown>
             </div>
         </div>
+    </>
     );
 };
+
 
 export default Editor;
