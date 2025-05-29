@@ -1,3 +1,8 @@
+# My Fullstack Blog
+
+## EER
+![EER](dev-blog/imgs/EER.svg)
+
 To run frontend
 ```
 cd frontend/src/website-frontend
