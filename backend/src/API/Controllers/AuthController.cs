@@ -14,21 +14,21 @@ namespace API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly NotesContext _context;
+        private readonly UnitOfWork _uow;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
-        public AuthController(NotesContext context, IConfiguration config, IWebHostEnvironment env)
+        public AuthController(UnitOfWork uow, IConfiguration config, IWebHostEnvironment env)
         {
-            _context = context;
+            _uow = uow;
             _config = config;
             _env = env;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
+            var user = await _uow.NotesRepo.GetUserOrNullAsync(request.Username, ct);
             if (user == null)
             {
                 return BadRequest("Auth: Cannot find user to assign JWT to.");

@@ -10,8 +10,12 @@ namespace Infrastructure.Data;
 public class NotesRepository : INotesRepository
 {
     private readonly NotesContext _context;
-    public NotesRepository(NotesContext context)
+    public NotesRepository(NotesContext context) => _context = context;
+
+    public async Task<User?> GetUserOrNullAsync(string username, CancellationToken ct)
     {
-        _context = context;
+        return await _context.Users
+                             .AsNoTracking()
+                             .SingleOrDefaultAsync(u => u.Username == username, ct);
     }
 }
