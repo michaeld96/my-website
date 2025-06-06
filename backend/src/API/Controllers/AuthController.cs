@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
@@ -14,11 +15,11 @@ namespace API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UnitOfWork _uow;
+        private readonly IUnitOfWork _uow;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
-        public AuthController(UnitOfWork uow, IConfiguration config, IWebHostEnvironment env)
+        public AuthController(IUnitOfWork uow, IConfiguration config, IWebHostEnvironment env)
         {
             _uow = uow;
             _config = config;
@@ -28,6 +29,10 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct)
         {
+            if (request == null)
+            {
+                return BadRequest("Auth: request was empty");
+            }
             var user = await _uow.NotesRepo.GetUserOrNullAsync(request.Username, ct);
             if (user == null)
             {
