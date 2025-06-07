@@ -71,7 +71,7 @@ namespace API.Controllers
         /// <returns></returns>
         // GET /api/notes/{school}/{subject}/titles
         [HttpGet("{schoolCode}/{subjectCode}/titles")]
-        public async Task<IActionResult> GetTitles(string schoolCode, string subjectCode, CancellationToken ct)
+        public async Task<IActionResult> GetNoteTitles(string schoolCode, string subjectCode, CancellationToken ct)
         {
             var result = await _uow.NotesRepo.DoesSchoolExistAsync(schoolCode, ct);
             if (!result)
@@ -85,23 +85,17 @@ namespace API.Controllers
             return Ok(titles);
         }
 
-        // // GET /api/notes/{school}/{subject}/{title}
-        // [HttpGet("{school}/{subject}/{title}")]
-        // public async Task<IActionResult> GetContent(string school, string subject, string title)
-        // {
-        //     var content = await _context.Notes
-        //         .Where(n => n.School == school
-        //             && n.Subject == subject
-        //             && n.Title == title)
-        //         .Select(n => n.Content)
-        //         .FirstOrDefaultAsync();
-
-        //     if (content == null)
-        //     {
-        //         return NotFound("Note is not found");
-        //     }
-        //     return Ok(content);
-        // }
+        // GET /api/notes/{school}/{subject}/{title}
+        [HttpGet("{schoolCode}/{subjectCode}/{titleCode}")]
+        public async Task<IActionResult> GetNote(string schoolCode, string subjectCode, string titleCode, CancellationToken ct)
+        {
+            if (schoolCode == null || subjectCode == null || titleCode == null)
+            {
+                return BadRequest(HTTPMessagesReturnedToUser.SchoolOrSubjectOrNoteNotPopulated(schoolCode, subjectCode, titleCode));
+            }
+            var result = await _uow.NotesRepo.GetNoteAsync(schoolCode, subjectCode, titleCode, ct);
+            return Ok(result);
+        }
 
         // // TODO: Complete skeleton for the UploadImage. Need to hook up S3.
         // [HttpPost("uploadImage")]

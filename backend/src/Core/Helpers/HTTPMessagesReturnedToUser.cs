@@ -12,4 +12,8 @@ public static class HTTPMessagesReturnedToUser
     {
         return "ERROR: No school was specified.";
     }
+    public static string SchoolOrSubjectOrNoteNotPopulated(string? schoolCode, string? subjectCode, string? noteTitle)
+    {
+        return $"ERROR: SchoolCode: {schoolCode}, SubjectCode: {subjectCode}, or NoteTitle: {noteTitle} are null";
+    }
 }

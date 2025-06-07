@@ -44,7 +44,7 @@ public class NotesRepository : INotesRepository
         return _context.Schools
                        .AsNoTracking()
                        .AnyAsync(s => s.Code == schoolCode);
-                       
+
     }
     public Task<bool> DoesSchoolExistForSubjectAsync(string schoolCode, CancellationToken ct)
     {
@@ -66,6 +66,13 @@ public class NotesRepository : INotesRepository
                        .AsNoTracking()
                        .Where(n => n.Subject.Code == subjectCode && n.Subject.School.Code == schoolCode)
                        .ToListAsync();
+    }
+    public Task<Note?> GetNoteAsync(string schoolCode, string subjectCode, string noteTitle, CancellationToken ct)
+    {
+        return _context.Notes
+                       .AsNoTracking()
+                       .Where(n => n.Subject.Code == subjectCode && n.Subject.School.Code == schoolCode && n.Title == noteTitle)
+                       .FirstOrDefaultAsync();
     }
     
 }   
