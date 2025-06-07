@@ -7,11 +7,14 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import { useDropzone } from 'react-dropzone';
 import './Editor.css'
+import { School } from '../types/school';
+import { Subject } from '../types/subject';
+import { Note } from '../types/note';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
-    const [schools, setSchools] = useState<string[]>([]);
-    const [subjects, setSubjects] = useState<string[]>([]);
+    const [schools, setSchools] = useState<School[]>([]);
+    const [subjects, setSubjects] = useState<Subject[]>([]);
     const [titles, setTitles] = useState<string[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
     const [showTitlePopUp, setShowTitlePopUp] = useState(false);
@@ -52,8 +55,8 @@ const Editor: React.FC = () => {
     {
         try
         {
-            const response = await axios.get(`http://localhost:5003/api/notes/${school}/${subject}/${title}`);
-            return response.data;
+            const response = await axios.get<Note>(`http://localhost:5003/api/notes/${school}/${subject}/${title}`);
+            return response.data.markdown;
         }
         catch (error)
         {
@@ -270,11 +273,11 @@ const Editor: React.FC = () => {
                 <ul>
                     {schools.map((school) => (
                         <li 
-                        key={school}
-                        className={`list-item ${school == selectedSchool ? 'active' : ''}`}
-                        onClick={() => handleSchoolClick(school)}
+                        key={school.code}
+                        className={`list-item ${school.code == selectedSchool ? 'active' : ''}`}
+                        onClick={() => handleSchoolClick(school.code)}
                         >
-                            {school}
+                            {school.code}
                         </li>
                     ))}
                 </ul>
@@ -284,10 +287,10 @@ const Editor: React.FC = () => {
                         <ul>
                             {subjects.map((subject) => (
                                 <li 
-                                    key={subject} 
-                                    className={`list-item ${subject == selectedSubject ? 'active' : ''}`}
-                                    onClick={() => handleSubjectClick(subject)}>
-                                    {subject}
+                                    key={subject.code} 
+                                    className={`list-item ${subject.code == selectedSubject ? 'active' : ''}`}
+                                    onClick={() => handleSubjectClick(subject.code)}>
+                                    {subject.code}
                                 </li>
                             ))}
                         </ul>
