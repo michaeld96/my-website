@@ -40,9 +40,9 @@ public class NotesContext : DbContext
         );
 
         b.Entity<Subject>().HasData(
-            new Subject { Id = 1, Title = "EECS 281: Data Structures and Algorithms", SchoolId = 1 },
-            new Subject { Id = 2, Title = "EECS 483: Compiler Construction", SchoolId = 1 },
-            new Subject { Id = 3, Title = "CS 6400: Database Systems Concepts and Design", SchoolId = 2 }
+            new Subject { Id = 1, Code = "EECS 281", Title = "Data Structures and Algorithms", SchoolId = 1 },
+            new Subject { Id = 2, Code = "EECS 483", Title = "Compiler Construction", SchoolId = 1 },
+            new Subject { Id = 3, Code = "CS 6400", Title = "Database Systems Concepts and Design", SchoolId = 2 }
         );
 
         b.Entity<Tag>().HasData(
@@ -70,7 +70,7 @@ public class NotesContext : DbContext
                 Id = 1,
                 CreatedAt = seeded_time,
                 UpdatedAt = seeded_time,
-                Title = "Lecture 1: Introduction",
+                Title = "Lecture 1: Stack, Queue, and Priority Queue ADTs",
                 Markdown = "This is an introduction to EECS 281!",
                 SubjectId = 1
             },
@@ -97,6 +97,15 @@ public class NotesContext : DbContext
                 Title = "Lecture 1: Introduction",
                 Markdown = "Databases....",
                 SubjectId = 3
+            },
+            new Note
+            {
+                Id = 4,
+                CreatedAt = seeded_time,
+                UpdatedAt = seeded_time,
+                Title = "Lecture 2: Complexity Analysis, Math Foundations",
+                Markdown = "Here is link to the lecture: https://www.youtube.com/watch?v=rO_ThtXqykc&list=PLmotwOE2mfH6-4Mw9GUbgpLKx2waxPhKJ&index=3",
+                SubjectId = 1
             }
         );
 

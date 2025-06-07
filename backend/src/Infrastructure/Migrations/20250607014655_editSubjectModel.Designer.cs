@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(NotesContext))]
-    partial class NotesContextModelSnapshot : ModelSnapshot
+    [Migration("20250607014655_editSubjectModel")]
+    partial class editSubjectModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,7 +63,7 @@ namespace Infrastructure.Migrations
                             CreatedAt = new DateTime(2025, 6, 3, 0, 0, 0, 0, DateTimeKind.Utc),
                             Markdown = "This is an introduction to EECS 281!",
                             SubjectId = 1,
-                            Title = "Lecture 1: Stack, Queue, and Priority Queue ADTs",
+                            Title = "Lecture 1: Introduction",
                             UpdatedAt = new DateTime(2025, 6, 3, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -79,15 +82,6 @@ namespace Infrastructure.Migrations
                             Markdown = "Databases....",
                             SubjectId = 3,
                             Title = "Lecture 1: Introduction",
-                            UpdatedAt = new DateTime(2025, 6, 3, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2025, 6, 3, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Markdown = "Here is link to the lecture: https://www.youtube.com/watch?v=rO_ThtXqykc&list=PLmotwOE2mfH6-4Mw9GUbgpLKx2waxPhKJ&index=3",
-                            SubjectId = 1,
-                            Title = "Lecture 2: Complexity Analysis, Math Foundations",
                             UpdatedAt = new DateTime(2025, 6, 3, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
