@@ -6,7 +6,6 @@ namespace Core.Models;
 
 public class School
 {
-    [Key]
     public int Id { get; set; } // PK.
     public string Code { get; set; } = null!; // UM, GT, etc.
     public string Name { get; set; } = null!; // Name of the school.

@@ -69,6 +69,8 @@ builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp =>
 
 // Register NotesRepository (DI).
 builder.Services.AddScoped<INotesRepository, NotesRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<INotesRepository, NotesRepository>();
 
 builder.Services.AddControllers();
 

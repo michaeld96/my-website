@@ -7,110 +7,110 @@ namespace Infrastructure.Data;
 
 public class NotesContext : DbContext
 {
+    // Each DbSet<T> represents a table in the DB.
+    public DbSet<School> Schools { get; set; } = null!;
+    public DbSet<Subject> Subjects { get; set; } = null!;
     public DbSet<Note> Notes { get; set; } = null!;
+    public DbSet<Tag> Tags { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
 
     public NotesContext(DbContextOptions<NotesContext> options) : base(options)
     {
+
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        base.OnModelCreating(modelBuilder);
+        base.OnConfiguring(optionsBuilder);
+    }
 
-        // Seed data for Notes
-        modelBuilder.Entity<Note>().HasData(
+    protected override void OnModelCreating(ModelBuilder b)
+    {
+        base.OnModelCreating(b);
+
+        // Creating a many-to-many join table where the PK is (NoteId, TagId).
+        b.Entity<Note>()
+            .HasMany(n => n.Tags)
+            .WithMany(t => t.Notes)
+            .UsingEntity("NoteTag");
+
+        b.Entity<School>().HasData(
+            new School { Id = 1, Code = "UM", Name = "University of Michigan" },
+            new School { Id = 2, Code = "GT", Name = "Georgia Tech" }
+        );
+
+        b.Entity<Subject>().HasData(
+            new Subject { Id = 1, Code = "EECS 281", Title = "Data Structures and Algorithms", SchoolId = 1 },
+            new Subject { Id = 2, Code = "EECS 483", Title = "Compiler Construction", SchoolId = 1 },
+            new Subject { Id = 3, Code = "CS 6400", Title = "Database Systems Concepts and Design", SchoolId = 2 }
+        );
+
+        b.Entity<Tag>().HasData(
+            new Tag { Id = 1, Name = "data-structures" },
+            new Tag { Id = 2, Name = "algorithms" },
+            new Tag { Id = 3, Name = "compilers" },
+            new Tag { Id = 4, Name = "databases" }
+        );
+        
+        // Populate the many-to-many table.
+        b.Entity("NoteTag").HasData(
+            new { NotesId = 1, TagsId = 1 },
+            new { NotesId = 1, TagsId = 2 }
+        );
+
+        // Adding this to see if this solves EF problem.
+        // EF will throw an error if computed values are in the seed data
+        // because whatever is written in the migration is what is expected
+        // when applying the migration.
+        var seeded_time = new DateTime(2025, 06, 03, 0, 0, 0, DateTimeKind.Utc);
+
+        b.Entity<Note>().HasData(
             new Note
             {
-                NotePK = -1,
-                School = "UM",
-                Subject = "EECS 183: Elementary Programming Concepts",
-                Title = "Overview",
-                Content = "# Elementary Programming Concepts\n\nThis is a test for the overview of EECS 183.",
-                Tags = ""
-            },
-            new Note
-            {
-                NotePK = -2,
-                School = "UM",
-                Subject = "EECS 280: Programming and Intro Data Structures",
-                Title = "Overview",
-                Content = "# Programming and Intro Data Structures\n\nThis is a test for the overview of EECS 280.",
-                Tags = "data-structures"
-            },
-            new Note
-            {
-                NotePK = -3,
-                School = "UM",
-                Subject = "EECS 281: Data Structures and Algorithms",
-                Title = "Overview",
-                Content = "# Data Structures and Algorithms\n\nThis is a test for the overview of EECS 281.",
-                Tags = "data-structures, algorithms"
-            },
-            new Note
-            {
-                NotePK = -4,
-                School = "UM",
-                Subject = "EECS 281: Data Structures and Algorithms",
+                Id = 1,
+                CreatedAt = seeded_time,
+                UpdatedAt = seeded_time,
                 Title = "Lecture 1: Stack, Queue, and Priority Queue ADTs",
-                Content = "# Lecture 1: Stack, Queue, and Priority Queue ADTs\n\nTest test test...",
-                Tags = "data-structures, algorithms"
+                Markdown = "This is an introduction to EECS 281!",
+                SubjectId = 1
             },
             new Note
             {
-                NotePK = -5,
-                School = "UM",
-                Subject = "EECS 281: Data Structures and Algorithms",
+                Id = 2,
+                CreatedAt = seeded_time,
+                UpdatedAt = seeded_time,
+                Title = "Introduction to compilers, course overview",
+                Markdown = """
+                We all have an intuitive understanding of what a program is: 
+                it's some thing that instructs a computer to do something. 
+                But the language in which we tend to write our programs is nothing like the language that the computer understands natively. 
+                Something must translate the source code of our programs into a form the computer understands.\n
+                Here is some more info
+                """,
+                SubjectId = 2
+            },
+            new Note
+            {
+                Id = 3,
+                CreatedAt = seeded_time,
+                UpdatedAt = seeded_time,
+                Title = "Lecture 1: Introduction",
+                Markdown = "Databases....",
+                SubjectId = 3
+            },
+            new Note
+            {
+                Id = 4,
+                CreatedAt = seeded_time,
+                UpdatedAt = seeded_time,
                 Title = "Lecture 2: Complexity Analysis, Math Foundations",
-                Content = "# Lecture 2: Complexity Analysis, Math Foundations\n\nTest test test...",
-                Tags = "data-structures, algorithms"
-            },
-            new Note
-            {
-                NotePK = -6,
-                School = "UM",
-                Subject = "EECS 281: Data Structures and Algorithms",
-                Title = "Lecture 3: Measuring Performance and Analysis Tools",
-                Content = "# Lecture 3: Measuring Performance and Analysis Tools\n\nTest test test...",
-                Tags = "data-structures, algorithms"
-            },
-            new Note
-            {
-                NotePK = -7,
-                School = "GT",
-                Subject = "CS 6200: Intro to Operating Systems",
-                Title = "Overview",
-                Content = "# Intro to Operating Systems\n\nThis is a test for the overview of CS 6200.",
-                Tags = "operating-systems"
-            },
-            new Note
-            {
-                NotePK = -8,
-                School = "GT",
-                Subject = "CS 6210: Advanced Operating Systems",
-                Title = "Overview",
-                Content = "# Advanced Operating Systems\n\nThis is a test for the overview of CS 6210.",
-                Tags = "operating-systems"
-            },
-            new Note
-            {
-                NotePK = -9,
-                School = "GT",
-                Subject = "CS 7210: Distributed Computing",
-                Title = "Overview",
-                Content = "# Distributed Computing\n\nThis is a test for the overview of CS 7210.",
-                Tags = "distributed-systems"
+                Markdown = "Here is link to the lecture: https://www.youtube.com/watch?v=rO_ThtXqykc&list=PLmotwOE2mfH6-4Mw9GUbgpLKx2waxPhKJ&index=3",
+                SubjectId = 1
             }
         );
 
-        // Seed data for Users
-        modelBuilder.Entity<User>().HasData(
-            new User
-            {
-                UserPK = 1,
-                Username = "admin",
-                PasswordHash = "password"
-            }
+        b.Entity<User>().HasData(
+            new User { Id = 1, Username = "mike", PasswordHash = "mikedick1" }
         );
     }
 }
