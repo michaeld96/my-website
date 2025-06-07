@@ -55,7 +55,7 @@ namespace API.Controllers
             var exists = await _uow.NotesRepo.DoesSchoolExistForSubjectAsync(schoolCode, ct);
             if (!exists)
             {
-                return BadRequest(HTTPMessagesReturnedToUser.SchoolNotFoundErrorMessage(schoolCode));
+                return NotFound(HTTPMessagesReturnedToUser.SchoolNotFoundErrorMessage(schoolCode));
             }
 
             var subjects = await _uow.NotesRepo.GetListOfSubjectsOrNullAsync(schoolCode, ct);
@@ -76,7 +76,7 @@ namespace API.Controllers
             var result = await _uow.NotesRepo.DoesSchoolExistAsync(schoolCode, ct);
             if (!result)
             {
-                return BadRequest(HTTPMessagesReturnedToUser.SchoolNotFoundErrorMessage(schoolCode));
+                return NotFound(HTTPMessagesReturnedToUser.SchoolNotFoundErrorMessage(schoolCode));
             }
             // TODO: Should I be putting error checking? All the info piped into the backend is going to be from the
             //       from the frontend. This error checking seems to intense.
