@@ -1,10 +1,10 @@
 using System;
 
-namespace Core.Models;
+namespace API.Mapping;
 
-public class NoteDTO
+public class NoteCreateDTO
 {
-    public int Id { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string Title { get; set; } = null!;
     public string Markdown { get; set; } = "";
     public int SubjectId { get; set; }

@@ -1,5 +1,6 @@
 using System.Text;
 using Amazon.S3;
+using AutoMapper;
 using Core.Interfaces;
 using DotNetEnv;
 using Infrastructure.Data;
@@ -71,6 +72,9 @@ builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp =>
 builder.Services.AddScoped<INotesRepository, NotesRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<INotesRepository, NotesRepository>();
+
+// Automapper.
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
 
