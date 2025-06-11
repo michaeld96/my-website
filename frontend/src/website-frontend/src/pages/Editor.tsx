@@ -20,9 +20,9 @@ const Editor: React.FC = () => {
     const [showTitlePopUp, setShowTitlePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
     const [newTitle, setNewTitle] = useState<string>('');
-
-    const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
-    const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+    const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
+    const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+    
     const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
 
     const [image, setImage] = useState<File | null>(null);
@@ -89,29 +89,29 @@ const Editor: React.FC = () => {
         fetchSchools();
     }, []);
 
-    const handleSchoolClick = async (schoolCode: string) => {
-        setSelectedSchool(schoolCode);
+    const handleSchoolClick = async (school: School) => {
+        setSelectedSchool(school);
         setSubjects([]); // Clear subjects when switching schools.
         setTitles([]); // Clear titles when switching schools.
         setMarkdown(''); // Clear markdown.
         setSelectedSubject(null);
         setSelectedTitle(null);
-        const response = await axios.get<Subject[]>(`http://localhost:5003/api/notes/${schoolCode}/subjects`);
+        const response = await axios.get<Subject[]>(`http://localhost:5003/api/notes/${school.code}/subjects`);
         setSubjects(response.data);
     };
 
-    const handleSubjectClick = async (subject: string) => {
+    const handleSubjectClick = async (subject: Subject) => {
         setSelectedSubject(subject);
         setTitles([]); // Clear titles when switching subjects
         setMarkdown(''); // Clear markdown
         setSelectedTitle(null);
-        const titles = await getAllTitlesAsync(selectedSchool, subject);
+        const titles = await getAllTitlesAsync(selectedSchool?.code ?? null, subject.code);
         setTitles(titles);
     };
 
     const handleTitleClick = async (title: string) => {
         setSelectedTitle(title);
-        const response = await getMarkdownAsync(selectedSchool, selectedSubject, title);
+        const response = await getMarkdownAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null, title);
         setMarkdown(response);
     };
 
@@ -122,7 +122,7 @@ const Editor: React.FC = () => {
         {
             try 
             {
-                await axios.put(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${selectedTitle}`, 
+                await axios.put(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${selectedTitle}`, 
                 {
                     school: selectedSchool,
                     subject: selectedSubject,
@@ -138,18 +138,17 @@ const Editor: React.FC = () => {
             }
         }
     };
-
+    
     const handleCreateNote = async () => {
         if (check_school_subject_selected())
         {
             try
             {
-                await axios.post(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${newTitle}`,
+                await axios.post<Note>(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${newTitle}`,
                     {
-                        school: selectedSchool,
-                        subject: selectedSubject,
+                        subjectId: selectedSubject?.id,
                         title: newTitle,
-                        content: "",
+                        markdown: "",
                     }
                 );
                 alert('New note saved!');
@@ -157,7 +156,7 @@ const Editor: React.FC = () => {
                 setShowTitlePopUp(false);
                 setMarkdown('');
                 setNewTitle('');
-                const response = await getAllTitlesAsync(selectedSchool, selectedSubject);
+                const response = await getAllTitlesAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null);
                 setTitles(response);
                 
             } 
@@ -175,7 +174,7 @@ const Editor: React.FC = () => {
             await axios.delete(`http://localhost:5003/api/notes/${selectedSchool}/${selectedSubject}/${selectedTitle}`);
             alert("Note has been successfully deleted!");
             setDeleteNotePopUp(false);
-            const response = await getAllTitlesAsync(selectedSchool, selectedSubject);
+            const response = await getAllTitlesAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null);
             setTitles(response);
 
             if (response.length > 0)
@@ -183,7 +182,7 @@ const Editor: React.FC = () => {
                 // If there is more content, let's just set it to the first one.
                 const nextTitle = response[0];
                 setSelectedTitle(nextTitle);
-                const markdown = await getMarkdownAsync(selectedSchool, selectedSubject, nextTitle);
+                const markdown = await getMarkdownAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null, nextTitle);
                 setMarkdown(markdown);
             }
             else
@@ -274,8 +273,8 @@ const Editor: React.FC = () => {
                     {schools.map((school) => (
                         <li 
                         key={school.code}
-                        className={`list-item ${school.code == selectedSchool ? 'active' : ''}`}
-                        onClick={() => handleSchoolClick(school.code)}
+                        className={`list-item ${school.code == selectedSchool?.code ? 'active' : ''}`}
+                        onClick={() => handleSchoolClick(school)}
                         >
                             {school.code}
                         </li>
@@ -288,8 +287,8 @@ const Editor: React.FC = () => {
                             {subjects.map((subject) => (
                                 <li 
                                     key={subject.code} 
-                                    className={`list-item ${subject.code == selectedSubject ? 'active' : ''}`}
-                                    onClick={() => handleSubjectClick(subject.code)}>
+                                    className={`list-item ${subject.code == selectedSubject?.code ? 'active' : ''}`}
+                                    onClick={() => handleSubjectClick(subject)}>
                                     {subject.code}
                                 </li>
                             ))}

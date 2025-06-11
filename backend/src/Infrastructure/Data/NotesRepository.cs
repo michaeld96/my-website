@@ -74,5 +74,9 @@ public class NotesRepository : INotesRepository
                        .Where(n => n.Subject.Code == subjectCode && n.Subject.School.Code == schoolCode && n.Title == noteTitle)
                        .FirstOrDefaultAsync();
     }
-    
+    public async Task<Note> AddNoteAsync(Note note, CancellationToken ct)
+    {
+        var entry = await _context.Notes.AddAsync(note, ct);
+        return entry.Entity;
+    }
 }   

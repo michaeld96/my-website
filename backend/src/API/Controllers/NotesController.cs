@@ -1,5 +1,6 @@
 using Amazon;
 using Amazon.S3;
+using API.Mapping;
 using AutoMapper;
 using Core.Helpers;
 using Core.Interfaces;
@@ -119,31 +120,41 @@ namespace API.Controllers
         }
 
         // POST /api/notes/{school}/{subject}/{title}
-        // // [Authorize] TODO: Do we really Authorization here?
-        // [HttpPost("{school}/{subject}/{title}")]
-        // public async Task<IActionResult> CreateContent(string school, string subject, string title, [FromBody] Note note)
-        // {
-        //     if (note == null)
-        //     {
-        //         return BadRequest("Note data is invalid.");
-        //     }
+        // [Authorize] TODO: Do we really Authorization here?
+        [HttpPost("{schoolCode}/{subjectCode}/{title}")]
+        public async Task<IActionResult> CreateNote(string schoolCode, string subjectCode, string title, CancellationToken ct, [FromBody] NoteCreateDTO note)
+        {
+            if (note == null)
+            {
+                return BadRequest("Note data is invalid.");
+            }
 
-        //     try
-        //     {
-        //         note.School = school;
-        //         note.Subject = subject;
-        //         note.Title = title;
+            Note newNote = new Note
+            {
+                Title = note.Title,
+                CreatedAt = note.CreatedAt,
+                Markdown = note.Markdown,
+                SubjectId = note.SubjectId
+            };
 
-        //         _context.Notes.Add(note);
-        //         await _context.SaveChangesAsync();
-
-        //         return Ok(note);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return StatusCode(500, $"Internal server error: {ex.Message}");
-        //     }
-        // }
+            try
+            {
+                // Add the new note to EF and this will return an entity with the Id populated.
+                var createdNote = await _uow.NotesRepo.AddNoteAsync(newNote, ct);
+                await _uow.CommitAsync(ct);
+                var resultDTO = _map.Map<NoteDTO>(createdNote);
+                // return CreatedAtAction(
+                //     nameof(GetNote),
+                //     new { schoolCode, subjectCode, title },
+                //     resultDTO
+                // );
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
         // // PUT /api/notes/{school}/{subject}/{title}
         // [HttpPut("{school}/{subject}/{title}")]
