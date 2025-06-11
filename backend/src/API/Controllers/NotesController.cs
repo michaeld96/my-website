@@ -38,7 +38,7 @@ namespace API.Controllers
         {
             // Need await here so schools is an actual List<School>.
             var schools = await _uow.NotesRepo.GetListOfSchoolsOrNullAsync(ct);
-            return Ok(schools);
+            return Ok(_map.Map<List<SchoolDTO>>(schools));
         }
         /// <summary>
         /// Given a schools name, this will return all the subjects that are associated with that 
@@ -61,8 +61,8 @@ namespace API.Controllers
                 return NotFound(HTTPMessagesReturnedToUser.SchoolNotFoundErrorMessage(schoolCode));
             }
 
-            var subjects = await _uow.NotesRepo.GetListOfSubjectsOrNullAsync(schoolCode, ct);
-            return Ok(subjects);
+            List<Subject> subjects = await _uow.NotesRepo.GetListOfSubjectsOrNullAsync(schoolCode, ct);
+            return Ok(_map.Map<List<SubjectDTO>>(subjects));
         }
 
         /// <summary>
@@ -97,27 +97,26 @@ namespace API.Controllers
                 return BadRequest(HTTPMessagesReturnedToUser.SchoolOrSubjectOrNoteNotPopulated(schoolCode, subjectCode, titleCode));
             }
             var result = await _uow.NotesRepo.GetNoteAsync(schoolCode, subjectCode, titleCode, ct);
-            return Ok(result);
+            return Ok(_map.Map<NoteDTO>(result));
         }
 
-        // // TODO: Complete skeleton for the UploadImage. Need to hook up S3.
-        // [HttpPost("uploadImage")]
-        // public async Task<IActionResult> ImageUpload([FromForm] IFormFile file)
-        // {
-        //     if (file == null || file.Length == 0)
-        //     {
-        //         return BadRequest("No file to upload");
-        //     }
+        [HttpPost("uploadImage")]
+        public async Task<IActionResult> ImageUpload([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file to upload");
+            }
 
-        //     var url = await _fileUploader.UploadAsync(file);
+            var url = await _fileUploader.UploadAsync(file);
 
-        //     if (String.IsNullOrEmpty(url.ToString()))
-        //     {
-        //         return BadRequest("Failed to upload image.");
-        //     }
+            if (String.IsNullOrEmpty(url.ToString()))
+            {
+                return BadRequest("Failed to upload image.");
+            }
 
-        //     return Ok(new { url });
-        // }
+            return Ok(new { url });
+        }
 
         // POST /api/notes/{school}/{subject}/{title}
         // // [Authorize] TODO: Do we really Authorization here?
