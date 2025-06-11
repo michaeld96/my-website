@@ -70,7 +70,7 @@ const Editor: React.FC = () => {
     {
         try
         {
-            const response = await axios.get(`http://localhost:5003/api/notes/${school}/${subject}/titles`);
+            const response = await axios.get<string[]>(`http://localhost:5003/api/notes/${school}/${subject}/titles`);
             return response.data;
         }
         catch (error)
@@ -83,20 +83,20 @@ const Editor: React.FC = () => {
 
     useEffect(() => {
         const fetchSchools = async () => {
-            const response = await axios.get('http://localhost:5003/api/notes/schools');
+            const response = await axios.get<School[]>('http://localhost:5003/api/notes/schools');
             setSchools(response.data);
         };
         fetchSchools();
     }, []);
 
-    const handleSchoolClick = async (school: string) => {
-        setSelectedSchool(school);
+    const handleSchoolClick = async (schoolCode: string) => {
+        setSelectedSchool(schoolCode);
         setSubjects([]); // Clear subjects when switching schools.
         setTitles([]); // Clear titles when switching schools.
         setMarkdown(''); // Clear markdown.
         setSelectedSubject(null);
         setSelectedTitle(null);
-        const response = await axios.get(`http://localhost:5003/api/notes/${school}/subjects`);
+        const response = await axios.get<Subject[]>(`http://localhost:5003/api/notes/${schoolCode}/subjects`);
         setSubjects(response.data);
     };
 
