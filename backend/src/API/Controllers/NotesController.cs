@@ -1,5 +1,6 @@
 using Amazon;
 using Amazon.S3;
+using AutoMapper;
 using Core.Helpers;
 using Core.Interfaces;
 using Core.Models;
@@ -18,12 +19,14 @@ namespace API.Controllers
     {
         private readonly IUnitOfWork _uow;
         private readonly IFileUploader _fileUploader;
+        private readonly IMapper _map;
         // Inject our dependencies here! .NET just wants us to register our services and then
         // the instantiation of our object .NET will inject our dependencies using their DI container.
-        public NotesController(IUnitOfWork uow, IFileUploader fileUploader)
+        public NotesController(IUnitOfWork uow, IFileUploader fileUploader, IMapper map)
         {
             _uow = uow;
             _fileUploader = fileUploader;
+            _map = map;
         }
         /// <summary>
         /// Gets the names of all the schools.
