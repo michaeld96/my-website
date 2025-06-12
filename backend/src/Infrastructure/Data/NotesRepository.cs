@@ -85,4 +85,8 @@ public class NotesRepository : INotesRepository
         var entry = await _context.Notes.AddAsync(note, ct);
         return entry.Entity;
     }
+    public void DeleteNote(Note note)
+    {
+        _context.Remove(note);
+    }
 }   

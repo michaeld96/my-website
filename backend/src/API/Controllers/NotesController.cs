@@ -174,45 +174,65 @@ namespace API.Controllers
             [FromBody] NoteUpdateDTO noteDTO,
             CancellationToken ct)
         {
-            // find note.
-            Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(schoolCode, subjectCode, title, ct);
-
-            if (note == null)
+            try
             {
-                return NotFound("This note is not found.");
+                // find note.
+                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(schoolCode, subjectCode, title, ct);
+
+                if (note == null)
+                {
+                    return NotFound("This note is not found.");
+                }
+
+                // update the note.
+                note.Markdown = noteDTO.Markdown;
+                note.UpdatedAt = noteDTO.UpdatedAt;
+                // save change. 
+                await _uow.CommitAsync(ct);
+                return NoContent();
             }
-
-            // update the note.
-            note.Markdown = noteDTO.Markdown;
-            note.UpdatedAt = noteDTO.UpdatedAt;
-            // save change. 
-            await _uow.CommitAsync(ct);
-            return NoContent();
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"ERROR: Database ran into error while updating a note: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Error occurred while updating a note: {ex.Message}");
+            }
         }
-        // // DELETE /api/notes/{school}/{subject}/{title}
-        // [HttpDelete("{school}/{subject}/{title}")]
-        // public async Task<IActionResult> DeleteNote(string school, string subject, string title)
-        // {
-        //     try
-        //     {
-        //         // First, see if the note exists.
-        //         var foundNote = await _context.Notes.FirstOrDefaultAsync(
-        //             n => n.School == school && n.Subject == subject && n.Title == title
-        //         );
+        // DELETE /api/notes/{school}/{subject}/{title}
+        [HttpDelete("{schoolCode}/{subjectCode}/{noteTitle}")]
+        public async Task<IActionResult> DeleteNote(
+            string schoolCode,
+            string subjectCode,
+            string noteTitle,
+            CancellationToken ct)
+        {
+            try
+            {
+                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(
+                    schoolCode,
+                    subjectCode,
+                    noteTitle,
+                    ct);
 
-        //         if (foundNote == null)
-        //         {
-        //             return NotFound("Note not found.");
-        //         }
+                if (note == null)
+                {
+                    return NotFound("Note not found.");
+                }
 
-        //         _context.Notes.Remove(foundNote);
-        //         await _context.SaveChangesAsync();
-        //         return NoContent();
-        //     }
-        //     catch (DbUpdateException ex)
-        //     {
-        //         return StatusCode(500, $"DB EXCEPTION: {ex.Message}");
-        //     }
-        // }
+                _uow.NotesRepo.DeleteNote(note);
+                await _uow.CommitAsync(ct);
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"ERROR: Database ran into an error deleting a note: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Error occurred while deleting a note: {ex.Message}");
+            }
+        }
     }
 }
