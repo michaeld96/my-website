@@ -141,28 +141,35 @@ const Editor: React.FC = () => {
     const handleCreateNote = async () => {
         if (check_school_subject_selected())
         {
-            try
+            if (newTitle.length == 0)
             {
-                await axios.post<Note>(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${newTitle}`,
-                    {
-                        subjectId: selectedSubject?.id,
-                        title: newTitle,
-                        markdown: "",
-                    }
-                );
-                alert('New note saved!');
-                setSelectedTitle(newTitle);
-                setShowTitlePopUp(false);
-                setMarkdown('');
-                setNewTitle('');
-                const response = await getAllTitlesAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null);
-                setTitles(response);
-                
-            } 
-            catch (error)
+                alert("Title must not be empty!");
+            }
+            else
             {
-                console.error('ERROR: Failed to save new content.');
-                alert('Failed to save new note. Please try again');
+                try
+                {
+                    await axios.post<Note>(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${newTitle}`,
+                        {
+                            subjectId: selectedSubject?.id,
+                            title: newTitle,
+                            markdown: "",
+                        }
+                    );
+                    alert('New note saved!');
+                    setSelectedTitle(newTitle);
+                    setShowTitlePopUp(false);
+                    setMarkdown('');
+                    setNewTitle('');
+                    const response = await getAllTitlesAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null);
+                    setTitles(response);
+                    
+                } 
+                catch (error)
+                {
+                    console.error('ERROR: Failed to save new content.');
+                    alert('Failed to save new note. Please try again');
+                }
             }
         }
     }
@@ -285,8 +292,8 @@ const Editor: React.FC = () => {
                         <ul>
                             {subjects.map((subject) => (
                                 <li 
-                                    key={subject.code} 
-                                    className={`list-item ${subject.code == selectedSubject?.code ? 'active' : ''}`}
+                                    key={subject.id} 
+                                    className={`list-item ${subject.id == selectedSubject?.id ? 'active' : ''}`}
                                     onClick={() => handleSubjectClick(subject)}>
                                     {subject.code}
                                 </li>
