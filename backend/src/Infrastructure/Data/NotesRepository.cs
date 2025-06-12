@@ -74,5 +74,19 @@ public class NotesRepository : INotesRepository
                        .Where(n => n.Subject.Code == subjectCode && n.Subject.School.Code == schoolCode && n.Title == noteTitle)
                        .FirstOrDefaultAsync();
     }
-    
+    public Task<Note?> GetNoteWithTrackingAsync(string schoolCode, string subjectCode, string noteTitle, CancellationToken ct)
+    {
+        return _context.Notes
+                       .Where(n => n.Subject.Code == subjectCode && n.Subject.School.Code == schoolCode && n.Title == noteTitle)
+                       .FirstOrDefaultAsync(ct);
+    }
+    public async Task<Note> AddNoteAsync(Note note, CancellationToken ct)
+    {
+        var entry = await _context.Notes.AddAsync(note, ct);
+        return entry.Entity;
+    }
+    public void DeleteNote(Note note)
+    {
+        _context.Remove(note);
+    }
 }   

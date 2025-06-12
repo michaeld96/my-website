@@ -1,5 +1,6 @@
 using Amazon;
 using Amazon.S3;
+using API.Mapping;
 using AutoMapper;
 using Core.Helpers;
 using Core.Interfaces;
@@ -48,7 +49,9 @@ namespace API.Controllers
         /// <returns>A list of sublets associated with that school.</returns>
         // GET /api/notes/{school}/subjects
         [HttpGet("{schoolCode}/subjects")]
-        public async Task<IActionResult> GetSubjects(string schoolCode, CancellationToken ct)
+        public async Task<IActionResult> GetSubjects(
+            string schoolCode,
+            CancellationToken ct)
         {
             if (schoolCode == null)
             {
@@ -74,7 +77,10 @@ namespace API.Controllers
         /// <returns></returns>
         // GET /api/notes/{school}/{subject}/titles
         [HttpGet("{schoolCode}/{subjectCode}/titles")]
-        public async Task<IActionResult> GetNoteTitles(string schoolCode, string subjectCode, CancellationToken ct)
+        public async Task<IActionResult> GetNoteTitles(
+            string schoolCode,
+            string subjectCode,
+            CancellationToken ct)
         {
             var result = await _uow.NotesRepo.DoesSchoolExistAsync(schoolCode, ct);
             if (!result)
@@ -90,7 +96,11 @@ namespace API.Controllers
 
         // GET /api/notes/{school}/{subject}/{title}
         [HttpGet("{schoolCode}/{subjectCode}/{titleCode}")]
-        public async Task<IActionResult> GetNote(string schoolCode, string subjectCode, string titleCode, CancellationToken ct)
+        public async Task<IActionResult> GetNote(
+            string schoolCode,
+            string subjectCode,
+            string titleCode,
+            CancellationToken ct)
         {
             if (schoolCode == null || subjectCode == null || titleCode == null)
             {
@@ -119,75 +129,110 @@ namespace API.Controllers
         }
 
         // POST /api/notes/{school}/{subject}/{title}
-        // // [Authorize] TODO: Do we really Authorization here?
-        // [HttpPost("{school}/{subject}/{title}")]
-        // public async Task<IActionResult> CreateContent(string school, string subject, string title, [FromBody] Note note)
-        // {
-        //     if (note == null)
-        //     {
-        //         return BadRequest("Note data is invalid.");
-        //     }
+        // [Authorize] TODO: Do we really Authorization here?
+        [HttpPost("{schoolCode}/{subjectCode}/{title}")]
+        public async Task<IActionResult> CreateNote(
+            string schoolCode,
+            string subjectCode,
+            string title,
+            CancellationToken ct,
+            [FromBody] NoteCreateDTO note)
+        {
+            if (note == null)
+            {
+                return BadRequest("Note data is invalid.");
+            }
 
-        //     try
-        //     {
-        //         note.School = school;
-        //         note.Subject = subject;
-        //         note.Title = title;
+            Note newNote = new Note
+            {
+                Title = note.Title,
+                CreatedAt = note.CreatedAt,
+                Markdown = note.Markdown,
+                SubjectId = note.SubjectId
+            };
 
-        //         _context.Notes.Add(note);
-        //         await _context.SaveChangesAsync();
+            try
+            {
+                // Add the new note to EF and this will return an entity with the Id populated.
+                var createdNote = await _uow.NotesRepo.AddNoteAsync(newNote, ct);
+                await _uow.CommitAsync(ct);
+                var resultDTO = _map.Map<NoteDTO>(createdNote);
+                return Ok(resultDTO);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
-        //         return Ok(note);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return StatusCode(500, $"Internal server error: {ex.Message}");
-        //     }
-        // }
+        // PUT /api/notes/{school}/{subject}/{title}
+        [HttpPut("{schoolCode}/{subjectCode}/{title}")]
+        public async Task<IActionResult> UpdateContent(
+            string schoolCode,
+            string subjectCode,
+            string title,
+            [FromBody] NoteUpdateDTO noteDTO,
+            CancellationToken ct)
+        {
+            try
+            {
+                // find note.
+                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(schoolCode, subjectCode, title, ct);
 
-        // // PUT /api/notes/{school}/{subject}/{title}
-        // [HttpPut("{school}/{subject}/{title}")]
-        // public async Task<IActionResult> UpdateContent(string school, string subject, string title, [FromBody] Note content)
-        // {
-        //     // find note.
-        //     var foundNote = await _context.Notes
-        //         .FirstOrDefaultAsync(n => n.School == school && n.Subject == subject && n.Title == title);
+                if (note == null)
+                {
+                    return NotFound("This note is not found.");
+                }
 
-        //     if (foundNote == null)
-        //     {
-        //         return NotFound("This note is not found.");
-        //     }
+                // update the note.
+                note.Markdown = noteDTO.Markdown;
+                note.UpdatedAt = noteDTO.UpdatedAt;
+                // save change. 
+                await _uow.CommitAsync(ct);
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"ERROR: Database ran into error while updating a note: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Error occurred while updating a note: {ex.Message}");
+            }
+        }
+        // DELETE /api/notes/{school}/{subject}/{title}
+        [HttpDelete("{schoolCode}/{subjectCode}/{noteTitle}")]
+        public async Task<IActionResult> DeleteNote(
+            string schoolCode,
+            string subjectCode,
+            string noteTitle,
+            CancellationToken ct)
+        {
+            try
+            {
+                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(
+                    schoolCode,
+                    subjectCode,
+                    noteTitle,
+                    ct);
 
-        //     // update the note.
-        //     foundNote.Content = content.Content;
-        //     // save change. 
-        //     await _context.SaveChangesAsync();
-        //     return NoContent();
-        // }
-        // // DELETE /api/notes/{school}/{subject}/{title}
-        // [HttpDelete("{school}/{subject}/{title}")]
-        // public async Task<IActionResult> DeleteNote(string school, string subject, string title)
-        // {
-        //     try
-        //     {
-        //         // First, see if the note exists.
-        //         var foundNote = await _context.Notes.FirstOrDefaultAsync(
-        //             n => n.School == school && n.Subject == subject && n.Title == title
-        //         );
+                if (note == null)
+                {
+                    return NotFound("Note not found.");
+                }
 
-        //         if (foundNote == null)
-        //         {
-        //             return NotFound("Note not found.");
-        //         }
-
-        //         _context.Notes.Remove(foundNote);
-        //         await _context.SaveChangesAsync();
-        //         return NoContent();
-        //     }
-        //     catch (DbUpdateException ex)
-        //     {
-        //         return StatusCode(500, $"DB EXCEPTION: {ex.Message}");
-        //     }
-        // }
+                _uow.NotesRepo.DeleteNote(note);
+                await _uow.CommitAsync(ct);
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"ERROR: Database ran into an error deleting a note: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Error occurred while deleting a note: {ex.Message}");
+            }
+        }
     }
 }
