@@ -49,7 +49,9 @@ namespace API.Controllers
         /// <returns>A list of sublets associated with that school.</returns>
         // GET /api/notes/{school}/subjects
         [HttpGet("{schoolCode}/subjects")]
-        public async Task<IActionResult> GetSubjects(string schoolCode, CancellationToken ct)
+        public async Task<IActionResult> GetSubjects(
+            string schoolCode,
+            CancellationToken ct)
         {
             if (schoolCode == null)
             {
@@ -75,7 +77,10 @@ namespace API.Controllers
         /// <returns></returns>
         // GET /api/notes/{school}/{subject}/titles
         [HttpGet("{schoolCode}/{subjectCode}/titles")]
-        public async Task<IActionResult> GetNoteTitles(string schoolCode, string subjectCode, CancellationToken ct)
+        public async Task<IActionResult> GetNoteTitles(
+            string schoolCode,
+            string subjectCode,
+            CancellationToken ct)
         {
             var result = await _uow.NotesRepo.DoesSchoolExistAsync(schoolCode, ct);
             if (!result)
@@ -91,7 +96,11 @@ namespace API.Controllers
 
         // GET /api/notes/{school}/{subject}/{title}
         [HttpGet("{schoolCode}/{subjectCode}/{titleCode}")]
-        public async Task<IActionResult> GetNote(string schoolCode, string subjectCode, string titleCode, CancellationToken ct)
+        public async Task<IActionResult> GetNote(
+            string schoolCode,
+            string subjectCode,
+            string titleCode,
+            CancellationToken ct)
         {
             if (schoolCode == null || subjectCode == null || titleCode == null)
             {
@@ -122,7 +131,12 @@ namespace API.Controllers
         // POST /api/notes/{school}/{subject}/{title}
         // [Authorize] TODO: Do we really Authorization here?
         [HttpPost("{schoolCode}/{subjectCode}/{title}")]
-        public async Task<IActionResult> CreateNote(string schoolCode, string subjectCode, string title, CancellationToken ct, [FromBody] NoteCreateDTO note)
+        public async Task<IActionResult> CreateNote(
+            string schoolCode,
+            string subjectCode,
+            string title,
+            CancellationToken ct,
+            [FromBody] NoteCreateDTO note)
         {
             if (note == null)
             {
@@ -143,12 +157,7 @@ namespace API.Controllers
                 var createdNote = await _uow.NotesRepo.AddNoteAsync(newNote, ct);
                 await _uow.CommitAsync(ct);
                 var resultDTO = _map.Map<NoteDTO>(createdNote);
-                // return CreatedAtAction(
-                //     nameof(GetNote),
-                //     new { schoolCode, subjectCode, title },
-                //     resultDTO
-                // );
-                return NoContent();
+                return Ok(resultDTO);
             }
             catch (Exception ex)
             {
@@ -156,25 +165,30 @@ namespace API.Controllers
             }
         }
 
-        // // PUT /api/notes/{school}/{subject}/{title}
-        // [HttpPut("{school}/{subject}/{title}")]
-        // public async Task<IActionResult> UpdateContent(string school, string subject, string title, [FromBody] Note content)
-        // {
-        //     // find note.
-        //     var foundNote = await _context.Notes
-        //         .FirstOrDefaultAsync(n => n.School == school && n.Subject == subject && n.Title == title);
+        // PUT /api/notes/{school}/{subject}/{title}
+        [HttpPut("{schoolCode}/{subjectCode}/{title}")]
+        public async Task<IActionResult> UpdateContent(
+            string schoolCode,
+            string subjectCode,
+            string title,
+            [FromBody] NoteUpdateDTO noteDTO,
+            CancellationToken ct)
+        {
+            // find note.
+            Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(schoolCode, subjectCode, title, ct);
 
-        //     if (foundNote == null)
-        //     {
-        //         return NotFound("This note is not found.");
-        //     }
+            if (note == null)
+            {
+                return NotFound("This note is not found.");
+            }
 
-        //     // update the note.
-        //     foundNote.Content = content.Content;
-        //     // save change. 
-        //     await _context.SaveChangesAsync();
-        //     return NoContent();
-        // }
+            // update the note.
+            note.Markdown = noteDTO.Markdown;
+            note.UpdatedAt = noteDTO.UpdatedAt;
+            // save change. 
+            await _uow.CommitAsync(ct);
+            return NoContent();
+        }
         // // DELETE /api/notes/{school}/{subject}/{title}
         // [HttpDelete("{school}/{subject}/{title}")]
         // public async Task<IActionResult> DeleteNote(string school, string subject, string title)

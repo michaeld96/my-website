@@ -124,10 +124,8 @@ const Editor: React.FC = () => {
             {
                 await axios.put(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${selectedTitle}`, 
                 {
-                    school: selectedSchool,
-                    subject: selectedSubject,
-                    title: selectedTitle,
-                    content: markdown,
+                    updateTime: new Date().toISOString(),   // Current UTC time.
+                    markdown: markdown,
                 });
                 alert("Note updated successfully!");
             } 
