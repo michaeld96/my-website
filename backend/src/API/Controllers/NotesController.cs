@@ -122,11 +122,11 @@ namespace API.Controllers
         // POST /api/notes/{school}/{subject}/{title}
         // [Authorize] TODO: Do we really Authorization here?
         // TODO: Would like to separate these controllers...
-        [HttpPost("{schoolCode}/{subjectCode}/{title}")]
+        [HttpPost("{schoolId}/{subjectId}")]
         public async Task<IActionResult> CreateNote(
-            string schoolCode,
-            string subjectCode,
-            string title,
+            int schoolId,
+            int subjectId,
+            int noteId,
             CancellationToken ct,
             [FromBody] NoteCreateDTO note)
         {

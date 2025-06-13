@@ -123,7 +123,7 @@ const Editor: React.FC = () => {
             try 
             {
                 console.log(new Date().toISOString());
-                await axios.put(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${selectedTitle}`, 
+                await axios.put(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${selectedTitle?.title}`, 
                 {
                     updatedAt: new Date().toISOString(),   // Current UTC time.
                     markdown: markdown,
@@ -149,7 +149,7 @@ const Editor: React.FC = () => {
             {
                 try
                 {
-                    await axios.post<Note>(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${newTitle}`,
+                    await axios.post<Note>(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}`,
                         {
                             subjectId: selectedSubject?.id,
                             title: newTitle,
