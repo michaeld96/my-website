@@ -4,7 +4,7 @@ namespace Core.Helpers;
 
 public static class HTTPMessagesReturnedToUser
 {
-    public static string SchoolNotFoundErrorMessage(string schoolCode)
+    public static string SchoolNotFoundErrorMessage<T>(T schoolCode)
     {
         return $"ERROR: School, {schoolCode}, does not exists.";
     }

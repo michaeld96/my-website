@@ -48,23 +48,18 @@ namespace API.Controllers
         /// <param name="school">The name of the school (e.g., "UM", "GT", "NA").</param>
         /// <returns>A list of sublets associated with that school.</returns>
         // GET /api/notes/{school}/subjects
-        [HttpGet("{schoolCode}/subjects")]
+        [HttpGet("{schoolId:int}/subjects")]
         public async Task<IActionResult> GetSubjects(
-            string schoolCode,
+            int schoolId,
             CancellationToken ct)
         {
-            if (schoolCode == null)
-            {
-                return BadRequest(HTTPMessagesReturnedToUser.SchoolNotSpecifiedErrorMessage());
-            }
-
-            var exists = await _uow.NotesRepo.DoesSchoolExistForSubjectAsync(schoolCode, ct);
+            var exists = await _uow.NotesRepo.DoesSchoolExistForSubjectAsync(schoolId, ct);
             if (!exists)
             {
-                return NotFound(HTTPMessagesReturnedToUser.SchoolNotFoundErrorMessage(schoolCode));
+                return NotFound(HTTPMessagesReturnedToUser.SchoolNotFoundErrorMessage(schoolId));
             }
 
-            List<Subject> subjects = await _uow.NotesRepo.GetListOfSubjectsOrNullAsync(schoolCode, ct);
+            List<Subject> subjects = await _uow.NotesRepo.GetListOfSubjectsOrNullAsync(schoolId, ct);
             return Ok(_map.Map<List<SubjectDTO>>(subjects));
         }
 
@@ -76,37 +71,33 @@ namespace API.Controllers
         /// <param name="subject">The name of the subject (e.g., "EECS 281: Data Structures and Algorithms"</param>
         /// <returns></returns>
         // GET /api/notes/{school}/{subject}/titles
-        [HttpGet("{schoolCode}/{subjectCode}/titles")]
+        [HttpGet("{schoolId:int}/{subjectId:int}/titles")]
         public async Task<IActionResult> GetNoteTitles(
-            string schoolCode,
-            string subjectCode,
+            int schoolId,
+            int subjectId,
             CancellationToken ct)
         {
-            var result = await _uow.NotesRepo.DoesSchoolExistAsync(schoolCode, ct);
+            var result = await _uow.NotesRepo.DoesSchoolExistAsync(schoolId, ct);
             if (!result)
             {
-                return NotFound(HTTPMessagesReturnedToUser.SchoolNotFoundErrorMessage(schoolCode));
+                return NotFound(HTTPMessagesReturnedToUser.SchoolNotFoundErrorMessage(schoolId));
             }
             // TODO: Should I be putting error checking? All the info piped into the backend is going to be from the
             //       from the frontend. This error checking seems to intense.
-            var titles = await _uow.NotesRepo.GetAllNoteTitlesAsync(schoolCode, subjectCode, ct);
-            
+            var titles = await _uow.NotesRepo.GetAllNoteTitlesAsync(schoolId, subjectId, ct);
+
             return Ok(titles);
         }
 
         // GET /api/notes/{school}/{subject}/{title}
-        [HttpGet("{schoolCode}/{subjectCode}/{titleCode}")]
+        [HttpGet("{schoolId}/{subjectId}/{noteId}")]
         public async Task<IActionResult> GetNote(
-            string schoolCode,
-            string subjectCode,
-            string titleCode,
+            int schoolId,
+            int subjectId,
+            int noteId,
             CancellationToken ct)
         {
-            if (schoolCode == null || subjectCode == null || titleCode == null)
-            {
-                return BadRequest(HTTPMessagesReturnedToUser.SchoolOrSubjectOrNoteNotPopulated(schoolCode, subjectCode, titleCode));
-            }
-            var result = await _uow.NotesRepo.GetNoteAsync(schoolCode, subjectCode, titleCode, ct);
+            var result = await _uow.NotesRepo.GetNoteAsync(schoolId, subjectId, noteId, ct);
             return Ok(_map.Map<NoteDTO>(result));
         }
 
@@ -130,11 +121,12 @@ namespace API.Controllers
 
         // POST /api/notes/{school}/{subject}/{title}
         // [Authorize] TODO: Do we really Authorization here?
-        [HttpPost("{schoolCode}/{subjectCode}/{title}")]
+        // TODO: Would like to separate these controllers...
+        [HttpPost("{schoolId}/{subjectId}")]
         public async Task<IActionResult> CreateNote(
-            string schoolCode,
-            string subjectCode,
-            string title,
+            int schoolId,
+            int subjectId,
+            int noteId,
             CancellationToken ct,
             [FromBody] NoteCreateDTO note)
         {
@@ -166,18 +158,18 @@ namespace API.Controllers
         }
 
         // PUT /api/notes/{school}/{subject}/{title}
-        [HttpPut("{schoolCode}/{subjectCode}/{title}")]
-        public async Task<IActionResult> UpdateContent(
-            string schoolCode,
-            string subjectCode,
-            string title,
+        [HttpPut("{schoolId}/{subjectId}/{noteId}")]
+        public async Task<IActionResult> UpdateMarkdown(
+            int schoolId,
+            int subjectId,
+            int noteId,
             [FromBody] NoteUpdateDTO noteDTO,
             CancellationToken ct)
         {
             try
             {
                 // find note.
-                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(schoolCode, subjectCode, title, ct);
+                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(schoolId, subjectId, noteId, ct);
 
                 if (note == null)
                 {
@@ -201,19 +193,19 @@ namespace API.Controllers
             }
         }
         // DELETE /api/notes/{school}/{subject}/{title}
-        [HttpDelete("{schoolCode}/{subjectCode}/{noteTitle}")]
+        [HttpDelete("{schoolId}/{subjectId}/{noteId}")]
         public async Task<IActionResult> DeleteNote(
-            string schoolCode,
-            string subjectCode,
-            string noteTitle,
+            int schoolId,
+            int subjectId,
+            int noteId,
             CancellationToken ct)
         {
             try
             {
                 Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(
-                    schoolCode,
-                    subjectCode,
-                    noteTitle,
+                    schoolId,
+                    subjectId,
+                    noteId,
                     ct);
 
                 if (note == null)
@@ -234,5 +226,7 @@ namespace API.Controllers
                 return StatusCode(500, $"ERROR: Error occurred while deleting a note: {ex.Message}");
             }
         }
+        // [HttpPut("{schoolCode}/{subjectCode}/{noteTitle}")]
+        // public async Task<IActionResult> UpdateNoteTitle(string schoolCode, string subjectCode, string noteTitle,)
     }
 }

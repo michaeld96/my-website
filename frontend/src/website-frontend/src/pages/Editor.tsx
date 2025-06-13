@@ -15,7 +15,7 @@ const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
     const [schools, setSchools] = useState<School[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
-    const [titles, setTitles] = useState<string[]>([]);
+    const [titles, setTitles] = useState<Note[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
     const [showTitlePopUp, setShowTitlePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
@@ -23,7 +23,7 @@ const Editor: React.FC = () => {
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     
-    const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
+    const [selectedTitle, setSelectedTitle] = useState<Note | null>(null);
 
     const [image, setImage] = useState<File | null>(null);
     const [imageName, setImageName] = useState<string>('');
@@ -51,11 +51,11 @@ const Editor: React.FC = () => {
         return true;
     }
 
-    async function getMarkdownAsync(school: string | null, subject: string | null, title: string | null): Promise<string>
+    async function getMarkdownAsync(schoolId: number | null, subjectId: number | null, noteId: number | null): Promise<string>
     {
         try
         {
-            const response = await axios.get<Note>(`http://localhost:5003/api/notes/${school}/${subject}/${title}`);
+            const response = await axios.get<Note>(`http://localhost:5003/api/notes/${schoolId}/${subjectId}/${noteId}`);
             return response.data.markdown;
         }
         catch (error)
@@ -66,11 +66,11 @@ const Editor: React.FC = () => {
         }
     }
 
-    async function getAllTitlesAsync(school: string | null, subject: string | null): Promise<string[]>
+    async function getAllTitlesAsync(schoolId: number | null, subjectId: number | null): Promise<Note[]>
     {
         try
         {
-            const response = await axios.get<string[]>(`http://localhost:5003/api/notes/${school}/${subject}/titles`);
+            const response = await axios.get<Note[]>(`http://localhost:5003/api/notes/${schoolId}/${subjectId}/titles`);
             return response.data;
         }
         catch (error)
@@ -96,7 +96,7 @@ const Editor: React.FC = () => {
         setMarkdown(''); // Clear markdown.
         setSelectedSubject(null);
         setSelectedTitle(null);
-        const response = await axios.get<Subject[]>(`http://localhost:5003/api/notes/${school.code}/subjects`);
+        const response = await axios.get<Subject[]>(`http://localhost:5003/api/notes/${school.id}/subjects`);
         setSubjects(response.data);
     };
 
@@ -105,13 +105,13 @@ const Editor: React.FC = () => {
         setTitles([]); // Clear titles when switching subjects
         setMarkdown(''); // Clear markdown
         setSelectedTitle(null);
-        const titles = await getAllTitlesAsync(selectedSchool?.code ?? null, subject.code);
+        const titles = await getAllTitlesAsync(selectedSchool?.id ?? null, subject.id);
         setTitles(titles);
     };
 
-    const handleTitleClick = async (title: string) => {
+    const handleTitleClick = async (title: Note) => {
         setSelectedTitle(title);
-        const response = await getMarkdownAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null, title);
+        const response = await getMarkdownAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null, title.id);
         setMarkdown(response);
     };
 
@@ -123,7 +123,7 @@ const Editor: React.FC = () => {
             try 
             {
                 console.log(new Date().toISOString());
-                await axios.put(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${selectedTitle}`, 
+                await axios.put(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}/${selectedTitle?.id}`, 
                 {
                     updatedAt: new Date().toISOString(),   // Current UTC time.
                     markdown: markdown,
@@ -149,7 +149,7 @@ const Editor: React.FC = () => {
             {
                 try
                 {
-                    await axios.post<Note>(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${newTitle}`,
+                    await axios.post<Note>(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}`,
                         {
                             subjectId: selectedSubject?.id,
                             title: newTitle,
@@ -157,11 +157,11 @@ const Editor: React.FC = () => {
                         }
                     );
                     alert('New note saved!');
-                    setSelectedTitle(newTitle);
+                    setSelectedTitle(null);
                     setShowTitlePopUp(false);
                     setMarkdown('');
                     setNewTitle('');
-                    const response = await getAllTitlesAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null);
+                    const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
                     setTitles(response);
                     
                 } 
@@ -177,10 +177,10 @@ const Editor: React.FC = () => {
     const handleDeleteNote = async () => {
         try
         {
-            await axios.delete(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${selectedTitle}`);
+            await axios.delete(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}/${selectedTitle.id}`);
             alert("Note has been successfully deleted!");
             setDeleteNotePopUp(false);
-            const response = await getAllTitlesAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null);
+            const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
             setTitles(response);
 
             if (response.length > 0)
@@ -188,12 +188,12 @@ const Editor: React.FC = () => {
                 // If there is more content, let's just set it to the first one.
                 const nextTitle = response[0];
                 setSelectedTitle(nextTitle);
-                const markdown = await getMarkdownAsync(selectedSchool?.code ?? null, selectedSubject?.code ?? null, nextTitle);
+                const markdown = await getMarkdownAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null, nextTitle.id);
                 setMarkdown(markdown);
             }
             else
             {
-                setSelectedTitle('');
+                setSelectedTitle(null);
                 setMarkdown('');
             }
             setTitles(response);  
@@ -331,11 +331,11 @@ const Editor: React.FC = () => {
                         <ul>
                             {titles.map((title) => (
                                 <li 
-                                    key={title} 
+                                    key={title.id} 
                                     onClick={() => handleTitleClick(title)}
                                     className={`list-item ${title == selectedTitle ? 'active' : ''}`}
                                 >
-                                    {title}
+                                    {title.title}
                                 </li>
                             ))}
                         </ul>
