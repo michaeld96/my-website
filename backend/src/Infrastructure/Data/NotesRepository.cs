@@ -32,32 +32,31 @@ public class NotesRepository : INotesRepository
                        .ToListAsync(ct);
     }
 
-    public Task<List<Subject>> GetListOfSubjectsOrNullAsync(string schoolCode, CancellationToken ct)
+    public Task<List<Subject>> GetListOfSubjectsOrNullAsync(int schoolId, CancellationToken ct)
     {
         return _context.Subjects
                        .AsNoTracking()
-                       .Where(s => s.School.Code == schoolCode)
+                       .Where(s => s.School.Id == schoolId)
                        .ToListAsync(ct);
     }
-    public Task<bool> DoesSchoolExistAsync(string schoolCode, CancellationToken ct)
+    public Task<bool> DoesSchoolExistAsync(int schoolId, CancellationToken ct)
     {
         return _context.Schools
                        .AsNoTracking()
-                       .AnyAsync(s => s.Code == schoolCode);
+                       .AnyAsync(s => s.Id == schoolId);
 
     }
-    public Task<bool> DoesSchoolExistForSubjectAsync(string schoolCode, CancellationToken ct)
+    public Task<bool> DoesSchoolExistForSubjectAsync(int schoolId, CancellationToken ct)
     {
         return _context.Subjects
                        .AsNoTracking()
-                       .AnyAsync(s => s.School.Code == schoolCode, ct);
+                       .AnyAsync(s => s.School.Id == schoolId, ct);
     }
-    public Task<List<string>> GetAllNoteTitlesAsync(string schoolCode, string subjectCode, CancellationToken ct)
+    public Task<List<Note>> GetAllNoteTitlesAsync(int schoolId, int subjectId, CancellationToken ct)
     {
         return _context.Notes
                        .AsNoTracking()
-                       .Where(n => n.Subject.Code == subjectCode && n.Subject.School.Code == schoolCode)
-                       .Select(n => n.Title)
+                       .Where(n => n.Subject.Id == subjectId && n.Subject.School.Id == schoolId)
                        .ToListAsync();
     }
     public Task<List<Note>> GetAllNotesAssociatedWithSubjectAndSchoolAsync(string schoolCode, string subjectCode, CancellationToken ct)
@@ -67,11 +66,11 @@ public class NotesRepository : INotesRepository
                        .Where(n => n.Subject.Code == subjectCode && n.Subject.School.Code == schoolCode)
                        .ToListAsync();
     }
-    public Task<Note?> GetNoteAsync(string schoolCode, string subjectCode, string noteTitle, CancellationToken ct)
+    public Task<Note?> GetNoteAsync(int schoolId, int subjectId, int noteId, CancellationToken ct)
     {
         return _context.Notes
                        .AsNoTracking()
-                       .Where(n => n.Subject.Code == subjectCode && n.Subject.School.Code == schoolCode && n.Title == noteTitle)
+                       .Where(n => n.Subject.Id == subjectId && n.Subject.School.Id == schoolId && n.Id == noteId)
                        .FirstOrDefaultAsync();
     }
     public Task<Note?> GetNoteWithTrackingAsync(string schoolCode, string subjectCode, string noteTitle, CancellationToken ct)
