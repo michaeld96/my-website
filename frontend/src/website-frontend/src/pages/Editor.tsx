@@ -123,7 +123,7 @@ const Editor: React.FC = () => {
             try 
             {
                 console.log(new Date().toISOString());
-                await axios.put(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${selectedTitle?.title}`, 
+                await axios.put(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}/${selectedTitle?.id}`, 
                 {
                     updatedAt: new Date().toISOString(),   // Current UTC time.
                     markdown: markdown,
@@ -177,7 +177,7 @@ const Editor: React.FC = () => {
     const handleDeleteNote = async () => {
         try
         {
-            await axios.delete(`http://localhost:5003/api/notes/${selectedSchool?.code}/${selectedSubject?.code}/${selectedTitle}`);
+            await axios.delete(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}/${selectedTitle.id}`);
             alert("Note has been successfully deleted!");
             setDeleteNotePopUp(false);
             const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);

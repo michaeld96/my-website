@@ -158,18 +158,18 @@ namespace API.Controllers
         }
 
         // PUT /api/notes/{school}/{subject}/{title}
-        [HttpPut("{schoolCode}/{subjectCode}/{title}")]
+        [HttpPut("{schoolId}/{subjectId}/{noteId}")]
         public async Task<IActionResult> UpdateMarkdown(
-            string schoolCode,
-            string subjectCode,
-            string title,
+            int schoolId,
+            int subjectId,
+            int noteId,
             [FromBody] NoteUpdateDTO noteDTO,
             CancellationToken ct)
         {
             try
             {
                 // find note.
-                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(schoolCode, subjectCode, title, ct);
+                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(schoolId, subjectId, noteId, ct);
 
                 if (note == null)
                 {
@@ -193,19 +193,19 @@ namespace API.Controllers
             }
         }
         // DELETE /api/notes/{school}/{subject}/{title}
-        [HttpDelete("{schoolCode}/{subjectCode}/{noteTitle}")]
+        [HttpDelete("{schoolId}/{subjectId}/{noteId}")]
         public async Task<IActionResult> DeleteNote(
-            string schoolCode,
-            string subjectCode,
-            string noteTitle,
+            int schoolId,
+            int subjectId,
+            int noteId,
             CancellationToken ct)
         {
             try
             {
                 Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(
-                    schoolCode,
-                    subjectCode,
-                    noteTitle,
+                    schoolId,
+                    subjectId,
+                    noteId,
                     ct);
 
                 if (note == null)
