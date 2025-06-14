@@ -10,6 +10,9 @@ import './Editor.css'
 import { School } from '../types/school';
 import { Subject } from '../types/subject';
 import { Note } from '../types/note';
+import { SchoolSelector } from '../components/editor/SchoolSelector';
+import { SubjectSelector } from '../components/editor/SubjectSelector';
+import { NoteCreateButton } from '../components/editor/NoteActions/NoteCreateButton';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -317,43 +320,24 @@ const Editor: React.FC = () => {
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc' }}>
-                <h3>Schools</h3>
-                <ul>
-                    {schools.map((school) => (
-                        <li 
-                        key={school.code}
-                        className={`list-item ${school.code == selectedSchool?.code ? 'active' : ''}`}
-                        onClick={() => handleSchoolClick(school)}
-                        >
-                            {school.code}
-                        </li>
-                    ))}
-                </ul>
+                <SchoolSelector
+                    schools={schools}
+                    selectedSchool={selectedSchool}
+                    onSchoolSelect={handleSchoolClick}
+                />
                 {selectedSchool && (
-                    <>
-                        <h4>Subjects</h4>
-                        <ul>
-                            {subjects.map((subject) => (
-                                <li 
-                                    key={subject.id} 
-                                    className={`list-item ${subject.id == selectedSubject?.id ? 'active' : ''}`}
-                                    onClick={() => handleSubjectClick(subject)}>
-                                    {subject.code}
-                                </li>
-                            ))}
-                        </ul>
-                    </>
+                    <SubjectSelector
+                        subjects={subjects}
+                        selectedSubject={selectedSubject}
+                        handleSubjectClick={handleSubjectClick}
+                    />
                 )}
                 {selectedSubject && (
                     <>
                         <div className='editor-header-alignment'>
-                            <h4>Titles</h4>
-                            <button 
-                                className='create-button'
-                                onClick={ () => { setShowTitlePopUp(true)} }
-                            >
-                                Create
-                            </button>
+                            <NoteCreateButton
+                                onClick={ () => setShowTitlePopUp(true) }
+                            />
                             <button 
                                 className='create-button'
                                 onClick={ () => {
