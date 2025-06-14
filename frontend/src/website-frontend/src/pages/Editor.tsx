@@ -12,7 +12,8 @@ import { Subject } from '../types/subject';
 import { Note } from '../types/note';
 import { SchoolSelector } from '../components/editor/SchoolSelector';
 import { SubjectSelector } from '../components/editor/SubjectSelector';
-import { NoteCreateButton } from '../components/editor/NoteActions/NoteCreateButton';
+import { SidePanelButton } from '../components/editor/Common/SidePanelButton';
+import { verifySelected } from '../utils/editor-helpers/verifySelected';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -33,6 +34,19 @@ const Editor: React.FC = () => {
     const [imageURL, setImageURL] = useState<string>('');
 
     // const baseUrl = process.env.REACT_APP_API_URL;
+
+    // const checkForSelectedNote = (
+    //     userMessage: string, 
+    //     setPopUpState: React.SetStateAction<boolean>) => {
+    //     if (!selectedTitle)
+    //     {
+    //         alert(userMessage);
+    //     }
+    //     else
+    //     {
+    //         popUpState(true);
+    //     }
+    // }
 
     function check_school_subject_title_selected(): boolean
      {
@@ -335,41 +349,30 @@ const Editor: React.FC = () => {
                 {selectedSubject && (
                     <>
                         <div className='editor-header-alignment'>
-                            <NoteCreateButton
+                            <h4>Titles</h4>
+                            <SidePanelButton 
+                                className="create-button"
                                 onClick={ () => setShowTitlePopUp(true) }
+                                buttonUIDisplay='Create'                          
                             />
-                            <button 
+                            <SidePanelButton 
+                                className="create-button"
+                                onClick={() => verifySelected(
+                                    !!selectedTitle, 
+                                    "Must select a note to delete!", 
+                                    () => setDeleteNotePopUp(true)
+                                )}
+                                buttonUIDisplay='Delete'                          
+                            />
+                            <SidePanelButton
                                 className='create-button'
-                                onClick={ () => {
-                                        if (!selectedTitle)
-                                        {
-                                            alert("Must select a title to delete!");    
-                                        }
-                                        else 
-                                        {
-                                            setDeleteNotePopUp(true);
-                                        }
-                                    }
-                                }
-                            >
-                                Delete
-                            </button>
-                            <button 
-                                className='create-button'
-                                onClick={ () => {
-                                        if (!selectedTitle)
-                                        {
-                                            alert("Must select a title to edit!");    
-                                        }
-                                        else 
-                                        {
-                                            setShowEditNotePopUp(true);
-                                        }
-                                    }
-                                }
-                            >
-                                Edit
-                            </button>
+                                onClick={() => verifySelected(
+                                    !!selectedTitle,
+                                    "Must select a note to edit!",
+                                    () => setShowEditNotePopUp(true)
+                                )}
+                                buttonUIDisplay='Edit'
+                            />
                         </div>
                         <ul>
                             {titles.map((title) => (
