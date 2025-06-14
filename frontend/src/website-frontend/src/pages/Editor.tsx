@@ -19,10 +19,10 @@ const Editor: React.FC = () => {
     const [markdown, setMarkdown] = useState<string>('');
     const [showTitlePopUp, setShowTitlePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
+    const [showEditNotePopUp, setShowEditNotePopUp] = useState(false);
     const [newTitle, setNewTitle] = useState<string>('');
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-    
     const [selectedTitle, setSelectedTitle] = useState<Note | null>(null);
 
     const [image, setImage] = useState<File | null>(null);
@@ -116,8 +116,6 @@ const Editor: React.FC = () => {
     };
 
     const updateNote = async () => {
-
-        
         if (check_school_subject_title_selected())
         {
             try 
@@ -177,7 +175,7 @@ const Editor: React.FC = () => {
     const handleDeleteNote = async () => {
         try
         {
-            await axios.delete(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}/${selectedTitle.id}`);
+            await axios.delete(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}/${selectedTitle?.id}`);
             alert("Note has been successfully deleted!");
             setDeleteNotePopUp(false);
             const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
@@ -202,6 +200,33 @@ const Editor: React.FC = () => {
         {
             console.error("ERROR: Failed to delete note!");
             alert("Failed to delete note.");
+        }
+    }
+    const handleEditNote = async () => {
+        try
+        {
+            await axios.put(`http://localhost:5003/api/notes/edit-note/${selectedTitle?.id}`, 
+                {
+                    updatedAt: new Date().toISOString(),   // Current UTC time.
+                    title: newTitle
+                }
+            );
+            setShowEditNotePopUp(false);
+            const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
+            setTitles(response);
+            
+            const updatedTitle = response.find(note => note.id == selectedTitle?.id);
+            if (updatedTitle)
+            {
+                setSelectedTitle(updatedTitle);
+            }
+
+            setNewTitle('');
+        }
+        catch (error)
+        {
+            console.error("ERROR: Failed to edit note!");
+            alert("Failed to edit note.");
         }
     }
 
@@ -271,6 +296,24 @@ const Editor: React.FC = () => {
             </div>
         </div>
     )}
+    {showEditNotePopUp && (
+        <div className='title-pop-up'>
+            <input
+                type='text'
+                value={newTitle}
+                onChange={(e) => { setNewTitle(e.target.value) }}
+                placeholder="Enter new note title."
+            />
+            <div className='title-pop-up-buttons'>
+                <button onClick={ handleEditNote }>
+                    Edit
+                </button>
+                <button onClick={() => { setShowEditNotePopUp(false) }}>
+                    Cancel
+                </button>
+            </div>
+        </div>
+    )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc' }}>
@@ -309,7 +352,7 @@ const Editor: React.FC = () => {
                                 className='create-button'
                                 onClick={ () => { setShowTitlePopUp(true)} }
                             >
-                                Create Note
+                                Create
                             </button>
                             <button 
                                 className='create-button'
@@ -325,7 +368,23 @@ const Editor: React.FC = () => {
                                     }
                                 }
                             >
-                                Delete Note
+                                Delete
+                            </button>
+                            <button 
+                                className='create-button'
+                                onClick={ () => {
+                                        if (!selectedTitle)
+                                        {
+                                            alert("Must select a title to edit!");    
+                                        }
+                                        else 
+                                        {
+                                            setShowEditNotePopUp(true);
+                                        }
+                                    }
+                                }
+                            >
+                                Edit
                             </button>
                         </div>
                         <ul>

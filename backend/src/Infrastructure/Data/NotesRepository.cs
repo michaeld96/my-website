@@ -73,10 +73,10 @@ public class NotesRepository : INotesRepository
                        .Where(n => n.Subject.Id == subjectId && n.Subject.School.Id == schoolId && n.Id == noteId)
                        .FirstOrDefaultAsync();
     }
-    public Task<Note?> GetNoteWithTrackingAsync(int schoolId, int subjectId, int noteId, CancellationToken ct)
+    public Task<Note?> GetNoteWithTrackingAsync(int noteId, CancellationToken ct)
     {
         return _context.Notes
-                       .Where(n => n.Subject.Id == subjectId && n.Subject.School.Id == schoolId && n.Id == noteId)
+                       .Where(n => n.Id == noteId)
                        .FirstOrDefaultAsync(ct);
     }
     public async Task<Note> AddNoteAsync(Note note, CancellationToken ct)

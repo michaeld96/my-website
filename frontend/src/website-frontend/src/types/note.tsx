@@ -4,5 +4,5 @@ export type Note = {
     title: string,
     markdown: string,
     updatedAt: Date,
-    subjectId: number,
+    subjectId: number
 }

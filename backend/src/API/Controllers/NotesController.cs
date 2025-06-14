@@ -169,11 +169,11 @@ namespace API.Controllers
             try
             {
                 // find note.
-                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(schoolId, subjectId, noteId, ct);
+                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(noteId, ct);
 
                 if (note == null)
                 {
-                    return NotFound("This note is not found.");
+                    return NotFound(HTTPMessagesReturnedToUser.NoteNotFound);
                 }
 
                 // update the note.
@@ -202,15 +202,11 @@ namespace API.Controllers
         {
             try
             {
-                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(
-                    schoolId,
-                    subjectId,
-                    noteId,
-                    ct);
+                Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(noteId, ct);
 
                 if (note == null)
                 {
-                    return NotFound("Note not found.");
+                    return NotFound(HTTPMessagesReturnedToUser.NoteNotFound);
                 }
 
                 _uow.NotesRepo.DeleteNote(note);
@@ -226,7 +222,18 @@ namespace API.Controllers
                 return StatusCode(500, $"ERROR: Error occurred while deleting a note: {ex.Message}");
             }
         }
-        // [HttpPut("{schoolCode}/{subjectCode}/{noteTitle}")]
-        // public async Task<IActionResult> UpdateNoteTitle(string schoolCode, string subjectCode, string noteTitle,)
+        [HttpPut("edit-note/{noteId:int}")]
+        public async Task<IActionResult> UpdateNoteTitle(int noteId, [FromBody] NoteUpdateDTO dto, CancellationToken ct)
+        {
+            Note? note = await _uow.NotesRepo.GetNoteWithTrackingAsync(noteId, ct);
+
+            if (note == null)
+            {
+                return NotFound(HTTPMessagesReturnedToUser.NoteNotFound);
+            }
+            note.Title = dto.Title;
+            await _uow.CommitAsync(ct);
+            return NoContent();
+        }
     }
 }
