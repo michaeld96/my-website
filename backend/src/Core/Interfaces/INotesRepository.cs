@@ -13,7 +13,7 @@ public interface INotesRepository
     public Task<List<Note>> GetAllNoteTitlesAsync(int schoolId, int subjectId, CancellationToken ct);
     public Task<List<Note>> GetAllNotesAssociatedWithSubjectAndSchoolAsync(string schoolCode, string subjectCode, CancellationToken ct);
     public Task<Note?> GetNoteAsync(int schoolId, int subjectId, int noteId, CancellationToken ct);
-    public Task<Note?> GetNoteWithTrackingAsync(int schoolId, int subjectId, int noteId, CancellationToken ct);
+    public Task<Note?> GetNoteWithTrackingAsync(int noteId, CancellationToken ct);
     public Task<Note> AddNoteAsync(Note note, CancellationToken ct);
     public void DeleteNote(Note note);
 
