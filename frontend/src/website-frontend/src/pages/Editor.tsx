@@ -19,7 +19,7 @@ const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
     const [schools, setSchools] = useState<School[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
-    const [titles, setTitles] = useState<Note[]>([]);
+    const [notes, setNotes] = useState<Note[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
     const [showTitlePopUp, setShowTitlePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
@@ -34,19 +34,6 @@ const Editor: React.FC = () => {
     const [imageURL, setImageURL] = useState<string>('');
 
     // const baseUrl = process.env.REACT_APP_API_URL;
-
-    // const checkForSelectedNote = (
-    //     userMessage: string, 
-    //     setPopUpState: React.SetStateAction<boolean>) => {
-    //     if (!selectedTitle)
-    //     {
-    //         alert(userMessage);
-    //     }
-    //     else
-    //     {
-    //         popUpState(true);
-    //     }
-    // }
 
     function check_school_subject_title_selected(): boolean
      {
@@ -109,7 +96,7 @@ const Editor: React.FC = () => {
     const handleSchoolClick = async (school: School) => {
         setSelectedSchool(school);
         setSubjects([]); // Clear subjects when switching schools.
-        setTitles([]); // Clear titles when switching schools.
+        setNotes([]); // Clears all notes.
         setMarkdown(''); // Clear markdown.
         setSelectedSubject(null);
         setSelectedTitle(null);
@@ -119,11 +106,11 @@ const Editor: React.FC = () => {
 
     const handleSubjectClick = async (subject: Subject) => {
         setSelectedSubject(subject);
-        setTitles([]); // Clear titles when switching subjects
+        setNotes([]); // Clear titles when switching subjects
         setMarkdown(''); // Clear markdown
         setSelectedTitle(null);
         const titles = await getAllTitlesAsync(selectedSchool?.id ?? null, subject.id);
-        setTitles(titles);
+        setNotes(titles);
     };
 
     const handleTitleClick = async (title: Note) => {
@@ -177,7 +164,7 @@ const Editor: React.FC = () => {
                     setMarkdown('');
                     setNewTitle('');
                     const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
-                    setTitles(response);
+                    setNotes(response);
                     
                 } 
                 catch (error)
@@ -196,7 +183,7 @@ const Editor: React.FC = () => {
             alert("Note has been successfully deleted!");
             setDeleteNotePopUp(false);
             const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
-            setTitles(response);
+            setNotes(response);
 
             if (response.length > 0)
             {
@@ -211,7 +198,7 @@ const Editor: React.FC = () => {
                 setSelectedTitle(null);
                 setMarkdown('');
             }
-            setTitles(response);  
+            setNotes(response);  
         }
         catch (error)
         {
@@ -230,7 +217,7 @@ const Editor: React.FC = () => {
             );
             setShowEditNotePopUp(false);
             const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
-            setTitles(response);
+            setNotes(response);
             
             const updatedTitle = response.find(note => note.id == selectedTitle?.id);
             if (updatedTitle)
@@ -375,13 +362,13 @@ const Editor: React.FC = () => {
                             />
                         </div>
                         <ul>
-                            {titles.map((title) => (
+                            {notes.map((note) => (
                                 <li 
-                                    key={title.id} 
-                                    onClick={() => handleTitleClick(title)}
-                                    className={`list-item ${title == selectedTitle ? 'active' : ''}`}
+                                    key={note.id} 
+                                    onClick={() => handleTitleClick(note)}
+                                    className={`list-item ${note == selectedTitle ? 'active' : ''}`}
                                 >
-                                    {title.title}
+                                    {note.title}
                                 </li>
                             ))}
                         </ul>
