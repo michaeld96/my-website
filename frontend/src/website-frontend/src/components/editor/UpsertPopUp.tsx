@@ -1,19 +1,3 @@
-        // <div className='title-pop-up'>
-        //     <input
-        //         type='text'
-        //         value={newTitle}
-        //         onChange={(e) => { setNewTitle(e.target.value) }}
-        //         placeholder="Enter new note title."
-        //     />
-        //     <div className='title-pop-up-buttons'>
-        //         <button onClick={ handleCreateNote }>
-        //             Create
-        //         </button>
-        //         <button onClick={() => { setShowTitlePopUp(false) }}>
-        //             Cancel
-        //         </button>
-        //     </div>
-        // </div>
 interface UpsertPopUpProps {
     popUpTitle: string;
     placeholder: string;

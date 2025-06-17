@@ -16,6 +16,7 @@ import { SidePanelButton } from '../components/editor/Common/SidePanelButton';
 import { verifySelected } from '../utils/editor-helpers/verifySelected';
 import { NoteSelector } from '../components/editor/NoteSelector';
 import { UpsertPopUp } from '../components/editor/UpsertPopUp';
+import { DeletePopUp } from '../components/editor/DeletePopUp';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -23,17 +24,13 @@ const Editor: React.FC = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
-    const [showTitlePopUp, setShowTitlePopUp] = useState(false);
+    const [showCreateNotePopUp, setShowCreateNotePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
     const [showEditNotePopUp, setShowEditNotePopUp] = useState(false);
-    const [newTitle, setNewTitle] = useState<string>('');
+    const [newNoteTitle, setNewNoteTitle] = useState<string>('');
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [selectedNote, setselectedNote] = useState<Note | null>(null);
-
-    const [image, setImage] = useState<File | null>(null);
-    const [imageName, setImageName] = useState<string>('');
-    const [imageURL, setImageURL] = useState<string>('');
 
     // const baseUrl = process.env.REACT_APP_API_URL;
 
@@ -145,7 +142,7 @@ const Editor: React.FC = () => {
     const handleCreateNote = async () => {
         if (check_school_subject_selected())
         {
-            if (newTitle.length == 0)
+            if (newNoteTitle.length == 0)
             {
                 alert("Title must not be empty!");
             }
@@ -156,15 +153,15 @@ const Editor: React.FC = () => {
                     await axios.post<Note>(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}`,
                         {
                             subjectId: selectedSubject?.id,
-                            title: newTitle,
+                            title: newNoteTitle,
                             markdown: "",
                         }
                     );
                     alert('New note saved!');
                     setselectedNote(null);
-                    setShowTitlePopUp(false);
+                    setShowCreateNotePopUp(false);
                     setMarkdown('');
-                    setNewTitle('');
+                    setNewNoteTitle('');
                     const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
                     setNotes(response);
                     
@@ -214,7 +211,7 @@ const Editor: React.FC = () => {
             await axios.put(`http://localhost:5003/api/notes/edit-note/${selectedNote?.id}`, 
                 {
                     updatedAt: new Date().toISOString(),   // Current UTC time.
-                    title: newTitle
+                    title: newNoteTitle
                 }
             );
             setShowEditNotePopUp(false);
@@ -227,7 +224,7 @@ const Editor: React.FC = () => {
                 setselectedNote(updatedTitle);
             }
 
-            setNewTitle('');
+            setNewNoteTitle('');
         }
         catch (error)
         {
@@ -271,63 +268,36 @@ const Editor: React.FC = () => {
 
     return (
     <>
-    {showTitlePopUp && (
-        // <div className='title-pop-up'>
-        //     <input
-        //         type='text'
-        //         value={newTitle}
-        //         onChange={(e) => { setNewTitle(e.target.value) }}
-        //         placeholder="Enter new note title."
-        //     />
-        //     <div className='title-pop-up-buttons'>
-        //         <button onClick={ handleCreateNote }>
-        //             Create
-        //         </button>
-        //         <button onClick={() => { setShowTitlePopUp(false) }}>
-        //             Cancel
-        //         </button>
-        //     </div>
-        // </div>
+    {showCreateNotePopUp && (
         <UpsertPopUp
-            popUpTitle={newTitle} 
+            popUpTitle={newNoteTitle} 
             placeholder='Enter new note title.'
-            upsertEntityName={setNewTitle}
+            upsertEntityName={setNewNoteTitle}
             acceptUpsertEntity={handleCreateNote}
             acceptUIOutput='Create'
-            closePopUp={setShowTitlePopUp}
+            closePopUp={setShowCreateNotePopUp}
             declineUIOutput='Cancel'
         />
     )}
     {showDeleteNotePopUp && (
-        <div className='title-pop-up'>
-            <h2>Are you sure you want to delete this note?</h2>
-            <div className='title-pop-up-buttons'>
-                <button onClick={ handleDeleteNote }>
-                    Delete
-                </button>
-                <button onClick={() => { setDeleteNotePopUp(false) }}>
-                    Cancel
-                </button>
-            </div>
-        </div>
+        <DeletePopUp
+            deleteUIHeader='Are you sure you want to delete this note?'
+            acceptDelete={ handleDeleteNote }
+            acceptUIOutput='Delete'
+            closePopUp={ setDeleteNotePopUp }
+            declineUIOutput='Cancel'
+        />
     )}
     {showEditNotePopUp && (
-        <div className='title-pop-up'>
-            <input
-                type='text'
-                value={newTitle}
-                onChange={(e) => { setNewTitle(e.target.value) }}
-                placeholder="Enter new note title."
-            />
-            <div className='title-pop-up-buttons'>
-                <button onClick={ handleEditNote }>
-                    Edit
-                </button>
-                <button onClick={() => { setShowEditNotePopUp(false) }}>
-                    Cancel
-                </button>
-            </div>
-        </div>
+        <UpsertPopUp
+            popUpTitle={newNoteTitle}
+            placeholder='Enter new note title.'
+            upsertEntityName={setNewNoteTitle}
+            acceptUpsertEntity={handleEditNote}
+            acceptUIOutput='Edit'
+            closePopUp={setShowEditNotePopUp}
+            declineUIOutput='Cancel'
+         />
     )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
@@ -350,7 +320,7 @@ const Editor: React.FC = () => {
                             <h4>Titles</h4>
                             <SidePanelButton 
                                 className="edit-button"
-                                onClick={ () => setShowTitlePopUp(true) }
+                                onClick={ () => setShowCreateNotePopUp(true) }
                                 buttonUIDisplay='Create'                          
                             />
                             <SidePanelButton 
