@@ -2,14 +2,14 @@ interface UpsertPopUpProps {
     popUpTitle: string;
     placeholder: string;
     upsertEntityName: (input: string) => void; 
-    acceptUpsertEntity: () => void;
-    acceptUIOutput: string;
+    confirmUpsertEntity: () => void;
+    confirmUpdateLable: string;
     closePopUp: (val: boolean) => void;
-    declineUIOutput: string;
+    cancelLable: string;
 };
 
 export const UpsertPopUp: React.FC<UpsertPopUpProps> = ({
-    popUpTitle, placeholder, upsertEntityName, acceptUpsertEntity, acceptUIOutput, closePopUp, declineUIOutput
+    popUpTitle, placeholder, upsertEntityName, confirmUpsertEntity, confirmUpdateLable, closePopUp, cancelLable
 }) => {
     return(
         <div className='title-pop-up'>
@@ -20,11 +20,11 @@ export const UpsertPopUp: React.FC<UpsertPopUpProps> = ({
                 placeholder={placeholder}
             />
             <div className='title-pop-up-buttons'>
-                <button onClick={ acceptUpsertEntity }>
-                    {acceptUIOutput}
+                <button onClick={ confirmUpsertEntity }>
+                    {confirmUpdateLable}
                 </button>
                 <button onClick={() => { closePopUp(false) }}>
-                    {declineUIOutput}
+                    {cancelLable}
                 </button>
             </div>
         </div>

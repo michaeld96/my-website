@@ -1,34 +1,23 @@
-// <div className='title-pop-up'>
-//     <h2>Are you sure you want to delete this note?</h2>
-//     <div className='title-pop-up-buttons'>
-//         <button onClick={ handleDeleteNote }>
-//             Delete
-//         </button>
-//         <button onClick={() => { setDeleteNotePopUp(false) }}>
-//             Cancel
-//         </button>
-//     </div>
-// </div>
 interface DeletePopUpProps {
     deleteUIHeader: string;
-    acceptDelete: () => void;
-    acceptUIOutput: string;
+    confirmDelete: () => void;
+    confirmLable: string;
     closePopUp: (val: boolean) => void;
-    declineUIOutput: string;
+    cancelLable: string;
 }
 
 export const DeletePopUp: React.FC<DeletePopUpProps> = ({
-    deleteUIHeader, acceptDelete, acceptUIOutput, closePopUp, declineUIOutput
+    deleteUIHeader, confirmDelete, confirmLable, closePopUp, cancelLable
 }) => {
     return(
         <div className='title-pop-up'>
             <h2>{deleteUIHeader}</h2>
             <div className='title-pop-up-buttons'>
-                <button onClick={ acceptDelete }>
-                    {acceptUIOutput}
+                <button onClick={ confirmDelete }>
+                    {confirmLable}
                 </button>
                 <button onClick={() => { closePopUp(false) }}>
-                    {declineUIOutput}
+                    {cancelLable}
                 </button>
             </div>
         </div>

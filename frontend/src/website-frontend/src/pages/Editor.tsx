@@ -273,19 +273,19 @@ const Editor: React.FC = () => {
             popUpTitle={newNoteTitle} 
             placeholder='Enter new note title.'
             upsertEntityName={setNewNoteTitle}
-            acceptUpsertEntity={handleCreateNote}
-            acceptUIOutput='Create'
+            confirmUpsertEntity={handleCreateNote}
+            confirmUpdateLable='Create'
             closePopUp={setShowCreateNotePopUp}
-            declineUIOutput='Cancel'
+            cancelLable='Cancel'
         />
     )}
     {showDeleteNotePopUp && (
         <DeletePopUp
             deleteUIHeader='Are you sure you want to delete this note?'
-            acceptDelete={ handleDeleteNote }
-            acceptUIOutput='Delete'
+            confirmDelete={ handleDeleteNote }
+            confirmLable='Delete'
             closePopUp={ setDeleteNotePopUp }
-            declineUIOutput='Cancel'
+            cancelLable='Cancel'
         />
     )}
     {showEditNotePopUp && (
@@ -293,10 +293,10 @@ const Editor: React.FC = () => {
             popUpTitle={newNoteTitle}
             placeholder='Enter new note title.'
             upsertEntityName={setNewNoteTitle}
-            acceptUpsertEntity={handleEditNote}
-            acceptUIOutput='Edit'
+            confirmUpsertEntity={handleEditNote}
+            confirmUpdateLable='Edit'
             closePopUp={setShowEditNotePopUp}
-            declineUIOutput='Cancel'
+            cancelLable='Cancel'
          />
     )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
