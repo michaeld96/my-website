@@ -52,7 +52,7 @@ public class NotesRepository : INotesRepository
                        .AsNoTracking()
                        .AnyAsync(s => s.School.Id == schoolId, ct);
     }
-    public Task<List<Note>> GetAllNoteTitlesAsync(int schoolId, int subjectId, CancellationToken ct)
+    public Task<List<Note>> GetAllNotesAsync(int schoolId, int subjectId, CancellationToken ct)
     {
         return _context.Notes
                        .AsNoTracking()

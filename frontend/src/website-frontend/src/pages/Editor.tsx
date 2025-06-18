@@ -17,6 +17,7 @@ import { verifySelected } from '../utils/editor-helpers/verifySelected';
 import { NoteSelector } from '../components/editor/NoteSelector';
 import { UpsertPopUp } from '../components/editor/UpsertPopUp';
 import { DeletePopUp } from '../components/editor/DeletePopUp';
+import { notesService } from '../services/notesService';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -58,8 +59,8 @@ const Editor: React.FC = () => {
     {
         try
         {
-            const response = await axios.get<Note>(`http://localhost:5003/api/notes/${schoolId}/${subjectId}/${noteId}`);
-            return response.data.markdown;
+            const markdown = await notesService.getMarkdown(schoolId, subjectId, noteId);
+            return markdown;
         }
         catch (error)
         {
@@ -73,8 +74,8 @@ const Editor: React.FC = () => {
     {
         try
         {
-            const response = await axios.get<Note[]>(`http://localhost:5003/api/notes/${schoolId}/${subjectId}/titles`);
-            return response.data;
+            const allNotes = await notesService.getNotes(schoolId, subjectId);
+            return allNotes;
         }
         catch (error)
         {
@@ -86,8 +87,16 @@ const Editor: React.FC = () => {
 
     useEffect(() => {
         const fetchSchools = async () => {
-            const response = await axios.get<School[]>('http://localhost:5003/api/notes/schools');
-            setSchools(response.data);
+            try
+            {
+                const schoolsData = await notesService.getSchools();
+                setSchools(schoolsData);
+            }
+            catch (error)
+            {
+                alert("ERROR: Cannot get all schools.");
+            }
+
         };
         fetchSchools();
     }, []);
@@ -99,8 +108,8 @@ const Editor: React.FC = () => {
         setMarkdown(''); // Clear markdown.
         setSelectedSubject(null);
         setselectedNote(null);
-        const response = await axios.get<Subject[]>(`http://localhost:5003/api/notes/${school.id}/subjects`);
-        setSubjects(response.data);
+        const allSubjectsData = await notesService.getSubjects(school.id);
+        setSubjects(allSubjectsData);
     };
 
     const handleSubjectClick = async (subject: Subject) => {
@@ -123,12 +132,7 @@ const Editor: React.FC = () => {
         {
             try 
             {
-                console.log(new Date().toISOString());
-                await axios.put(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}/${selectedNote?.id}`, 
-                {
-                    updatedAt: new Date().toISOString(),   // Current UTC time.
-                    markdown: markdown,
-                });
+                await notesService.updateNotesMarkdown(selectedSchool?.id, selectedSubject?.id, selectedNote?.id, markdown);
                 alert("Note updated successfully!");
             } 
             catch (error) 
@@ -150,13 +154,7 @@ const Editor: React.FC = () => {
             {
                 try
                 {
-                    await axios.post<Note>(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}`,
-                        {
-                            subjectId: selectedSubject?.id,
-                            title: newNoteTitle,
-                            markdown: "",
-                        }
-                    );
+                    await notesService.uploadNote(selectedSchool?.id, selectedSubject?.id, newNoteTitle);
                     alert('New note saved!');
                     setselectedNote(null);
                     setShowCreateNotePopUp(false);
@@ -178,7 +176,7 @@ const Editor: React.FC = () => {
     const handleDeleteNote = async () => {
         try
         {
-            await axios.delete(`http://localhost:5003/api/notes/${selectedSchool?.id}/${selectedSubject?.id}/${selectedNote?.id}`);
+            await notesService.deleteNote(selectedSchool?.id, selectedSubject?.id, selectedNote?.id);
             alert("Note has been successfully deleted!");
             setDeleteNotePopUp(false);
             const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
@@ -206,14 +204,14 @@ const Editor: React.FC = () => {
         }
     }
     const handleEditNote = async () => {
+        if (newNoteTitle == "")
+        {
+            alert("Note title must not be empty");
+            return;
+        }
         try
         {
-            await axios.put(`http://localhost:5003/api/notes/edit-note/${selectedNote?.id}`, 
-                {
-                    updatedAt: new Date().toISOString(),   // Current UTC time.
-                    title: newNoteTitle
-                }
-            );
+            await notesService.updateNoteTitle(selectedNote?.id, newNoteTitle);
             setShowEditNotePopUp(false);
             const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
             setNotes(response);

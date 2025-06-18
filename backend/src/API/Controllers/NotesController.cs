@@ -71,8 +71,8 @@ namespace API.Controllers
         /// <param name="subject">The name of the subject (e.g., "EECS 281: Data Structures and Algorithms"</param>
         /// <returns></returns>
         // GET /api/notes/{school}/{subject}/titles
-        [HttpGet("{schoolId:int}/{subjectId:int}/titles")]
-        public async Task<IActionResult> GetNoteTitles(
+        [HttpGet("{schoolId:int}/{subjectId:int}/notes")]
+        public async Task<IActionResult> GetNotes(
             int schoolId,
             int subjectId,
             CancellationToken ct)
@@ -84,7 +84,7 @@ namespace API.Controllers
             }
             // TODO: Should I be putting error checking? All the info piped into the backend is going to be from the
             //       from the frontend. This error checking seems to intense.
-            var titles = await _uow.NotesRepo.GetAllNoteTitlesAsync(schoolId, subjectId, ct);
+            var titles = await _uow.NotesRepo.GetAllNotesAsync(schoolId, subjectId, ct);
 
             return Ok(titles);
         }
