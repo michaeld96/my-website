@@ -72,6 +72,13 @@ export const notesService = {
     },
     async deleteNote(schoolId: number | undefined, subjectId: number | undefined, noteId: number | undefined): Promise<void>
     {
-        await axios.delete(`${API_BASE}/${schoolId}/${subjectId}/${noteId}`);
+        if (schoolId == undefined || subjectId == undefined || noteId == undefined)
+        {
+            alert("ERROR: SchoolId, SubjectId, or NoteID is undefined.");
+        }
+        else
+        {
+            await axios.delete(`${API_BASE}/${schoolId}/${subjectId}/${noteId}`);
+        }
     }
 };
