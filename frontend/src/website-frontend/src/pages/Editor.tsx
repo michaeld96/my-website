@@ -19,9 +19,10 @@ import { UpsertPopUp } from '../components/editor/UpsertPopUp';
 import { DeletePopUp } from '../components/editor/DeletePopUp';
 import { notesService } from '../services/notesService';
 import { useSchools } from '../hooks/useSchools';
+import { useSubjects } from '../hooks/useSubjects';
 
 const Editor: React.FC = () => {
-    const [subjects, setSubjects] = useState<Subject[]>([]);
+    // const [subjects, setSubjects] = useState<Subject[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
     const [showCreateNotePopUp, setShowCreateNotePopUp] = useState(false);
@@ -31,6 +32,8 @@ const Editor: React.FC = () => {
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [selectedNote, setselectedNote] = useState<Note | null>(null);
+
+    // New states.
 
     function check_school_subject_title_selected(): boolean
      {
@@ -82,17 +85,20 @@ const Editor: React.FC = () => {
         }
     }
     const schools = useSchools();
+    const subjects = useSubjects(selectedSchool?.id);
 
-    const handleSchoolClick = async (school: School) => {
-        setSelectedSchool(school);
-        setSubjects([]); // Clear subjects when switching schools.
-        setNotes([]); // Clears all notes.
-        setMarkdown(''); // Clear markdown.
-        setSelectedSubject(null);
-        setselectedNote(null);
-        const allSubjectsData = await notesService.getSubjects(school.id);
-        setSubjects(allSubjectsData);
-    };
+    // const handleSchoolClick = async (school: School) => {
+    //     setSelectedSchool(school);
+    //     setSubjects([]); // Clear subjects when switching schools.
+    //     setNotes([]); // Clears all notes.
+    //     setMarkdown(''); // Clear markdown.
+    //     setSelectedSubject(null);
+    //     setselectedNote(null);
+    //     const allSubjectsData = await notesService.getSubjects(school.id);
+    //     setSubjects(allSubjectsData);
+    // };
+
+    
 
     const handleSubjectClick = async (subject: Subject) => {
         setSelectedSubject(subject);
@@ -285,7 +291,7 @@ const Editor: React.FC = () => {
                 <SchoolSelector
                     schools={schools}
                     selectedSchool={selectedSchool}
-                    onSchoolSelect={handleSchoolClick}
+                    onSchoolSelect={(school: School) => { setSelectedSchool(school)} }
                 />
                 {selectedSchool && (
                     <SubjectSelector
