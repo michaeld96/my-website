@@ -18,10 +18,9 @@ import { NoteSelector } from '../components/editor/NoteSelector';
 import { UpsertPopUp } from '../components/editor/UpsertPopUp';
 import { DeletePopUp } from '../components/editor/DeletePopUp';
 import { notesService } from '../services/notesService';
+import { useSchools } from '../hooks/useSchools';
 
 const Editor: React.FC = () => {
-    // returns state value, and a function to update the state.
-    const [schools, setSchools] = useState<School[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
@@ -32,8 +31,6 @@ const Editor: React.FC = () => {
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [selectedNote, setselectedNote] = useState<Note | null>(null);
-
-    // const baseUrl = process.env.REACT_APP_API_URL;
 
     function check_school_subject_title_selected(): boolean
      {
@@ -84,22 +81,7 @@ const Editor: React.FC = () => {
             return [];   
         }
     }
-
-    useEffect(() => {
-        const fetchSchools = async () => {
-            try
-            {
-                const schoolsData = await notesService.getSchools();
-                setSchools(schoolsData);
-            }
-            catch (error)
-            {
-                alert("ERROR: Cannot get all schools.");
-            }
-
-        };
-        fetchSchools();
-    }, []);
+    const schools = useSchools();
 
     const handleSchoolClick = async (school: School) => {
         setSelectedSchool(school);
