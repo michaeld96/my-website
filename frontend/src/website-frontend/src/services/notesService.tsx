@@ -16,7 +16,7 @@ export const notesService = {
         const response = await axios.get<Subject[]>(`${API_BASE}/${schoolId}/subjects`);
         return response.data;
     },
-    async getNotes(schoolId: number | null, subjectId: number | null): Promise<Note[]>
+    async getNotes(schoolId?: number, subjectId?: number): Promise<Note[]>
     {
         const response = await axios.get<Note[]>(`${API_BASE}/${schoolId}/${subjectId}/notes`);
         return response.data;

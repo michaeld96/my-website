@@ -20,10 +20,11 @@ import { DeletePopUp } from '../components/editor/DeletePopUp';
 import { notesService } from '../services/notesService';
 import { useSchools } from '../hooks/useSchools';
 import { useSubjects } from '../hooks/useSubjects';
+import { useNotes } from '../hooks/useNotes';
 
 const Editor: React.FC = () => {
     // const [subjects, setSubjects] = useState<Subject[]>([]);
-    const [notes, setNotes] = useState<Note[]>([]);
+    // const [notes, setNotes] = useState<Note[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
     const [showCreateNotePopUp, setShowCreateNotePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
@@ -70,7 +71,7 @@ const Editor: React.FC = () => {
         }
     }
 
-    async function getAllTitlesAsync(schoolId: number | null, subjectId: number | null): Promise<Note[]>
+    async function getAllTitlesAsync(schoolId?: number, subjectId?: number): Promise<Note[]>
     {
         try
         {
@@ -86,6 +87,7 @@ const Editor: React.FC = () => {
     }
     const schools = useSchools();
     const subjects = useSubjects(selectedSchool?.id);
+    const notes = useNotes(selectedSchool?.id, selectedSubject?.id);
 
     // const handleSchoolClick = async (school: School) => {
     //     setSelectedSchool(school);
@@ -100,14 +102,14 @@ const Editor: React.FC = () => {
 
     
 
-    const handleSubjectClick = async (subject: Subject) => {
-        setSelectedSubject(subject);
-        setNotes([]); // Clear titles when switching subjects
-        setMarkdown(''); // Clear markdown
-        setselectedNote(null);
-        const titles = await getAllTitlesAsync(selectedSchool?.id ?? null, subject.id);
-        setNotes(titles);
-    };
+    // const handleSubjectClick = async (subject: Subject) => {
+    //     setSelectedSubject(subject);
+    //     setNotes([]); // Clear titles when switching subjects
+    //     setMarkdown(''); // Clear markdown
+    //     setselectedNote(null);
+    //     const titles = await getAllTitlesAsync(selectedSchool?.id ?? null, subject.id);
+    //     setNotes(titles);
+    // };
 
     const handleNoteClick = async (title: Note) => {
         setselectedNote(title);
@@ -148,8 +150,8 @@ const Editor: React.FC = () => {
                     setShowCreateNotePopUp(false);
                     setMarkdown('');
                     setNewNoteTitle('');
-                    const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
-                    setNotes(response);
+                    const response = await getAllTitlesAsync(selectedSchool?.id, selectedSubject?.id);
+                    // setNotes(response);
                     
                 } 
                 catch (error)
@@ -167,8 +169,8 @@ const Editor: React.FC = () => {
             await notesService.deleteNote(selectedSchool?.id, selectedSubject?.id, selectedNote?.id);
             alert("Note has been successfully deleted!");
             setDeleteNotePopUp(false);
-            const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
-            setNotes(response);
+            const response = await getAllTitlesAsync(selectedSchool?.id, selectedSubject?.id);
+            // setNotes(response);
 
             if (response.length > 0)
             {
@@ -183,7 +185,7 @@ const Editor: React.FC = () => {
                 setselectedNote(null);
                 setMarkdown('');
             }
-            setNotes(response);  
+            // setNotes(response);  
         }
         catch (error)
         {
@@ -201,8 +203,8 @@ const Editor: React.FC = () => {
         {
             await notesService.updateNoteTitle(selectedNote?.id, newNoteTitle);
             setShowEditNotePopUp(false);
-            const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
-            setNotes(response);
+            const response = await getAllTitlesAsync(selectedSchool?.id, selectedSubject?.id);
+            // setNotes(response);
             
             const updatedTitle = response.find(note => note.id == selectedNote?.id);
             if (updatedTitle)
@@ -297,7 +299,9 @@ const Editor: React.FC = () => {
                     <SubjectSelector
                         subjects={subjects}
                         selectedSubject={selectedSubject}
-                        handleSubjectClick={handleSubjectClick}
+                        handleSubjectClick={(subject: Subject) => { 
+                            setSelectedSubject(subject) 
+                        }}
                     />
                 )}
                 {selectedSubject && (
