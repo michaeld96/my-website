@@ -30,6 +30,7 @@ const Editor: React.FC = () => {
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
     const [showEditNotePopUp, setShowEditNotePopUp] = useState(false);
     const [newNoteTitle, setNewNoteTitle] = useState<string>('');
+    // These will remain and stay with the editor.
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [selectedNote, setselectedNote] = useState<Note | null>(null);
@@ -87,29 +88,7 @@ const Editor: React.FC = () => {
     }
     const schools = useSchools();
     const subjects = useSubjects(selectedSchool?.id);
-    const notes = useNotes(selectedSchool?.id, selectedSubject?.id);
-
-    // const handleSchoolClick = async (school: School) => {
-    //     setSelectedSchool(school);
-    //     setSubjects([]); // Clear subjects when switching schools.
-    //     setNotes([]); // Clears all notes.
-    //     setMarkdown(''); // Clear markdown.
-    //     setSelectedSubject(null);
-    //     setselectedNote(null);
-    //     const allSubjectsData = await notesService.getSubjects(school.id);
-    //     setSubjects(allSubjectsData);
-    // };
-
-    
-
-    // const handleSubjectClick = async (subject: Subject) => {
-    //     setSelectedSubject(subject);
-    //     setNotes([]); // Clear titles when switching subjects
-    //     setMarkdown(''); // Clear markdown
-    //     setselectedNote(null);
-    //     const titles = await getAllTitlesAsync(selectedSchool?.id ?? null, subject.id);
-    //     setNotes(titles);
-    // };
+    const { notes, createNote } = useNotes(selectedSchool?.id, selectedSubject?.id);
 
     const handleNoteClick = async (title: Note) => {
         setselectedNote(title);
@@ -133,35 +112,35 @@ const Editor: React.FC = () => {
         }
     };
     
-    const handleCreateNote = async () => {
-        if (check_school_subject_selected())
-        {
-            if (newNoteTitle.length == 0)
-            {
-                alert("Title must not be empty!");
-            }
-            else
-            {
-                try
-                {
-                    await notesService.uploadNote(selectedSchool?.id, selectedSubject?.id, newNoteTitle);
-                    alert('New note saved!');
-                    setselectedNote(null);
-                    setShowCreateNotePopUp(false);
-                    setMarkdown('');
-                    setNewNoteTitle('');
-                    const response = await getAllTitlesAsync(selectedSchool?.id, selectedSubject?.id);
-                    // setNotes(response);
+    // const handleCreateNote = async () => {
+    //     if (check_school_subject_selected())
+    //     {
+    //         if (newNoteTitle.length == 0)
+    //         {
+    //             alert("Title must not be empty!");
+    //         }
+    //         else
+    //         {
+    //             try
+    //             {
+    //                 await notesService.uploadNote(selectedSchool?.id, selectedSubject?.id, newNoteTitle);
+    //                 alert('New note saved!');
+    //                 setselectedNote(null);
+    //                 setShowCreateNotePopUp(false);
+    //                 setMarkdown('');
+    //                 setNewNoteTitle('');
+    //                 const response = await getAllTitlesAsync(selectedSchool?.id, selectedSubject?.id);
+    //                 // setNotes(response);
                     
-                } 
-                catch (error)
-                {
-                    console.error('ERROR: Failed to save new content.');
-                    alert('Failed to save new note. Please try again');
-                }
-            }
-        }
-    }
+    //             } 
+    //             catch (error)
+    //             {
+    //                 console.error('ERROR: Failed to save new content.');
+    //                 alert('Failed to save new note. Please try again');
+    //             }
+    //         }
+    //     }
+    // }
 
     const handleDeleteNote = async () => {
         try
@@ -261,7 +240,7 @@ const Editor: React.FC = () => {
             popUpTitle={newNoteTitle} 
             placeholder='Enter new note title.'
             upsertEntityName={setNewNoteTitle}
-            confirmUpsertEntity={handleCreateNote}
+            confirmUpsertEntity={() => createNote(newNoteTitle).then(() => {setShowCreateNotePopUp(false)})}
             confirmUpdateLable='Create'
             closePopUp={setShowCreateNotePopUp}
             cancelLable='Cancel'
