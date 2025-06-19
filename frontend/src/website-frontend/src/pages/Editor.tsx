@@ -21,6 +21,7 @@ import { notesService } from '../services/notesService';
 import { useSchools } from '../hooks/useSchools';
 import { useSubjects } from '../hooks/useSubjects';
 import { useNotes } from '../hooks/useNotes';
+import { useMarkdown } from '../hooks/useMarkdown';
 
 const Editor: React.FC = () => {
     // const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -111,36 +112,6 @@ const Editor: React.FC = () => {
             }
         }
     };
-    
-    // const handleCreateNote = async () => {
-    //     if (check_school_subject_selected())
-    //     {
-    //         if (newNoteTitle.length == 0)
-    //         {
-    //             alert("Title must not be empty!");
-    //         }
-    //         else
-    //         {
-    //             try
-    //             {
-    //                 await notesService.uploadNote(selectedSchool?.id, selectedSubject?.id, newNoteTitle);
-    //                 alert('New note saved!');
-    //                 setselectedNote(null);
-    //                 setShowCreateNotePopUp(false);
-    //                 setMarkdown('');
-    //                 setNewNoteTitle('');
-    //                 const response = await getAllTitlesAsync(selectedSchool?.id, selectedSubject?.id);
-    //                 // setNotes(response);
-                    
-    //             } 
-    //             catch (error)
-    //             {
-    //                 console.error('ERROR: Failed to save new content.');
-    //                 alert('Failed to save new note. Please try again');
-    //             }
-    //         }
-    //     }
-    // }
 
     const handleDeleteNote = async () => {
         try
@@ -240,7 +211,18 @@ const Editor: React.FC = () => {
             popUpTitle={newNoteTitle} 
             placeholder='Enter new note title.'
             upsertEntityName={setNewNoteTitle}
-            confirmUpsertEntity={() => createNote(newNoteTitle).then(() => {setShowCreateNotePopUp(false)})}
+            confirmUpsertEntity={() => {
+                if (newNoteTitle != '')
+                {
+                    createNote(newNoteTitle);
+                    setShowCreateNotePopUp(false);
+                    setNewNoteTitle('');
+                }
+                else
+                {
+                    alert("Note must not have an empty title.");
+                }
+            }}
             confirmUpdateLable='Create'
             closePopUp={setShowCreateNotePopUp}
             cancelLable='Cancel'
@@ -268,7 +250,7 @@ const Editor: React.FC = () => {
     )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
-            <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc' }}>
+            <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll`}}>
                 <SchoolSelector
                     schools={schools}
                     selectedSchool={selectedSchool}

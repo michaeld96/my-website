@@ -4,7 +4,7 @@ import { notesService } from "../services/notesService";
 
 export const useNotes = (schoolId?: number, subjectId?: number) => {
     const [notes, setNotes] = useState<Note[]>([]);
-    const [markdown, setMarkdown] = useState<string>('');
+
 
     const checkSchoolAndSubject = () :boolean => {
         if (!schoolId || !subjectId)
@@ -36,11 +36,12 @@ export const useNotes = (schoolId?: number, subjectId?: number) => {
         reloadNotes();
     }, [reloadNotes]);
 
-    const createNote = useCallback( async (newTitle: string) => {
+    const createNote = useCallback( async (title: string) => {
         if (checkSchoolAndSubject())
         {
-            await notesService.uploadNote(schoolId, subjectId, newTitle);
+            await notesService.uploadNote(schoolId, subjectId, title);
             await reloadNotes();
+
         }
     }, [schoolId, subjectId, reloadNotes]);
 
