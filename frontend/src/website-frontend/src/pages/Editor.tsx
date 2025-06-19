@@ -21,7 +21,6 @@ import { notesService } from '../services/notesService';
 import { useSchools } from '../hooks/useSchools';
 import { useSubjects } from '../hooks/useSubjects';
 import { useNotes } from '../hooks/useNotes';
-import { useMarkdown } from '../hooks/useMarkdown';
 
 const Editor: React.FC = () => {
     // const [subjects, setSubjects] = useState<Subject[]>([]);
