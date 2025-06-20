@@ -18,24 +18,22 @@ import { NoteSelector } from '../components/editor/NoteSelector';
 import { UpsertPopUp } from '../components/editor/UpsertPopUp';
 import { DeletePopUp } from '../components/editor/DeletePopUp';
 import { notesService } from '../services/notesService';
-import { useSchools } from '../hooks/useSchools';
-import { useSubjects } from '../hooks/useSubjects';
-import { useNotes } from '../hooks/useNotes';
 
 const Editor: React.FC = () => {
-    // const [subjects, setSubjects] = useState<Subject[]>([]);
-    // const [notes, setNotes] = useState<Note[]>([]);
+    // returns state value, and a function to update the state.
+    const [schools, setSchools] = useState<School[]>([]);
+    const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [notes, setNotes] = useState<Note[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
     const [showCreateNotePopUp, setShowCreateNotePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
     const [showEditNotePopUp, setShowEditNotePopUp] = useState(false);
     const [newNoteTitle, setNewNoteTitle] = useState<string>('');
-    // These will remain and stay with the editor.
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [selectedNote, setselectedNote] = useState<Note | null>(null);
 
-    // New states.
+    // const baseUrl = process.env.REACT_APP_API_URL;
 
     function check_school_subject_title_selected(): boolean
      {
@@ -72,7 +70,7 @@ const Editor: React.FC = () => {
         }
     }
 
-    async function getAllTitlesAsync(schoolId?: number, subjectId?: number): Promise<Note[]>
+    async function getAllTitlesAsync(schoolId: number | null, subjectId: number | null): Promise<Note[]>
     {
         try
         {
@@ -86,9 +84,42 @@ const Editor: React.FC = () => {
             return [];   
         }
     }
-    const schools = useSchools();
-    const subjects = useSubjects(selectedSchool?.id);
-    const { notes, createNote } = useNotes(selectedSchool?.id, selectedSubject?.id);
+
+    useEffect(() => {
+        const fetchSchools = async () => {
+            try
+            {
+                const schoolsData = await notesService.getSchools();
+                setSchools(schoolsData);
+            }
+            catch (error)
+            {
+                alert("ERROR: Cannot get all schools.");
+            }
+
+        };
+        fetchSchools();
+    }, []);
+
+    const handleSchoolClick = async (school: School) => {
+        setSelectedSchool(school);
+        setSubjects([]); // Clear subjects when switching schools.
+        setNotes([]); // Clears all notes.
+        setMarkdown(''); // Clear markdown.
+        setSelectedSubject(null);
+        setselectedNote(null);
+        const allSubjectsData = await notesService.getSubjects(school.id);
+        setSubjects(allSubjectsData);
+    };
+
+    const handleSubjectClick = async (subject: Subject) => {
+        setSelectedSubject(subject);
+        setNotes([]); // Clear titles when switching subjects
+        setMarkdown(''); // Clear markdown
+        setselectedNote(null);
+        const titles = await getAllTitlesAsync(selectedSchool?.id ?? null, subject.id);
+        setNotes(titles);
+    };
 
     const handleNoteClick = async (title: Note) => {
         setselectedNote(title);
@@ -111,6 +142,36 @@ const Editor: React.FC = () => {
             }
         }
     };
+    
+    const handleCreateNote = async () => {
+        if (check_school_subject_selected())
+        {
+            if (newNoteTitle.length == 0)
+            {
+                alert("Title must not be empty!");
+            }
+            else
+            {
+                try
+                {
+                    await notesService.uploadNote(selectedSchool?.id, selectedSubject?.id, newNoteTitle);
+                    alert('New note saved!');
+                    setselectedNote(null);
+                    setShowCreateNotePopUp(false);
+                    setMarkdown('');
+                    setNewNoteTitle('');
+                    const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
+                    setNotes(response);
+                    
+                } 
+                catch (error)
+                {
+                    console.error('ERROR: Failed to save new content.');
+                    alert('Failed to save new note. Please try again');
+                }
+            }
+        }
+    }
 
     const handleDeleteNote = async () => {
         try
@@ -118,8 +179,8 @@ const Editor: React.FC = () => {
             await notesService.deleteNote(selectedSchool?.id, selectedSubject?.id, selectedNote?.id);
             alert("Note has been successfully deleted!");
             setDeleteNotePopUp(false);
-            const response = await getAllTitlesAsync(selectedSchool?.id, selectedSubject?.id);
-            // setNotes(response);
+            const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
+            setNotes(response);
 
             if (response.length > 0)
             {
@@ -134,7 +195,7 @@ const Editor: React.FC = () => {
                 setselectedNote(null);
                 setMarkdown('');
             }
-            // setNotes(response);  
+            setNotes(response);  
         }
         catch (error)
         {
@@ -152,8 +213,8 @@ const Editor: React.FC = () => {
         {
             await notesService.updateNoteTitle(selectedNote?.id, newNoteTitle);
             setShowEditNotePopUp(false);
-            const response = await getAllTitlesAsync(selectedSchool?.id, selectedSubject?.id);
-            // setNotes(response);
+            const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
+            setNotes(response);
             
             const updatedTitle = response.find(note => note.id == selectedNote?.id);
             if (updatedTitle)
@@ -210,18 +271,7 @@ const Editor: React.FC = () => {
             popUpTitle={newNoteTitle} 
             placeholder='Enter new note title.'
             upsertEntityName={setNewNoteTitle}
-            confirmUpsertEntity={() => {
-                if (newNoteTitle != '')
-                {
-                    createNote(newNoteTitle);
-                    setShowCreateNotePopUp(false);
-                    setNewNoteTitle('');
-                }
-                else
-                {
-                    alert("Note must not have an empty title.");
-                }
-            }}
+            confirmUpsertEntity={handleCreateNote}
             confirmUpdateLable='Create'
             closePopUp={setShowCreateNotePopUp}
             cancelLable='Cancel'
@@ -249,19 +299,17 @@ const Editor: React.FC = () => {
     )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
-            <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll`}}>
+            <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
                 <SchoolSelector
                     schools={schools}
                     selectedSchool={selectedSchool}
-                    onSchoolSelect={(school: School) => { setSelectedSchool(school)} }
+                    onSchoolSelect={handleSchoolClick}
                 />
                 {selectedSchool && (
                     <SubjectSelector
                         subjects={subjects}
                         selectedSubject={selectedSubject}
-                        handleSubjectClick={(subject: Subject) => { 
-                            setSelectedSubject(subject) 
-                        }}
+                        handleSubjectClick={handleSubjectClick}
                     />
                 )}
                 {selectedSubject && (
