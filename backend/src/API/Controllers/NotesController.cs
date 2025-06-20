@@ -235,5 +235,20 @@ namespace API.Controllers
             await _uow.CommitAsync(ct);
             return NoContent();
         }
+        [HttpPost("{schoolId:int}/create-subject")]
+        public async Task<IActionResult> CreateSubject(int schoolId, SubjectDTO dto, CancellationToken ct)
+        {
+            Subject subject = new Subject
+            {
+                Title = dto.Title,
+                Code = dto.Code,
+                SchoolId = dto.SchoolId
+            };
+
+            await _uow.NotesRepo.AddSubjectAsync(subject, ct);
+            await _uow.CommitAsync(ct);
+            var resultDTO = _map.Map<SubjectDTO>(subject);
+            return Ok(resultDTO);
+        }
     }
 }

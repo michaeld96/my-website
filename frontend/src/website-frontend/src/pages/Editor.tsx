@@ -18,6 +18,7 @@ import { NoteSelector } from '../components/editor/NoteSelector';
 import { UpsertPopUp } from '../components/editor/UpsertPopUp';
 import { DeletePopUp } from '../components/editor/DeletePopUp';
 import { notesService } from '../services/notesService';
+import { UpsertPopUpSubjects } from '../components/editor/UpsertPopUpSubjects';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -28,11 +29,14 @@ const Editor: React.FC = () => {
     const [showCreateNotePopUp, setShowCreateNotePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
     const [showEditNotePopUp, setShowEditNotePopUp] = useState(false);
+    const [showCreateSubjectPopup, setShowSubjectNotePopUp] = useState(false);
+    const [newSubjectTitle, setNewSubjectTitle] = useState<string>('');
+    const [newSubjectCode, setNewSubjectCode] = useState<string>('');
+
     const [newNoteTitle, setNewNoteTitle] = useState<string>('');
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-    const [selectedNote, setselectedNote] = useState<Note | null>(null);
-
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     // const baseUrl = process.env.REACT_APP_API_URL;
 
     function check_school_subject_title_selected(): boolean
@@ -107,7 +111,7 @@ const Editor: React.FC = () => {
         setNotes([]); // Clears all notes.
         setMarkdown(''); // Clear markdown.
         setSelectedSubject(null);
-        setselectedNote(null);
+        setSelectedNote(null);
         const allSubjectsData = await notesService.getSubjects(school.id);
         setSubjects(allSubjectsData);
     };
@@ -116,13 +120,13 @@ const Editor: React.FC = () => {
         setSelectedSubject(subject);
         setNotes([]); // Clear titles when switching subjects
         setMarkdown(''); // Clear markdown
-        setselectedNote(null);
+        setSelectedNote(null);
         const titles = await getAllTitlesAsync(selectedSchool?.id ?? null, subject.id);
         setNotes(titles);
     };
 
     const handleNoteClick = async (title: Note) => {
-        setselectedNote(title);
+        setSelectedNote(title);
         const response = await getMarkdownAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null, title.id);
         setMarkdown(response);
     };
@@ -156,13 +160,13 @@ const Editor: React.FC = () => {
                 {
                     await notesService.uploadNote(selectedSchool?.id, selectedSubject?.id, newNoteTitle);
                     alert('New note saved!');
-                    setselectedNote(null);
+                    setSelectedNote(null);
                     setShowCreateNotePopUp(false);
                     setMarkdown('');
                     setNewNoteTitle('');
                     const response = await getAllTitlesAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null);
                     setNotes(response);
-                    
+                    setSelectedNote(response[response.length - 1]);
                 } 
                 catch (error)
                 {
@@ -170,6 +174,32 @@ const Editor: React.FC = () => {
                     alert('Failed to save new note. Please try again');
                 }
             }
+        }
+    }
+
+    const handleCreateSubject = async () => {
+        if (newSubjectTitle.length == 0)
+        {
+            alert("Subject title cannot be empty");
+            return;
+        }
+        if (newSubjectCode.length == 0)
+        {
+            alert("Subject code cannot be empty");
+            return;
+        }
+        try
+        {
+            await notesService.uploadSubject(selectedSchool?.id, newSubjectTitle, newSubjectCode);
+            alert('New subject saved!');
+            setShowSubjectNotePopUp(false);
+            const allSubjects = await notesService.getSubjects(selectedSchool?.id);
+            setSubjects(allSubjects);
+            setSelectedSubject(allSubjects[allSubjects.length - 1]);
+        }
+        catch (error)
+        {
+            alert('Failed to save subject.')
         }
     }
 
@@ -186,13 +216,13 @@ const Editor: React.FC = () => {
             {
                 // If there is more content, let's just set it to the first one.
                 const nextTitle = response[0];
-                setselectedNote(nextTitle);
+                setSelectedNote(nextTitle);
                 const markdown = await getMarkdownAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null, nextTitle.id);
                 setMarkdown(markdown);
             }
             else
             {
-                setselectedNote(null);
+                setSelectedNote(null);
                 setMarkdown('');
             }
             setNotes(response);  
@@ -219,7 +249,7 @@ const Editor: React.FC = () => {
             const updatedTitle = response.find(note => note.id == selectedNote?.id);
             if (updatedTitle)
             {
-                setselectedNote(updatedTitle);
+                setSelectedNote(updatedTitle);
             }
 
             setNewNoteTitle('');
@@ -277,15 +307,6 @@ const Editor: React.FC = () => {
             cancelLable='Cancel'
         />
     )}
-    {showDeleteNotePopUp && (
-        <DeletePopUp
-            deleteUIHeader='Are you sure you want to delete this note?'
-            confirmDelete={ handleDeleteNote }
-            confirmLable='Delete'
-            closePopUp={ setDeleteNotePopUp }
-            cancelLable='Cancel'
-        />
-    )}
     {showEditNotePopUp && (
         <UpsertPopUp
             popUpTitle={newNoteTitle}
@@ -297,6 +318,29 @@ const Editor: React.FC = () => {
             cancelLable='Cancel'
          />
     )}
+    {showDeleteNotePopUp && (
+        <DeletePopUp
+            deleteUIHeader='Are you sure you want to delete this note?'
+            confirmDelete={ handleDeleteNote }
+            confirmLable='Delete'
+            closePopUp={ setDeleteNotePopUp }
+            cancelLable='Cancel'
+        />
+    )}
+    {showCreateSubjectPopup && (
+        <UpsertPopUpSubjects 
+            popUpTitle={newSubjectTitle} 
+            placeholder='Enter new subject title.'
+            upsertEntityName={setNewSubjectTitle}
+            confirmUpsertEntity={handleCreateSubject}
+            confirmUpdateLable='Create'
+            closePopUp={setShowSubjectNotePopUp}
+            cancelLable='Cancel'
+            popUpCode={newSubjectCode}
+            upsertEntityCode={setNewSubjectCode}
+            popUpPlaceholder='Enter new code here.'
+        />
+    )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
@@ -306,20 +350,22 @@ const Editor: React.FC = () => {
                     onSchoolSelect={handleSchoolClick}
                 />
                 {selectedSchool && (
-                    <SubjectSelector
-                        subjects={subjects}
-                        selectedSubject={selectedSubject}
-                        handleSubjectClick={handleSubjectClick}
-                    />
-                )}
-                {selectedSubject && (
                     <>
                         <div className='editor-header-alignment'>
-                            <h4>Titles</h4>
+                            <h4>Subjects</h4>
                             <SidePanelButton 
                                 className="edit-button"
-                                onClick={ () => setShowCreateNotePopUp(true) }
+                                onClick={ () => setShowSubjectNotePopUp(true) }
                                 buttonUIDisplay='Create'                          
+                            />
+                            <SidePanelButton
+                                className='edit-button'
+                                onClick={() => verifySelected(
+                                    !!selectedNote,
+                                    "Must select a note to edit!",
+                                    () => setShowEditNotePopUp(true)
+                                )}
+                                buttonUIDisplay='Edit'
                             />
                             <SidePanelButton 
                                 className="edit-button"
@@ -330,6 +376,24 @@ const Editor: React.FC = () => {
                                 )}
                                 buttonUIDisplay='Delete'                          
                             />
+                        </div>
+                        
+                    <SubjectSelector
+                        subjects={subjects}
+                        selectedSubject={selectedSubject}
+                        handleSubjectClick={handleSubjectClick}
+                    />
+                    </>
+                )}
+                {selectedSubject && (
+                    <>
+                        <div className='editor-header-alignment'>
+                            <h4>Titles</h4>
+                            <SidePanelButton 
+                                className="edit-button"
+                                onClick={ () => setShowCreateNotePopUp(true) }
+                                buttonUIDisplay='Create'                          
+                            />
                             <SidePanelButton
                                 className='edit-button'
                                 onClick={() => verifySelected(
@@ -338,6 +402,15 @@ const Editor: React.FC = () => {
                                     () => setShowEditNotePopUp(true)
                                 )}
                                 buttonUIDisplay='Edit'
+                            />
+                            <SidePanelButton 
+                                className="edit-button"
+                                onClick={() => verifySelected(
+                                    !!selectedNote, 
+                                    "Must select a note to delete!", 
+                                    () => setDeleteNotePopUp(true)
+                                )}
+                                buttonUIDisplay='Delete'                          
                             />
                         </div>
                         <NoteSelector 

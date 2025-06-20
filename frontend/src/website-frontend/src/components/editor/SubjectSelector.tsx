@@ -11,7 +11,6 @@ export const SubjectSelector: React.FC<
 > = ({subjects, selectedSubject, handleSubjectClick}) => {
     return(
         <>
-            <h4>Subjects</h4>
             <ul>
                 {subjects.map((subject) => (
                     <li 

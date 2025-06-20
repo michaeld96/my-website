@@ -88,4 +88,9 @@ public class NotesRepository : INotesRepository
     {
         _context.Remove(note);
     }
+    public async Task<Subject> AddSubjectAsync(Subject subject, CancellationToken ct)
+    {
+        var entity = await _context.AddAsync(subject, ct);
+        return entity.Entity;
+    }
 }   

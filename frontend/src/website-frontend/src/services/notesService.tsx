@@ -2,6 +2,7 @@ import axios from "axios";
 import { School } from "../types/school";
 import { Subject } from "../types/subject";
 import { Note } from "../types/note";
+import { title } from "process";
 
 const API_BASE = 'http://localhost:5003/api/notes';
 
@@ -35,12 +36,22 @@ export const notesService = {
         else
         {
             await axios.post(`${API_BASE}/${schoolId}/${subjectId}`, 
-            {
+        {
                 title: newNoteTitle,
                 subjectId: subjectId,
                 markdown: ""
             });
         }
+    },
+    async uploadSubject(schoolId: number | undefined, subjectTitle: string, subjectCode: string)
+    {
+        await axios.post(`${API_BASE}/${schoolId}/create-subject`,
+            {
+                schoolId: schoolId,
+                title: subjectTitle,
+                code: subjectCode
+            }
+        );
     },
     async updateNotesMarkdown(schoolId: number | undefined, subjectId: number | undefined, noteId: number | undefined, markdown: string): Promise<void>
     {
