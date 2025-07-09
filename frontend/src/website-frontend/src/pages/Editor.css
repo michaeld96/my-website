@@ -14,16 +14,16 @@
 .editor-header-alignment
 {
     display: flex;
-    gap: 10px;
+    gap: 5px;
     align-items: center;
 }
 
-.create-button
+.edit-button
 {
     transition: 0.3s ease;
 }
 
-.create-button:hover
+.edit-button:hover
 {
     background-color: #007BFF;
 }

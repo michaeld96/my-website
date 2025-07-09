@@ -52,7 +52,7 @@ public class NotesRepository : INotesRepository
                        .AsNoTracking()
                        .AnyAsync(s => s.School.Id == schoolId, ct);
     }
-    public Task<List<Note>> GetAllNoteTitlesAsync(int schoolId, int subjectId, CancellationToken ct)
+    public Task<List<Note>> GetAllNotesAsync(int schoolId, int subjectId, CancellationToken ct)
     {
         return _context.Notes
                        .AsNoTracking()
@@ -87,5 +87,10 @@ public class NotesRepository : INotesRepository
     public void DeleteNote(Note note)
     {
         _context.Remove(note);
+    }
+    public async Task<Subject> AddSubjectAsync(Subject subject, CancellationToken ct)
+    {
+        var entity = await _context.AddAsync(subject, ct);
+        return entity.Entity;
     }
 }   
