@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import axios, { all } from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -26,12 +26,15 @@ const Editor: React.FC = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
+
     const [showCreateNotePopUp, setShowCreateNotePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
     const [showEditNotePopUp, setShowEditNotePopUp] = useState(false);
 
     const [showCreateSubjectPopup, setShowSubjectNotePopUp] = useState(false);
     const [showEditSubjectPopup, setShowEditSubjectPopup] = useState(false);
+    const [showDeleteSubjectPopup, setShowDeleteSubjectPopup] = useState(false);
+
     const [newSubjectTitle, setNewSubjectTitle] = useState<string>('');
     const [newSubjectCode, setNewSubjectCode] = useState<string>('');
 
@@ -198,7 +201,23 @@ const Editor: React.FC = () => {
     }
 
     const handleDeleteSubject = async () => {
-
+        try {
+            await notesService.deleteSubject(selectedSchool?.id, selectedSubject?.id);
+            alert('Subject has been deleted!');
+            setShowDeleteSubjectPopup(false);
+            const allSubjects = await notesService.getSubjects(selectedSchool?.id);
+            setSubjects(allSubjects);
+            if (allSubjects.length > 0) {
+                setSelectedSubject(allSubjects[0]);
+                
+            }
+            else {
+                setSelectedSubject(null);
+            }
+        }
+        catch (error) {
+            console.log(`ERROR: ${error}`);
+        }
     }
 
     const updateNote = async () => {
@@ -399,6 +418,15 @@ const Editor: React.FC = () => {
             popUpPlaceholder='Enter new code here.'
         />
     )}
+    {showDeleteSubjectPopup && (
+        <DeletePopUp
+            deleteUIHeader='Are you sure you want to delete this Subject?'
+            confirmDelete={ handleDeleteSubject }
+            confirmLable='Delete'
+            closePopUp={ setShowDeleteSubjectPopup }
+            cancelLable='Cancel'
+        />
+    )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
@@ -428,9 +456,9 @@ const Editor: React.FC = () => {
                             <SidePanelButton 
                                 className="edit-button"
                                 onClick={() => verifySelected(
-                                    !!selectedNote, 
-                                    "Must select a note to delete!", 
-                                    () => setDeleteNotePopUp(true)
+                                    !!selectedSubject, 
+                                    "Must select a subject to delete!", 
+                                    () => setShowDeleteSubjectPopup(true)
                                 )}
                                 buttonUIDisplay='Delete'                          
                             />

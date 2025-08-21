@@ -266,5 +266,31 @@ namespace API.Controllers
             await _uow.CommitAsync(ct);
             return NoContent();
         }
+
+        [HttpDelete("{schoolId:int}/delete-subject/{subjectId:int}")]
+        public async Task<IActionResult> DeleteSubject(int schoolId, int subjectId, CancellationToken ct)
+        {
+            try
+            {
+                Subject? subject = await _uow.NotesRepo.GetSubjectWithTrackingAsync(subjectId, ct);
+
+                if (subject == null)
+                {
+                    return NotFound(HTTPMessagesReturnedToUser.SubjectNotFound);
+                }
+
+                _uow.NotesRepo.DeleteSubject(subject);
+                await _uow.CommitAsync(ct);
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"ERROR: Database ran into an error deleting a note: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Error occurred while deleting a note: {ex.Message}");
+            }
+        }
     }
 }

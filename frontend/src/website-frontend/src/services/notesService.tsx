@@ -63,6 +63,9 @@ export const notesService = {
             }
         );
     },
+    async deleteSubject(schoolId: number | undefined, subjectId: number | undefined) {
+        await axios.delete(`${API_BASE}/${schoolId}/delete-subject/${subjectId}`);
+    },
     async updateNotesMarkdown(schoolId: number | undefined, subjectId: number | undefined, noteId: number | undefined, markdown: string): Promise<void>
     {
         if (schoolId == undefined || subjectId == undefined || noteId == undefined)

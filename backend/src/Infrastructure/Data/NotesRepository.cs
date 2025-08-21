@@ -100,4 +100,9 @@ public class NotesRepository : INotesRepository
                         .Where(s => s.Id == subjectId)
                         .FirstOrDefaultAsync(ct);
     }
+
+    public void DeleteSubject(Subject subject)
+    {
+        _context.Subjects.Remove(subject);
+    }
 }   
