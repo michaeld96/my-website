@@ -93,4 +93,34 @@ public class NotesRepository : INotesRepository
         var entity = await _context.AddAsync(subject, ct);
         return entity.Entity;
     }
+
+    public Task<Subject?> GetSubjectWithTrackingAsync(int subjectId, CancellationToken ct)
+    {
+        return _context.Subjects
+                        .Where(s => s.Id == subjectId)
+                        .FirstOrDefaultAsync(ct);
+    }
+
+    public void DeleteSubject(Subject subject)
+    {
+        _context.Subjects.Remove(subject);
+    }
+
+    public async Task<School> AddSchoolAsync(School school, CancellationToken ct)
+    {
+        var entity = await _context.Schools.AddAsync(school, ct);
+        return entity.Entity;
+    }
+
+    public Task<School?> GetSchoolWithTrackingAsync(int schoolId, CancellationToken ct)
+    {
+        return _context.Schools
+                        .Where(s => s.Id == schoolId)
+                        .FirstOrDefaultAsync(ct);
+    }
+
+    public void DeleteSchool(School school)
+    {
+        _context.Remove(school);
+    }
 }   

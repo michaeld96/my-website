@@ -250,5 +250,102 @@ namespace API.Controllers
             var resultDTO = _map.Map<SubjectDTO>(subject);
             return Ok(resultDTO);
         }
+
+        [HttpPut("{schoolId:int}/edit-subject")]
+        public async Task<IActionResult> EditSubject(int schoolId, [FromBody] SubjectDTO dto, CancellationToken ct)
+        {
+            Subject? subject = await _uow.NotesRepo.GetSubjectWithTrackingAsync(dto.Id, ct);
+
+            if (subject == null)
+            {
+                return NotFound(HTTPMessagesReturnedToUser.SubjectNotFound);
+            }
+
+            subject.Code = dto.Code;
+            subject.Title = dto.Title;
+            await _uow.CommitAsync(ct);
+            return NoContent();
+        }
+
+        [HttpDelete("{schoolId:int}/delete-subject/{subjectId:int}")]
+        public async Task<IActionResult> DeleteSubject(int schoolId, int subjectId, CancellationToken ct)
+        {
+            try
+            {
+                Subject? subject = await _uow.NotesRepo.GetSubjectWithTrackingAsync(subjectId, ct);
+
+                if (subject == null)
+                {
+                    return NotFound(HTTPMessagesReturnedToUser.SubjectNotFound);
+                }
+
+                _uow.NotesRepo.DeleteSubject(subject);
+                await _uow.CommitAsync(ct);
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"ERROR: Database ran into an error deleting a subject: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Error occurred while deleting a subject: {ex.Message}");
+            }
+        }
+
+        [HttpPost("create-school")]
+        public async Task<IActionResult> CreateSchool([FromBody] SchoolDTO dto, CancellationToken ct)
+        {
+            School school = new School
+            {
+                Name = dto.Name,
+                Code = dto.Code
+            };
+
+            await _uow.NotesRepo.AddSchoolAsync(school, ct);
+            await _uow.CommitAsync(ct);
+            var resultDTO = _map.Map<SchoolDTO>(school);
+            return Ok(resultDTO);
+        }
+
+        [HttpPut("edit-school/{schoolId:int}")]
+        public async Task<IActionResult> EditSchool(int schoolId, [FromBody] SchoolDTO dto, CancellationToken ct)
+        {
+            School? school = await _uow.NotesRepo.GetSchoolWithTrackingAsync(schoolId, ct);
+            if (school == null)
+            {
+                return NotFound("School is not found");
+            }
+
+            school.Name = dto.Name;
+            school.Code = dto.Code;
+            await _uow.CommitAsync(ct);
+            return NoContent();
+            
+        }
+
+        [HttpDelete("delete-school/{schoolId:int}")]
+        public async Task<IActionResult> DeleteSchool(int schoolId, CancellationToken ct)
+        {
+            School? school = await _uow.NotesRepo.GetSchoolWithTrackingAsync(schoolId, ct);
+            if (school == null)
+            {
+                return NotFound("School is not found");
+            }
+            try
+            {
+                _uow.NotesRepo.DeleteSchool(school);
+                await _uow.CommitAsync(ct);
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"ERROR: Database ran into an error deleting a school: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Error occurred while deleting a school: {ex.Message}");
+            }
+        }
     }
 }

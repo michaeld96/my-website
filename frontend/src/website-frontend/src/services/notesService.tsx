@@ -2,7 +2,7 @@ import axios from "axios";
 import { School } from "../types/school";
 import { Subject } from "../types/subject";
 import { Note } from "../types/note";
-import { title } from "process";
+// import { title } from "process";
 
 const API_BASE = 'http://localhost:5003/api/notes';
 
@@ -53,6 +53,19 @@ export const notesService = {
             }
         );
     },
+    async editSubject(schoolId: number | undefined, subjectTitle: string, subjectCode: string, subjectId: number| undefined) {
+        await axios.put(`${API_BASE}/${schoolId}/edit-subject`,
+            {
+                schoolId: schoolId,
+                title: subjectTitle,
+                code: subjectCode,
+                id: subjectId
+            }
+        );
+    },
+    async deleteSubject(schoolId: number | undefined, subjectId: number | undefined) {
+        await axios.delete(`${API_BASE}/${schoolId}/delete-subject/${subjectId}`);
+    },
     async updateNotesMarkdown(schoolId: number | undefined, subjectId: number | undefined, noteId: number | undefined, markdown: string): Promise<void>
     {
         if (schoolId == undefined || subjectId == undefined || noteId == undefined)
@@ -91,5 +104,24 @@ export const notesService = {
         {
             await axios.delete(`${API_BASE}/${schoolId}/${subjectId}/${noteId}`);
         }
-    }
+    },
+    async uploadSchool(schoolName: string, schoolCode: string): Promise<void> {
+        await axios.post(`${API_BASE}/create-school`, 
+            {
+                name: schoolName,
+                code: schoolCode
+            }
+        );
+    },
+    async editSchool(schoolId: number | undefined, schoolName: string, schoolCode: string) {
+        await axios.put(`${API_BASE}/edit-school/${schoolId}`,
+            {
+                name: schoolName,
+                code: schoolCode
+            }
+        );
+    },
+    async deleteSchool(schoolId: number | undefined) {
+        await axios.delete(`${API_BASE}/delete-school/${schoolId}`);
+    },
 };

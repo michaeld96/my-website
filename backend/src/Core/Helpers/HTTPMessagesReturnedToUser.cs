@@ -14,4 +14,5 @@ public static class HTTPMessagesReturnedToUser
     {
         return $"ERROR: SchoolCode: {schoolCode}, SubjectCode: {subjectCode}, or NoteTitle: {noteTitle} are null";
     }
+    public const string SubjectNotFound = "Subject was not found.";
 }

@@ -7,7 +7,6 @@ export const SchoolSelector: React.FC<{ // Props that are not defined with a int
 }> = ({ schools, selectedSchool, onSchoolSelect}) => {
     return(
         <>
-            <h3>Schools</h3>
             <ul>
                 {schools.map((school) => (
                     <li

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import axios, { all } from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -26,10 +26,21 @@ const Editor: React.FC = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const [markdown, setMarkdown] = useState<string>('');
+
     const [showCreateNotePopUp, setShowCreateNotePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
     const [showEditNotePopUp, setShowEditNotePopUp] = useState(false);
+
     const [showCreateSubjectPopup, setShowSubjectNotePopUp] = useState(false);
+    const [showEditSubjectPopup, setShowEditSubjectPopup] = useState(false);
+    const [showDeleteSubjectPopup, setShowDeleteSubjectPopup] = useState(false);
+
+    const [showCreateSchoolPopup, setShowCreateSchoolPopup] = useState(false);
+    const [showEditSchoolPopup, setShowEditSchoolPopup] = useState(false);
+    const [showDeleteSchoolPopup, setShowDeleteSchoolPopup] = useState(false);
+    const [newSchoolTitle, setNewSchoolTitle] = useState<string>('');
+    const [newSchoolCode, setNewSchoolCode] = useState<string>('');
+
     const [newSubjectTitle, setNewSubjectTitle] = useState<string>('');
     const [newSubjectCode, setNewSubjectCode] = useState<string>('');
 
@@ -59,6 +70,20 @@ const Editor: React.FC = () => {
         return true;
     }
 
+    function valid_title_and_code(title: string, code: string): boolean {
+        if (title.length == 0)
+        {
+            alert("Subject title cannot be empty");
+            return false;
+        }
+        if (code.length == 0)
+        {
+            alert("Subject code cannot be empty");
+            return false;;
+        }
+        return true;
+    }
+
     async function getMarkdownAsync(schoolId: number | null, subjectId: number | null, noteId: number | null): Promise<string>
     {
         try
@@ -83,14 +108,12 @@ const Editor: React.FC = () => {
         }
         catch (error)
         {
-            console.error("ERROR: Cannot get all titles for this subject.");
             alert("ERROR: Cannot get all titles for this subject.");
+            console.log(`ERROR: ${error}`);
             return [];   
         }
     }
-
-    useEffect(() => {
-        const fetchSchools = async () => {
+    async function getSchools() {
             try
             {
                 const schoolsData = await notesService.getSchools();
@@ -99,10 +122,26 @@ const Editor: React.FC = () => {
             catch (error)
             {
                 alert("ERROR: Cannot get all schools.");
+                console.log(`ERROR: ${error}`);
             }
+    }
 
-        };
-        fetchSchools();
+    useEffect(() => {
+        // const fetchSchools = async () => {
+        //     try
+        //     {
+        //         const schoolsData = await notesService.getSchools();
+        //         setSchools(schoolsData);
+        //     }
+        //     catch (error)
+        //     {
+        //         alert("ERROR: Cannot get all schools.");
+        //         console.log(`ERROR: ${error}`);
+        //     }
+
+        // };
+        // fetchSchools();
+        getSchools();
     }, []);
 
     const handleSchoolClick = async (school: School) => {
@@ -130,6 +169,148 @@ const Editor: React.FC = () => {
         const response = await getMarkdownAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null, title.id);
         setMarkdown(response);
     };
+
+    const handleCreateSubject = async () => {
+        if (newSubjectTitle.length == 0)
+        {
+            alert("Subject title cannot be empty");
+            return;
+        }
+        if (newSubjectCode.length == 0)
+        {
+            alert("Subject code cannot be empty");
+            return;
+        }
+        try
+        {
+            await notesService.uploadSubject(selectedSchool?.id, newSubjectTitle, newSubjectCode);
+            alert('New subject saved!');
+            setShowSubjectNotePopUp(false);
+            const allSubjects = await notesService.getSubjects(selectedSchool?.id);
+            setSubjects(allSubjects);
+            setSelectedSubject(allSubjects[allSubjects.length - 1]);
+            setNewSubjectCode("");
+            setNewSubjectTitle("");
+            // refresh notes.
+            setSelectedNote(null);
+            setMarkdown("");
+            setNotes([]);
+        }
+        catch (error)
+        {
+            alert(`Failed to save subject. ERROR: ${error}`);
+        }
+    }
+
+    const handleEditSubject = async () => {
+        if (!valid_title_and_code(newSubjectTitle, newSubjectCode)) {
+            return;
+        }
+        try
+        {
+            await notesService.editSubject(selectedSchool?.id, newSubjectTitle, newSubjectCode, selectedSubject?.id);
+            alert('Subject was updated!');
+            setShowEditSubjectPopup(false);
+            const allSubjects = await notesService.getSubjects(selectedSchool?.id);
+            setSubjects(allSubjects);
+            setNewSubjectCode("");
+            setNewSubjectTitle("");
+        }
+        catch (error)
+        {
+            alert("Subject's edit was not saved!");
+            console.log(`ERROR: ${error}`);
+        }
+    }
+
+    const handleDeleteSubject = async () => {
+        try {
+            await notesService.deleteSubject(selectedSchool?.id, selectedSubject?.id);
+            alert('Subject has been deleted!');
+            setShowDeleteSubjectPopup(false);
+            const allSubjects = await notesService.getSubjects(selectedSchool?.id);
+            setSubjects(allSubjects);
+            if (allSubjects.length > 0) {
+                setSelectedSubject(allSubjects[0]);
+                const response = await getAllTitlesAsync(selectedSchool?.id ?? null, allSubjects[0].id);
+                setNotes(response);
+            }
+            else {
+                setSelectedSubject(null);
+                setNotes([]);
+            }
+        }
+        catch (error) {
+            console.log(`ERROR: ${error}`);
+        }
+    }
+
+    const handleCreateSchool = async () => {
+        if (!valid_title_and_code(newSchoolTitle, newSchoolCode)) {
+            return;
+        }
+        try {
+            await notesService.uploadSchool(newSchoolTitle, newSchoolCode);
+            alert('New school saved!');
+            setShowCreateSchoolPopup(false);
+            setSubjects([]);
+            setNotes([]);
+            getSchools();
+        }
+        catch (error) {
+            alert("ERROR: Could not save new school!");
+            console.log(`ERROR: ${error}`);
+        }
+    }
+
+    const handleEditSchool = async () => {
+        if (!valid_title_and_code(newSchoolTitle, newSchoolCode)) {
+            return;
+        }
+        try {
+            await notesService.editSchool(selectedSchool?.id, newSchoolTitle, newSchoolCode);
+            alert("School has been updated");
+            await getSchools();
+            const updatedSelectedSchool = schools.find(s => s.id == selectedSchool?.id);
+            console.log(selectedSchool?.id)
+            console.log(updatedSelectedSchool);
+            if (updatedSelectedSchool == undefined) {
+                return;
+            }
+            setSelectedSchool(updatedSelectedSchool);
+            setShowEditSchoolPopup(false);
+            // setSubjects([]);
+            // setNotes([]);
+        }
+        catch (error) {
+            alert("ERROR: Could not update school!");
+            console.log(`ERROR: ${error}`);
+        }
+    }
+
+    const handleDeleteSchool = async () => {
+        try {
+            await notesService.deleteSchool(selectedSchool?.id);
+            alert("School has been deleted!");
+            setShowDeleteSchoolPopup(false);
+            await getSchools();
+            
+            setSelectedSubject(null);
+            setSelectedNote(null);
+            setSubjects([]);
+            setNotes([]);
+            if (schools.length > 0) {
+                setSelectedSchool(schools[0]);
+                handleSchoolClick(schools[0]);
+            }
+            else {
+                setSelectedSchool(null);
+            }
+        }
+        catch (error) {
+            console.log(`ERROR: ${error}`);
+        }
+    }
 
     const updateNote = async () => {
         if (check_school_subject_title_selected())
@@ -170,36 +351,10 @@ const Editor: React.FC = () => {
                 } 
                 catch (error)
                 {
-                    console.error('ERROR: Failed to save new content.');
                     alert('Failed to save new note. Please try again');
+                    console.log(`ERROR: ${error}`);
                 }
             }
-        }
-    }
-
-    const handleCreateSubject = async () => {
-        if (newSubjectTitle.length == 0)
-        {
-            alert("Subject title cannot be empty");
-            return;
-        }
-        if (newSubjectCode.length == 0)
-        {
-            alert("Subject code cannot be empty");
-            return;
-        }
-        try
-        {
-            await notesService.uploadSubject(selectedSchool?.id, newSubjectTitle, newSubjectCode);
-            alert('New subject saved!');
-            setShowSubjectNotePopUp(false);
-            const allSubjects = await notesService.getSubjects(selectedSchool?.id);
-            setSubjects(allSubjects);
-            setSelectedSubject(allSubjects[allSubjects.length - 1]);
-        }
-        catch (error)
-        {
-            alert('Failed to save subject.')
         }
     }
 
@@ -229,8 +384,8 @@ const Editor: React.FC = () => {
         }
         catch (error)
         {
-            console.error("ERROR: Failed to delete note!");
             alert("Failed to delete note.");
+            console.log(`ERROR: ${error}`);
         }
     }
     const handleEditNote = async () => {
@@ -256,8 +411,8 @@ const Editor: React.FC = () => {
         }
         catch (error)
         {
-            console.error("ERROR: Failed to edit note!");
             alert("Failed to edit note.");
+            console.log(`ERROR: ${error}`);
         }
     }
 
@@ -302,7 +457,7 @@ const Editor: React.FC = () => {
             placeholder='Enter new note title.'
             upsertEntityName={setNewNoteTitle}
             confirmUpsertEntity={handleCreateNote}
-            confirmUpdateLable='Create'
+            confirmUpdateLabel='Create'
             closePopUp={setShowCreateNotePopUp}
             cancelLable='Cancel'
         />
@@ -313,7 +468,7 @@ const Editor: React.FC = () => {
             placeholder='Enter new note title.'
             upsertEntityName={setNewNoteTitle}
             confirmUpsertEntity={handleEditNote}
-            confirmUpdateLable='Edit'
+            confirmUpdateLabel='Edit'
             closePopUp={setShowEditNotePopUp}
             cancelLable='Cancel'
          />
@@ -333,7 +488,7 @@ const Editor: React.FC = () => {
             placeholder='Enter new subject title.'
             upsertEntityName={setNewSubjectTitle}
             confirmUpsertEntity={handleCreateSubject}
-            confirmUpdateLable='Create'
+            confirmUpdateLabel='Create'
             closePopUp={setShowSubjectNotePopUp}
             cancelLable='Cancel'
             popUpCode={newSubjectCode}
@@ -341,9 +496,95 @@ const Editor: React.FC = () => {
             popUpPlaceholder='Enter new code here.'
         />
     )}
+    {showEditSubjectPopup && (
+        <UpsertPopUpSubjects
+            popUpTitle={newSubjectTitle} 
+            placeholder='Enter new subject title.'
+            upsertEntityName={setNewSubjectTitle}
+            confirmUpsertEntity={handleEditSubject}
+            confirmUpdateLabel='Edit'
+            closePopUp={setShowEditSubjectPopup}
+            cancelLable='Cancel'
+            popUpCode={newSubjectCode}
+            upsertEntityCode={setNewSubjectCode}
+            popUpPlaceholder='Enter new code here.'
+        />
+    )}
+    {showDeleteSubjectPopup && (
+        <DeletePopUp
+            deleteUIHeader='Are you sure you want to delete this Subject?'
+            confirmDelete={ handleDeleteSubject }
+            confirmLable='Delete'
+            closePopUp={ setShowDeleteSubjectPopup }
+            cancelLable='Cancel'
+        />
+    )}
+    {showCreateSchoolPopup && (
+        <UpsertPopUpSubjects 
+            popUpTitle={newSchoolTitle} 
+            placeholder='Enter new school title.'
+            upsertEntityName={setNewSchoolTitle}
+            confirmUpsertEntity={handleCreateSchool}
+            confirmUpdateLabel='Create'
+            closePopUp={setShowCreateSchoolPopup}
+            cancelLable='Cancel'
+            popUpCode={newSchoolCode}
+            upsertEntityCode={setNewSchoolCode}
+            popUpPlaceholder='Enter new code here.'
+        />
+    )}
+    {showEditSchoolPopup && (
+        <UpsertPopUpSubjects 
+            popUpTitle={newSchoolTitle} 
+            placeholder='Enter new school title.'
+            upsertEntityName={setNewSchoolTitle}
+            confirmUpsertEntity={handleEditSchool}
+            confirmUpdateLabel='Create'
+            closePopUp={setShowEditSchoolPopup}
+            cancelLable='Cancel'
+            popUpCode={newSchoolCode}
+            upsertEntityCode={setNewSchoolCode}
+            popUpPlaceholder='Enter new code here.'
+        />
+    )}
+    {showDeleteSchoolPopup && (
+        <DeletePopUp
+            deleteUIHeader='Are you sure you want to delete this school?'
+            confirmDelete={ handleDeleteSchool }
+            confirmLable='Delete'
+            closePopUp={ setShowDeleteSchoolPopup }
+            cancelLable='Cancel'
+        />
+    )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
+                <div className='editor-header-alignment'>
+                    <h3>Schools</h3>
+                    <SidePanelButton 
+                        className="edit-button"
+                        onClick={ () => setShowCreateSchoolPopup(true) }
+                        buttonUIDisplay='Create'                          
+                    />
+                    <SidePanelButton
+                        className='edit-button'
+                        onClick={() => verifySelected(
+                            !!selectedSchool,
+                            "Must select a school to edit!",
+                            () => setShowEditSchoolPopup(true)
+                        )}
+                        buttonUIDisplay='Edit'
+                    />
+                    <SidePanelButton 
+                        className="edit-button"
+                        onClick={() => verifySelected(
+                            !!selectedSchool, 
+                            "Must select a school to delete!", 
+                            () => setShowDeleteSchoolPopup(true)
+                        )}
+                        buttonUIDisplay='Delete'                          
+                    />
+                </div>
                 <SchoolSelector
                     schools={schools}
                     selectedSchool={selectedSchool}
@@ -361,18 +602,18 @@ const Editor: React.FC = () => {
                             <SidePanelButton
                                 className='edit-button'
                                 onClick={() => verifySelected(
-                                    !!selectedNote,
-                                    "Must select a note to edit!",
-                                    () => setShowEditNotePopUp(true)
+                                    !!selectedSubject,
+                                    "Must select a subject to edit!",
+                                    () => setShowEditSubjectPopup(true)
                                 )}
                                 buttonUIDisplay='Edit'
                             />
                             <SidePanelButton 
                                 className="edit-button"
                                 onClick={() => verifySelected(
-                                    !!selectedNote, 
-                                    "Must select a note to delete!", 
-                                    () => setDeleteNotePopUp(true)
+                                    !!selectedSubject, 
+                                    "Must select a subject to delete!", 
+                                    () => setShowDeleteSubjectPopup(true)
                                 )}
                                 buttonUIDisplay='Delete'                          
                             />
@@ -425,23 +666,34 @@ const Editor: React.FC = () => {
             {/* Middle Panel: Markdown Editor */}
             <div style={{ width: '40%', padding: '10px', borderRight: '1px solid #ccc', display: 'flex', flexDirection: 'column' }}>
                 {/* Drag-and-drop area: wrap your text area */}
-                 <div
+                <div
                     {...getRootProps()}
                     style={{
                         flex: 1,
                         marginBottom: '10px',
                     }}
-                    >
-                    {/* Keep the input hidden to accept drops, but it won't open on click */}
+                >
                     <input {...(getInputProps() as React.InputHTMLAttributes<HTMLInputElement>)} />
                     {isDragActive ? (
                         <p>Drop the files here ...</p>
-                    ) : (
+                    ) : selectedNote ? (
                         <textarea
-                        style={{ width: '100%', height: '100%', border: 'none', resize: 'none', background: 'inherit' }}
-                        value={markdown}
-                        onChange={(e) => setMarkdown(e.target.value)}
+                            style={{ width: '100%', height: '100%', border: 'none', resize: 'none', background: 'inherit' }}
+                            value={markdown}
+                            onChange={(e) => setMarkdown(e.target.value)}
                         />
+                    ) : (
+                        <div style={{ 
+                            width: '100%', 
+                            height: '100%', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            color: '#666',
+                            fontSize: '18px'
+                        }}>
+                            Please select a note to start editing
+                        </div>
                     )}
                 </div>
                 <button onClick={updateNote} style={{ padding: '10px', background: '#007BFF', color: '#fff', border: 'none', borderRadius: '4px' }}>
