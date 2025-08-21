@@ -20,4 +20,6 @@ public interface INotesRepository
     public void DeleteSubject(Subject subject);
     public void DeleteNote(Note note);
 
+    public Task<School> AddSchoolAsync(School school, CancellationToken ct);
+
 }

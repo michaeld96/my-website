@@ -104,5 +104,13 @@ export const notesService = {
         {
             await axios.delete(`${API_BASE}/${schoolId}/${subjectId}/${noteId}`);
         }
+    },
+    async uploadSchool(schoolName: string, schoolCode: string): Promise<void> {
+        await axios.post(`${API_BASE}/create-school`, 
+            {
+                name: schoolName,
+                code: schoolCode
+            }
+        );
     }
 };

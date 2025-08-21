@@ -35,6 +35,12 @@ const Editor: React.FC = () => {
     const [showEditSubjectPopup, setShowEditSubjectPopup] = useState(false);
     const [showDeleteSubjectPopup, setShowDeleteSubjectPopup] = useState(false);
 
+    const [showCreateSchoolPopup, setShowCreateSchoolPopup] = useState(false);
+    const [showEditSchoolPopup, setShowEditSchoolPopup] = useState(false);
+    const [showDeleteSchoolPopup, setShowDeleteSchoolPopup] = useState(false);
+    const [newSchoolTitle, setNewSchoolTitle] = useState<string>('');
+    const [newSchoolCode, setNewSchoolCode] = useState<string>('');
+
     const [newSubjectTitle, setNewSubjectTitle] = useState<string>('');
     const [newSubjectCode, setNewSubjectCode] = useState<string>('');
 
@@ -64,7 +70,7 @@ const Editor: React.FC = () => {
         return true;
     }
 
-    function valid_subject_name_and_code(title: string, code: string): boolean {
+    function valid_title_and_code(title: string, code: string): boolean {
         if (title.length == 0)
         {
             alert("Subject title cannot be empty");
@@ -107,9 +113,7 @@ const Editor: React.FC = () => {
             return [];   
         }
     }
-
-    useEffect(() => {
-        const fetchSchools = async () => {
+    async function getSchools() {
             try
             {
                 const schoolsData = await notesService.getSchools();
@@ -120,9 +124,24 @@ const Editor: React.FC = () => {
                 alert("ERROR: Cannot get all schools.");
                 console.log(`ERROR: ${error}`);
             }
+    }
 
-        };
-        fetchSchools();
+    useEffect(() => {
+        // const fetchSchools = async () => {
+        //     try
+        //     {
+        //         const schoolsData = await notesService.getSchools();
+        //         setSchools(schoolsData);
+        //     }
+        //     catch (error)
+        //     {
+        //         alert("ERROR: Cannot get all schools.");
+        //         console.log(`ERROR: ${error}`);
+        //     }
+
+        // };
+        // fetchSchools();
+        getSchools();
     }, []);
 
     const handleSchoolClick = async (school: School) => {
@@ -184,7 +203,7 @@ const Editor: React.FC = () => {
     }
 
     const handleEditSubject = async () => {
-        if (!valid_subject_name_and_code(newSubjectTitle, newSubjectCode)) {
+        if (!valid_title_and_code(newSubjectTitle, newSubjectCode)) {
             return;
         }
         try
@@ -213,15 +232,43 @@ const Editor: React.FC = () => {
             setSubjects(allSubjects);
             if (allSubjects.length > 0) {
                 setSelectedSubject(allSubjects[0]);
-                
+                const response = await getAllTitlesAsync(selectedSchool?.id ?? null, allSubjects[0].id);
+                setNotes(response);
             }
             else {
                 setSelectedSubject(null);
+                setNotes([]);
             }
         }
         catch (error) {
             console.log(`ERROR: ${error}`);
         }
+    }
+
+    const handleCreateSchool = async () => {
+        if (!valid_title_and_code(newSchoolTitle, newSchoolCode)) {
+            return;
+        }
+        try {
+            await notesService.uploadSchool(newSchoolTitle, newSchoolCode);
+            alert('New school saved!');
+            setShowCreateSchoolPopup(false);
+            setSubjects([]);
+            setNotes([]);
+            getSchools();
+        }
+        catch (error) {
+            alert("ERROR: Could not save new school!");
+            console.log(`ERROR: ${error}`);
+        }
+    }
+
+    const handleEditSchool = async () => {
+        alert("TODO");
+    }
+
+    const handleDeleteSchool = async () => {
+        alert("TODO");
     }
 
     const updateNote = async () => {
@@ -431,9 +478,49 @@ const Editor: React.FC = () => {
             cancelLable='Cancel'
         />
     )}
+    {showCreateSchoolPopup && (
+        <UpsertPopUpSubjects 
+            popUpTitle={newSchoolTitle} 
+            placeholder='Enter new school title.'
+            upsertEntityName={setNewSchoolTitle}
+            confirmUpsertEntity={handleCreateSchool}
+            confirmUpdateLabel='Create'
+            closePopUp={setShowCreateSchoolPopup}
+            cancelLable='Cancel'
+            popUpCode={newSchoolCode}
+            upsertEntityCode={setNewSchoolCode}
+            popUpPlaceholder='Enter new code here.'
+        />
+    )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
+                <div className='editor-header-alignment'>
+                    <h3>Schools</h3>
+                    <SidePanelButton 
+                        className="edit-button"
+                        onClick={ () => setShowCreateSchoolPopup(true) }
+                        buttonUIDisplay='Create'                          
+                    />
+                    <SidePanelButton
+                        className='edit-button'
+                        onClick={() => verifySelected(
+                            !!selectedSubject,
+                            "Must select a subject to edit!",
+                            () => setShowEditSchoolPopup(true)
+                        )}
+                        buttonUIDisplay='Edit'
+                    />
+                    <SidePanelButton 
+                        className="edit-button"
+                        onClick={() => verifySelected(
+                            !!selectedSubject, 
+                            "Must select a subject to delete!", 
+                            () => setShowDeleteSchoolPopup(true)
+                        )}
+                        buttonUIDisplay='Delete'                          
+                    />
+                </div>
                 <SchoolSelector
                     schools={schools}
                     selectedSchool={selectedSchool}

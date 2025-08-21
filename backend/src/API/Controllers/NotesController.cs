@@ -292,5 +292,20 @@ namespace API.Controllers
                 return StatusCode(500, $"ERROR: Error occurred while deleting a note: {ex.Message}");
             }
         }
+
+        [HttpPost("create-school")]
+        public async Task<IActionResult> CreateSchool([FromBody] SchoolDTO dto, CancellationToken ct)
+        {
+            School school = new School
+            {
+                Name = dto.Name,
+                Code = dto.Code
+            };
+
+            await _uow.NotesRepo.AddSchoolAsync(school, ct);
+            await _uow.CommitAsync(ct);
+            var resultDTO = _map.Map<SchoolDTO>(school);
+            return Ok(resultDTO);
+        }
     }
 }
