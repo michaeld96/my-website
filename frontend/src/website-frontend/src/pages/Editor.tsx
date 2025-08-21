@@ -29,7 +29,9 @@ const Editor: React.FC = () => {
     const [showCreateNotePopUp, setShowCreateNotePopUp] = useState(false);
     const [showDeleteNotePopUp, setDeleteNotePopUp] = useState(false);
     const [showEditNotePopUp, setShowEditNotePopUp] = useState(false);
+
     const [showCreateSubjectPopup, setShowSubjectNotePopUp] = useState(false);
+    const [showEditSubjectPopup, setShowEditSubjectPopup] = useState(false);
     const [newSubjectTitle, setNewSubjectTitle] = useState<string>('');
     const [newSubjectCode, setNewSubjectCode] = useState<string>('');
 
@@ -59,6 +61,20 @@ const Editor: React.FC = () => {
         return true;
     }
 
+    function valid_subject_name_and_code(title: string, code: string): boolean {
+        if (title.length == 0)
+        {
+            alert("Subject title cannot be empty");
+            return false;
+        }
+        if (code.length == 0)
+        {
+            alert("Subject code cannot be empty");
+            return false;;
+        }
+        return true;
+    }
+
     async function getMarkdownAsync(schoolId: number | null, subjectId: number | null, noteId: number | null): Promise<string>
     {
         try
@@ -83,8 +99,8 @@ const Editor: React.FC = () => {
         }
         catch (error)
         {
-            console.error("ERROR: Cannot get all titles for this subject.");
             alert("ERROR: Cannot get all titles for this subject.");
+            console.log(`ERROR: ${error}`);
             return [];   
         }
     }
@@ -99,6 +115,7 @@ const Editor: React.FC = () => {
             catch (error)
             {
                 alert("ERROR: Cannot get all schools.");
+                console.log(`ERROR: ${error}`);
             }
 
         };
@@ -130,6 +147,44 @@ const Editor: React.FC = () => {
         const response = await getMarkdownAsync(selectedSchool?.id ?? null, selectedSubject?.id ?? null, title.id);
         setMarkdown(response);
     };
+
+    const handleCreateSubject = async () => {
+        if (newSubjectTitle.length == 0)
+        {
+            alert("Subject title cannot be empty");
+            return;
+        }
+        if (newSubjectCode.length == 0)
+        {
+            alert("Subject code cannot be empty");
+            return;
+        }
+        try
+        {
+            await notesService.uploadSubject(selectedSchool?.id, newSubjectTitle, newSubjectCode);
+            alert('New subject saved!');
+            setShowSubjectNotePopUp(false);
+            const allSubjects = await notesService.getSubjects(selectedSchool?.id);
+            setSubjects(allSubjects);
+            setSelectedSubject(allSubjects[allSubjects.length - 1]);
+            setNewSubjectCode("");
+            setNewSubjectTitle("");
+        }
+        catch (error)
+        {
+            alert(`Failed to save subject. ERROR: ${error}`);
+        }
+    }
+
+    const handleEditSubject = async () => {
+        if (!valid_subject_name_and_code(newSubjectTitle, newSubjectCode)) {
+            return;
+        }
+    }
+
+    const handleDeleteSubject = async () => {
+
+    }
 
     const updateNote = async () => {
         if (check_school_subject_title_selected())
@@ -170,36 +225,10 @@ const Editor: React.FC = () => {
                 } 
                 catch (error)
                 {
-                    console.error('ERROR: Failed to save new content.');
                     alert('Failed to save new note. Please try again');
+                    console.log(`ERROR: ${error}`);
                 }
             }
-        }
-    }
-
-    const handleCreateSubject = async () => {
-        if (newSubjectTitle.length == 0)
-        {
-            alert("Subject title cannot be empty");
-            return;
-        }
-        if (newSubjectCode.length == 0)
-        {
-            alert("Subject code cannot be empty");
-            return;
-        }
-        try
-        {
-            await notesService.uploadSubject(selectedSchool?.id, newSubjectTitle, newSubjectCode);
-            alert('New subject saved!');
-            setShowSubjectNotePopUp(false);
-            const allSubjects = await notesService.getSubjects(selectedSchool?.id);
-            setSubjects(allSubjects);
-            setSelectedSubject(allSubjects[allSubjects.length - 1]);
-        }
-        catch (error)
-        {
-            alert('Failed to save subject.')
         }
     }
 
@@ -229,8 +258,8 @@ const Editor: React.FC = () => {
         }
         catch (error)
         {
-            console.error("ERROR: Failed to delete note!");
             alert("Failed to delete note.");
+            console.log(`ERROR: ${error}`);
         }
     }
     const handleEditNote = async () => {
@@ -256,8 +285,8 @@ const Editor: React.FC = () => {
         }
         catch (error)
         {
-            console.error("ERROR: Failed to edit note!");
             alert("Failed to edit note.");
+            console.log(`ERROR: ${error}`);
         }
     }
 
@@ -302,7 +331,7 @@ const Editor: React.FC = () => {
             placeholder='Enter new note title.'
             upsertEntityName={setNewNoteTitle}
             confirmUpsertEntity={handleCreateNote}
-            confirmUpdateLable='Create'
+            confirmUpdateLabel='Create'
             closePopUp={setShowCreateNotePopUp}
             cancelLable='Cancel'
         />
@@ -313,7 +342,7 @@ const Editor: React.FC = () => {
             placeholder='Enter new note title.'
             upsertEntityName={setNewNoteTitle}
             confirmUpsertEntity={handleEditNote}
-            confirmUpdateLable='Edit'
+            confirmUpdateLabel='Edit'
             closePopUp={setShowEditNotePopUp}
             cancelLable='Cancel'
          />
@@ -333,7 +362,21 @@ const Editor: React.FC = () => {
             placeholder='Enter new subject title.'
             upsertEntityName={setNewSubjectTitle}
             confirmUpsertEntity={handleCreateSubject}
-            confirmUpdateLable='Create'
+            confirmUpdateLabel='Create'
+            closePopUp={setShowSubjectNotePopUp}
+            cancelLable='Cancel'
+            popUpCode={newSubjectCode}
+            upsertEntityCode={setNewSubjectCode}
+            popUpPlaceholder='Enter new code here.'
+        />
+    )}
+    {showEditSubjectPopup && (
+        <UpsertPopUpSubjects
+            popUpTitle={newSubjectTitle} 
+            placeholder='Enter new subject title.'
+            upsertEntityName={setNewSubjectTitle}
+            confirmUpsertEntity={handleEditSubject}
+            confirmUpdateLabel='Create'
             closePopUp={setShowSubjectNotePopUp}
             cancelLable='Cancel'
             popUpCode={newSubjectCode}
@@ -361,9 +404,9 @@ const Editor: React.FC = () => {
                             <SidePanelButton
                                 className='edit-button'
                                 onClick={() => verifySelected(
-                                    !!selectedNote,
-                                    "Must select a note to edit!",
-                                    () => setShowEditNotePopUp(true)
+                                    !!selectedSubject,
+                                    "Must select a subject to edit!",
+                                    () => setShowEditSubjectPopup(true)
                                 )}
                                 buttonUIDisplay='Edit'
                             />

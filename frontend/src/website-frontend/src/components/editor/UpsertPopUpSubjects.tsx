@@ -4,7 +4,7 @@ interface UpsertPopUpProps {
     upsertEntityName: (input: string) => void; 
     upsertEntityCode: (input: string) => void;
     confirmUpsertEntity: () => void;
-    confirmUpdateLable: string;
+    confirmUpdateLabel: string;
     closePopUp: (val: boolean) => void;
     cancelLable: string;
     popUpCode: string;
@@ -12,7 +12,7 @@ interface UpsertPopUpProps {
 };
 
 export const UpsertPopUpSubjects: React.FC<UpsertPopUpProps> = ({
-    popUpTitle, placeholder, upsertEntityName, confirmUpsertEntity, confirmUpdateLable, closePopUp, cancelLable, popUpCode, upsertEntityCode
+    popUpTitle, placeholder, upsertEntityName, confirmUpsertEntity, confirmUpdateLabel, closePopUp, cancelLable, popUpCode, upsertEntityCode, popUpPlaceholder
 }) => {
     return(
         <div className='title-pop-up'>
@@ -26,11 +26,11 @@ export const UpsertPopUpSubjects: React.FC<UpsertPopUpProps> = ({
                 type='text'
                 value={popUpCode}
                 onChange={(e) => { upsertEntityCode(e.target.value) }}
-                placeholder={placeholder}
+                placeholder={popUpPlaceholder}
             />
             <div className='title-pop-up-buttons'>
                 <button onClick={ confirmUpsertEntity }>
-                    {confirmUpdateLable}
+                    {confirmUpdateLabel}
                 </button>
                 <button onClick={() => { closePopUp(false) }}>
                     {cancelLable}
