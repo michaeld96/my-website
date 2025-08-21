@@ -111,4 +111,16 @@ public class NotesRepository : INotesRepository
         var entity = await _context.Schools.AddAsync(school, ct);
         return entity.Entity;
     }
+
+    public Task<School?> GetSchoolWithTrackingAsync(int schoolId, CancellationToken ct)
+    {
+        return _context.Schools
+                        .Where(s => s.Id == schoolId)
+                        .FirstOrDefaultAsync(ct);
+    }
+
+    public void DeleteSchool(School school)
+    {
+        _context.Remove(school);
+    }
 }   

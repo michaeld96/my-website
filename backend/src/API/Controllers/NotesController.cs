@@ -285,11 +285,11 @@ namespace API.Controllers
             }
             catch (DbUpdateException ex)
             {
-                return StatusCode(500, $"ERROR: Database ran into an error deleting a note: {ex.Message}");
+                return StatusCode(500, $"ERROR: Database ran into an error deleting a subject: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"ERROR: Error occurred while deleting a note: {ex.Message}");
+                return StatusCode(500, $"ERROR: Error occurred while deleting a subject: {ex.Message}");
             }
         }
 
@@ -306,6 +306,46 @@ namespace API.Controllers
             await _uow.CommitAsync(ct);
             var resultDTO = _map.Map<SchoolDTO>(school);
             return Ok(resultDTO);
+        }
+
+        [HttpPut("edit-school/{schoolId:int}")]
+        public async Task<IActionResult> EditSchool(int schoolId, [FromBody] SchoolDTO dto, CancellationToken ct)
+        {
+            School? school = await _uow.NotesRepo.GetSchoolWithTrackingAsync(schoolId, ct);
+            if (school == null)
+            {
+                return NotFound("School is not found");
+            }
+
+            school.Name = dto.Name;
+            school.Code = dto.Code;
+            await _uow.CommitAsync(ct);
+            return NoContent();
+            
+        }
+
+        [HttpDelete("delete-school/{schoolId:int}")]
+        public async Task<IActionResult> DeleteSchool(int schoolId, CancellationToken ct)
+        {
+            School? school = await _uow.NotesRepo.GetSchoolWithTrackingAsync(schoolId, ct);
+            if (school == null)
+            {
+                return NotFound("School is not found");
+            }
+            try
+            {
+                _uow.NotesRepo.DeleteSchool(school);
+                await _uow.CommitAsync(ct);
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"ERROR: Database ran into an error deleting a school: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Error occurred while deleting a school: {ex.Message}");
+            }
         }
     }
 }

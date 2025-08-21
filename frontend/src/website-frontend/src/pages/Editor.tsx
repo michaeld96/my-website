@@ -264,11 +264,52 @@ const Editor: React.FC = () => {
     }
 
     const handleEditSchool = async () => {
-        alert("TODO");
+        if (!valid_title_and_code(newSchoolTitle, newSchoolCode)) {
+            return;
+        }
+        try {
+            await notesService.editSchool(selectedSchool?.id, newSchoolTitle, newSchoolCode);
+            alert("School has been updated");
+            await getSchools();
+            const updatedSelectedSchool = schools.find(s => s.id == selectedSchool?.id);
+            console.log(selectedSchool?.id)
+            console.log(updatedSelectedSchool);
+            if (updatedSelectedSchool == undefined) {
+                return;
+            }
+            setSelectedSchool(updatedSelectedSchool);
+            setShowEditSchoolPopup(false);
+            // setSubjects([]);
+            // setNotes([]);
+        }
+        catch (error) {
+            alert("ERROR: Could not update school!");
+            console.log(`ERROR: ${error}`);
+        }
     }
 
     const handleDeleteSchool = async () => {
-        alert("TODO");
+        try {
+            await notesService.deleteSchool(selectedSchool?.id);
+            alert("School has been deleted!");
+            setShowDeleteSchoolPopup(false);
+            await getSchools();
+            
+            setSelectedSubject(null);
+            setSelectedNote(null);
+            setSubjects([]);
+            setNotes([]);
+            if (schools.length > 0) {
+                setSelectedSchool(schools[0]);
+                handleSchoolClick(schools[0]);
+            }
+            else {
+                setSelectedSchool(null);
+            }
+        }
+        catch (error) {
+            console.log(`ERROR: ${error}`);
+        }
     }
 
     const updateNote = async () => {
@@ -492,6 +533,29 @@ const Editor: React.FC = () => {
             popUpPlaceholder='Enter new code here.'
         />
     )}
+    {showEditSchoolPopup && (
+        <UpsertPopUpSubjects 
+            popUpTitle={newSchoolTitle} 
+            placeholder='Enter new school title.'
+            upsertEntityName={setNewSchoolTitle}
+            confirmUpsertEntity={handleEditSchool}
+            confirmUpdateLabel='Create'
+            closePopUp={setShowEditSchoolPopup}
+            cancelLable='Cancel'
+            popUpCode={newSchoolCode}
+            upsertEntityCode={setNewSchoolCode}
+            popUpPlaceholder='Enter new code here.'
+        />
+    )}
+    {showDeleteSchoolPopup && (
+        <DeletePopUp
+            deleteUIHeader='Are you sure you want to delete this school?'
+            confirmDelete={ handleDeleteSchool }
+            confirmLable='Delete'
+            closePopUp={ setShowDeleteSchoolPopup }
+            cancelLable='Cancel'
+        />
+    )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
@@ -505,8 +569,8 @@ const Editor: React.FC = () => {
                     <SidePanelButton
                         className='edit-button'
                         onClick={() => verifySelected(
-                            !!selectedSubject,
-                            "Must select a subject to edit!",
+                            !!selectedSchool,
+                            "Must select a school to edit!",
                             () => setShowEditSchoolPopup(true)
                         )}
                         buttonUIDisplay='Edit'
@@ -514,8 +578,8 @@ const Editor: React.FC = () => {
                     <SidePanelButton 
                         className="edit-button"
                         onClick={() => verifySelected(
-                            !!selectedSubject, 
-                            "Must select a subject to delete!", 
+                            !!selectedSchool, 
+                            "Must select a school to delete!", 
                             () => setShowDeleteSchoolPopup(true)
                         )}
                         buttonUIDisplay='Delete'                          

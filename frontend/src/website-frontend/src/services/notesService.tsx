@@ -112,5 +112,16 @@ export const notesService = {
                 code: schoolCode
             }
         );
-    }
+    },
+    async editSchool(schoolId: number | undefined, schoolName: string, schoolCode: string) {
+        await axios.put(`${API_BASE}/edit-school/${schoolId}`,
+            {
+                name: schoolName,
+                code: schoolCode
+            }
+        );
+    },
+    async deleteSchool(schoolId: number | undefined) {
+        await axios.delete(`${API_BASE}/delete-school/${schoolId}`);
+    },
 };
