@@ -172,6 +172,10 @@ const Editor: React.FC = () => {
             setSelectedSubject(allSubjects[allSubjects.length - 1]);
             setNewSubjectCode("");
             setNewSubjectTitle("");
+            // refresh notes.
+            setSelectedNote(null);
+            setMarkdown("");
+            setNotes([]);
         }
         catch (error)
         {
@@ -511,23 +515,34 @@ const Editor: React.FC = () => {
             {/* Middle Panel: Markdown Editor */}
             <div style={{ width: '40%', padding: '10px', borderRight: '1px solid #ccc', display: 'flex', flexDirection: 'column' }}>
                 {/* Drag-and-drop area: wrap your text area */}
-                 <div
+                <div
                     {...getRootProps()}
                     style={{
                         flex: 1,
                         marginBottom: '10px',
                     }}
-                    >
-                    {/* Keep the input hidden to accept drops, but it won't open on click */}
+                >
                     <input {...(getInputProps() as React.InputHTMLAttributes<HTMLInputElement>)} />
                     {isDragActive ? (
                         <p>Drop the files here ...</p>
-                    ) : (
+                    ) : selectedNote ? (
                         <textarea
-                        style={{ width: '100%', height: '100%', border: 'none', resize: 'none', background: 'inherit' }}
-                        value={markdown}
-                        onChange={(e) => setMarkdown(e.target.value)}
+                            style={{ width: '100%', height: '100%', border: 'none', resize: 'none', background: 'inherit' }}
+                            value={markdown}
+                            onChange={(e) => setMarkdown(e.target.value)}
                         />
+                    ) : (
+                        <div style={{ 
+                            width: '100%', 
+                            height: '100%', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            color: '#666',
+                            fontSize: '18px'
+                        }}>
+                            Please select a note to start editing
+                        </div>
                     )}
                 </div>
                 <button onClick={updateNote} style={{ padding: '10px', background: '#007BFF', color: '#fff', border: 'none', borderRadius: '4px' }}>
