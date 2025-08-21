@@ -2,7 +2,7 @@ import axios from "axios";
 import { School } from "../types/school";
 import { Subject } from "../types/subject";
 import { Note } from "../types/note";
-import { title } from "process";
+// import { title } from "process";
 
 const API_BASE = 'http://localhost:5003/api/notes';
 
@@ -50,6 +50,16 @@ export const notesService = {
                 schoolId: schoolId,
                 title: subjectTitle,
                 code: subjectCode
+            }
+        );
+    },
+    async editSubject(schoolId: number | undefined, subjectTitle: string, subjectCode: string, subjectId: number| undefined) {
+        await axios.put(`${API_BASE}/${schoolId}/edit-subject`,
+            {
+                schoolId: schoolId,
+                title: subjectTitle,
+                code: subjectCode,
+                id: subjectId
             }
         );
     },

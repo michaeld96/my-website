@@ -180,6 +180,21 @@ const Editor: React.FC = () => {
         if (!valid_subject_name_and_code(newSubjectTitle, newSubjectCode)) {
             return;
         }
+        try
+        {
+            await notesService.editSubject(selectedSchool?.id, newSubjectTitle, newSubjectCode, selectedSubject?.id);
+            alert('Subject was updated!');
+            setShowEditSubjectPopup(false);
+            const allSubjects = await notesService.getSubjects(selectedSchool?.id);
+            setSubjects(allSubjects);
+            setNewSubjectCode("");
+            setNewSubjectTitle("");
+        }
+        catch (error)
+        {
+            alert("Subject's edit was not saved!");
+            console.log(`ERROR: ${error}`);
+        }
     }
 
     const handleDeleteSubject = async () => {
@@ -376,8 +391,8 @@ const Editor: React.FC = () => {
             placeholder='Enter new subject title.'
             upsertEntityName={setNewSubjectTitle}
             confirmUpsertEntity={handleEditSubject}
-            confirmUpdateLabel='Create'
-            closePopUp={setShowSubjectNotePopUp}
+            confirmUpdateLabel='Edit'
+            closePopUp={setShowEditSubjectPopup}
             cancelLable='Cancel'
             popUpCode={newSubjectCode}
             upsertEntityCode={setNewSubjectCode}

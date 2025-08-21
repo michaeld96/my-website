@@ -250,5 +250,21 @@ namespace API.Controllers
             var resultDTO = _map.Map<SubjectDTO>(subject);
             return Ok(resultDTO);
         }
+
+        [HttpPut("{schoolId:int}/edit-subject")]
+        public async Task<IActionResult> EditSubject(int schoolId, [FromBody] SubjectDTO dto, CancellationToken ct)
+        {
+            Subject? subject = await _uow.NotesRepo.GetSubjectWithTrackingAsync(dto.Id, ct);
+
+            if (subject == null)
+            {
+                return NotFound(HTTPMessagesReturnedToUser.SubjectNotFound);
+            }
+
+            subject.Code = dto.Code;
+            subject.Title = dto.Title;
+            await _uow.CommitAsync(ct);
+            return NoContent();
+        }
     }
 }

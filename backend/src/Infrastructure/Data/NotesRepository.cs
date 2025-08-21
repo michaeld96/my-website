@@ -93,4 +93,11 @@ public class NotesRepository : INotesRepository
         var entity = await _context.AddAsync(subject, ct);
         return entity.Entity;
     }
+
+    public Task<Subject?> GetSubjectWithTrackingAsync(int subjectId, CancellationToken ct)
+    {
+        return _context.Subjects
+                        .Where(s => s.Id == subjectId)
+                        .FirstOrDefaultAsync(ct);
+    }
 }   
