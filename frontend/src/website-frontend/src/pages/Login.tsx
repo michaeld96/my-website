@@ -28,6 +28,7 @@ const Login: React.FC = () => {
             navigate('/editor'); // Redirect to admin hub on successful login.
         } catch (error) {
             setError('Invalid username or password');
+            console.log("ERROR:", error);
         }
     };
 
