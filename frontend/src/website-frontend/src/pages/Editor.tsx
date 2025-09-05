@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios, { all } from 'axios';
+import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -127,20 +127,6 @@ const Editor: React.FC = () => {
     }
 
     useEffect(() => {
-        // const fetchSchools = async () => {
-        //     try
-        //     {
-        //         const schoolsData = await notesService.getSchools();
-        //         setSchools(schoolsData);
-        //     }
-        //     catch (error)
-        //     {
-        //         alert("ERROR: Cannot get all schools.");
-        //         console.log(`ERROR: ${error}`);
-        //     }
-
-        // };
-        // fetchSchools();
         getSchools();
     }, []);
 
@@ -558,7 +544,7 @@ const Editor: React.FC = () => {
     )}
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
-            <div style={{ width: '20%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
+            <div style={{ width: '22%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
                 <div className='editor-header-alignment'>
                     <h3>Schools</h3>
                     <SidePanelButton 
@@ -664,7 +650,7 @@ const Editor: React.FC = () => {
             </div>
 
             {/* Middle Panel: Markdown Editor */}
-            <div style={{ width: '40%', padding: '10px', borderRight: '1px solid #ccc', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ width: '39%', padding: '10px', borderRight: '1px solid #ccc', display: 'flex', flexDirection: 'column' }}>
                 {/* Drag-and-drop area: wrap your text area */}
                 <div
                     {...getRootProps()}
@@ -702,7 +688,7 @@ const Editor: React.FC = () => {
             </div>
 
             {/* Right Panel: Rendered Markdown */}
-            <div style={{ width: '40%', padding: '10px', overflow: 'scroll'}}>
+            <div style={{ width: '39%', padding: '10px', overflow: 'scroll'}}>
                 <ReactMarkdown
                     remarkPlugins={[remarkMath]}
                     rehypePlugins={[
