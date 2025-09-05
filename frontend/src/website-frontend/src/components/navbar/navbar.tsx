@@ -9,7 +9,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage }) => {
     return (
         <nav className="navbar">
             <div className="navbar-brand">
-                <h2>Your Name</h2>
+                <h2>Michael's Website</h2>
             </div>
             <ul className="navbar-links">
                 <li>

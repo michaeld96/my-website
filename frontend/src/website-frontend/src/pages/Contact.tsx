@@ -1,4 +1,4 @@
-import { Navbar } from "../components/navbar/navbar";
+import { Navbar } from "../components/navbar/Navbar";
 
 const Contact: React.FC = () => {
     return(
