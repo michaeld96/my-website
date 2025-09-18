@@ -15,6 +15,7 @@ import "./PreviewNotes.css"
 
 const PreviewNotes: React.FC = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     
     async function getSubjects() {
         try
@@ -32,6 +33,11 @@ const PreviewNotes: React.FC = () => {
         getSubjects();
     }, []);
 
+    const handleSubjectClick = (subject: Subject) => {
+        setSelectedSubject(subject);
+        alert("We have a selected subject");
+    }
+
     return (
         <div className="app-layout">
             <Navbar currentPage="notes" />
@@ -42,7 +48,7 @@ const PreviewNotes: React.FC = () => {
                         {subjects.map((subject) => {
                             return (
                                 <li key={subject.id} className="button-item">
-                                    <PreviewButton name={subject.title} school={subject.code} />
+                                    <PreviewButton name={subject.title} school={subject.code} onClick={() => handleSubjectClick(subject)}/>
                                 </li>
                             )
                         })}
