@@ -1,6 +1,6 @@
 import { startTransition, useCallback, useEffect, useState } from "react";
 import { Navbar } from "../components/navbar/Navbar";
-import { PreviewButton } from "../components/preview/button";
+import { PreviewButton } from "../components/preview/PreviewButton";
 import { notesService } from "../services/notesService";
 import { Subject } from "../types/subject";
 import "./PreviewNotes.css"
@@ -73,13 +73,13 @@ const PreviewNotes: React.FC = () => {
 
     return (
         <div className="app-layout">
-            <Navbar currentPage="notes" />
+            {/* <Navbar currentPage="notes" /> */}
             <div className="main-content">
                 {selectedSubject == null ? 
                 (
                     <>
-                    <h2>Welcome To My Notes!</h2>
-                    <h3>Click on any of the subjects to see my notes</h3>
+                    <h2 className="preview-h2">Welcome To My Notes!</h2>
+                    <h3 className="preview-h3">Click on any of the subjects to see my notes</h3>
                     <div className="button-container">
                         {subjects.map((subject) => {
                             return (
@@ -99,7 +99,7 @@ const PreviewNotes: React.FC = () => {
                         {notes.map(note => {
                             return(
                                 <li key={note.id} className="button-item">
-                                    <PreviewButton name={note.title} school={""} onClick={null}/>
+                                    <PreviewButton name={note.title} school={""}/>
                                 </li>
                             )
                         })}

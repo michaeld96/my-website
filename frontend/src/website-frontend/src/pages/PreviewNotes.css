@@ -2,11 +2,11 @@ li {
     list-style-type: none;
 }
 
-h2 {
+.preview-h2 {
     margin: 0 calc(100vw/2 - 325px);
 }
 
-h3 {
+.preview-h3 {
     margin: 0 calc(100vw/2 - 385px);
 }
 
