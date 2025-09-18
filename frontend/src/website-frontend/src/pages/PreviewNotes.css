@@ -1,0 +1,26 @@
+li {
+    list-style-type: none;
+}
+
+h2 {
+    margin: 0 calc(100vw/2 - 325px);
+}
+
+h3 {
+    margin: 0 calc(100vw/2 - 385px);
+}
+
+.main-content {
+    width: 100vw - 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+.button-container {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    margin: 0 calc(100vw/2 - 350px);
+    gap: 20px;
+}

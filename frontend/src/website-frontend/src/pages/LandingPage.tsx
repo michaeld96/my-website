@@ -5,6 +5,7 @@ import { Navbar } from '../components/navbar/Navbar';
 const LandingPage: React.FC = () => {
     return(
         <>
+        <div className='app-layout'>
             <Navbar currentPage="home" />
             <div className="main-content">
                 <div style={{ textAlign: 'center', marginTop: '50px' }}>
@@ -15,6 +16,7 @@ const LandingPage: React.FC = () => {
                     </Link>
                 </div>
             </div>
+        </div>
         </>
     );
 };

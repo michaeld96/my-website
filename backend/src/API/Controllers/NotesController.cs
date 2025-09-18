@@ -321,7 +321,7 @@ namespace API.Controllers
             school.Code = dto.Code;
             await _uow.CommitAsync(ct);
             return NoContent();
-            
+
         }
 
         [HttpDelete("delete-school/{schoolId:int}")]
@@ -345,6 +345,21 @@ namespace API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"ERROR: Error occurred while deleting a school: {ex.Message}");
+            }
+        }
+
+        [HttpGet("all-subjects")]
+        public async Task<IActionResult> GetAllSubjects()
+        {
+            List<Subject> subjects = new List<Subject>();
+            try
+            {
+                subjects = await _uow.NotesRepo.GetAllSubjects();
+                return Ok(subjects);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Error occured when getting all subjects: {ex.Message}");
             }
         }
     }
