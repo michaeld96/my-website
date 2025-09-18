@@ -12,6 +12,11 @@ export const notesService = {
         const response = await axios.get<School[]>(`${API_BASE}/schools`);
         return response.data;
     },
+    async getAllSubjects(): Promise<Subject[]>
+    {
+        const response = await axios.get<Subject[]>(`${API_BASE}/all-subjects`)
+        return response.data;
+    },
     async getSubjects(schoolId: number | undefined): Promise<Subject[]>
     {
         const response = await axios.get<Subject[]>(`${API_BASE}/${schoolId}/subjects`);
@@ -123,5 +128,5 @@ export const notesService = {
     },
     async deleteSchool(schoolId: number | undefined) {
         await axios.delete(`${API_BASE}/delete-school/${schoolId}`);
-    },
+    }
 };

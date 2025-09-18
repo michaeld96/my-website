@@ -123,4 +123,9 @@ public class NotesRepository : INotesRepository
     {
         _context.Remove(school);
     }
+
+    public Task<List<Subject>> GetAllSubjects()
+    {
+        return _context.Subjects.ToListAsync();
+    }
 }   
