@@ -6,7 +6,7 @@ const LandingPage: React.FC = () => {
     return(
         <>
         <div className='app-layout'>
-            <Navbar currentPage="home" />
+            <Navbar/>
             <div className="main-content">
                 <div style={{ textAlign: 'center', marginTop: '50px' }}>
                     <h1>Welcome to the Knowledge Hub</h1>

@@ -1,11 +1,11 @@
 import { startTransition, useCallback, useEffect, useState } from "react";
-import { Navbar } from "../components/navbar/Navbar";
 import { PreviewButton } from "../components/preview/PreviewButton";
 import { notesService } from "../services/notesService";
 import { Subject } from "../types/subject";
 import "./PreviewNotes.css"
 import BreadCrumb from "../components/preview/Breadcrumbs";
 import { Note } from "../types/note";
+import { Navbar } from "../components/navbar/Navbar";
 
 const PreviewNotes: React.FC = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -65,15 +65,19 @@ const PreviewNotes: React.FC = () => {
         });
     }, []);
 
-    const handleSubjectCrumbClick = useCallback(() => {
+    const handleNoteClick = useCallback((subject: Subject, note: Note) => {
+        alert("clicked note click.");
+    }, []);
+
+    const handleSubjectCrumbClick = useCallback(() => { // using this kind of callback because it memoizes, this means no new function object each call
         setCrumbs([]);
         setSelectedSubject(null);
         setNotes([]); // show the page cleanly.
-    }, []);
+    }, []); // [] means no new function object is created.
 
     return (
         <div className="app-layout">
-            {/* <Navbar currentPage="notes" /> */}
+            <Navbar/>
             <div className="main-content">
                 {selectedSubject == null ? 
                 (
@@ -89,7 +93,8 @@ const PreviewNotes: React.FC = () => {
                             )
                         })}
                     </div>
-                </>) 
+                    </>
+                ) 
                 :
                 (
                     <>
@@ -99,7 +104,7 @@ const PreviewNotes: React.FC = () => {
                         {notes.map(note => {
                             return(
                                 <li key={note.id} className="button-item">
-                                    <PreviewButton name={note.title} school={""}/>
+                                    <PreviewButton name={note.title} school={""} onClick={() => {handleNoteClick(selectedSubject, note)}}/>
                                 </li>
                             )
                         })}

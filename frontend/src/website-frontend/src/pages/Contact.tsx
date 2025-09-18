@@ -4,7 +4,7 @@ const Contact: React.FC = () => {
     return(
         <>
         <div className="app-layout">
-            <Navbar currentPage="contact"/>
+            <Navbar/>
             This is the contact page.
         </div>
         </>

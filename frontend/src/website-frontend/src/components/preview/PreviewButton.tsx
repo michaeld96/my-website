@@ -1,4 +1,4 @@
-import './button.css'
+import './PreviewButton.css'
 interface PreviewProps {
     name: string
     school: string
