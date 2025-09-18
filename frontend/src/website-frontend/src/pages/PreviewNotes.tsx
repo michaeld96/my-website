@@ -1,29 +1,23 @@
-import { useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import { Navbar } from "../components/navbar/Navbar";
 import { PreviewButton } from "../components/preview/button";
 import { notesService } from "../services/notesService";
 import { Subject } from "../types/subject";
 import "./PreviewNotes.css"
 import BreadCrumb from "../components/preview/Breadcrumbs";
-
-/*
-    1. Need to make an API call to get all subjects.
-    2. When a subject button is clicked, two things happen, we append to the list that acts as anchors, and we load all the notes.
-*/
-
-
-
+import { Note } from "../types/note";
 
 const PreviewNotes: React.FC = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [crumbs, setCrumbs] = useState<string[]>([]);
-    const [notes, setNotes] = useState<Notes[]>([]);
-    
+    const [notes, setNotes] = useState<Note[] | null>(null);
+    const [isLoadingNotes, setIsLoadingNotes] = useState<boolean>(false);
     
     async function getSubjects() {
         try
         {
+            setNotes([]); // clear previous list so we don't get UI flicker.
             const subjects = await notesService.getAllSubjects();
             setSubjects(subjects);
         }
@@ -33,34 +27,49 @@ const PreviewNotes: React.FC = () => {
             console.log(`ERROR: ${error}`);
         }
     }
-
-    async function getNotes(subject: Subject) {
-        try
-        {
-            const notes = await notesService.getNotes(subject.schoolId, subject.id);
-            setNotes(notes);
-        }
-        catch (error)
-        {
-            alert("ERROR: Cannot get notes");
-            console.log(`ERROR: ${error}`);
-        }
-    }
     
     useEffect(() => {
         getSubjects();
     }, []);
 
-    const handleSubjectClick = (subject: Subject) => {
-        setSelectedSubject(subject);
-        setCrumbs(prevState => [...prevState, subject.title]); // appending to state and creating new array.
-        getNotes(subject);
-    }
+    useEffect(() => {
+        if (!selectedSubject) {
+            return;
+        }
+        const ac = new AbortController();
+        (async () => {
+            try {
+                const data = await notesService.getNotes(selectedSubject.schoolId, selectedSubject.id);
+                if (!ac.signal.aborted) {
+                    setNotes(data);
+                }
+            }
+            catch (error) {
+                alert("ERROR: Cannot get notes");
+                console.log(`ERROR: ${error}`);
+            }
+            finally {
+                if (!ac.signal.aborted) {
+                    setIsLoadingNotes(false);
+                }
+            }
+        })();
+    }, [selectedSubject]);
 
-    const handleSubjectCrumbClick = () => {
+    const handleSubjectClick = useCallback((subject: Subject) => {
+        startTransition(() => {
+            setSelectedSubject(subject);
+            setCrumbs(prevState => [...prevState, subject.title]); // appending to state and creating new array.
+            setIsLoadingNotes(true);
+            setNotes(null);
+        });
+    }, []);
+
+    const handleSubjectCrumbClick = useCallback(() => {
         setCrumbs([]);
         setSelectedSubject(null);
-    }
+        setNotes([]); // show the page cleanly.
+    }, []);
 
     return (
         <div className="app-layout">
@@ -85,6 +94,7 @@ const PreviewNotes: React.FC = () => {
                 (
                     <>
                     <BreadCrumb crumbs={crumbs} onClick={() => handleSubjectCrumbClick()}/>
+                    {isLoadingNotes || notes === null ? null : notes && notes.length > 0 ? (
                     <div className="button-container">
                         {notes.map(note => {
                             return(
@@ -93,7 +103,11 @@ const PreviewNotes: React.FC = () => {
                                 </li>
                             )
                         })}
+                    </div>) : (
+                    <div className="no-notes-container">
+                        {(!notes || notes.length === 0) && <h1>There are no notes for this subject.</h1>}
                     </div>
+                    )}
                     </>
                 )}
             </div>

@@ -24,3 +24,8 @@ h3 {
     margin: 0 calc(100vw/2 - 350px);
     gap: 20px;
 }
+
+.no-notes-container {
+    display: flex;
+    margin: 0 calc(100vw/2 - 580px);
+}
