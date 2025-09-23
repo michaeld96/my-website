@@ -1,11 +1,8 @@
 import React from 'react';
 import './navbar.css';
+import { NavLink } from 'react-router-dom';
 
-interface NavbarProps {
-    currentPage?: string;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ currentPage }) => {
+export const Navbar: React.FC = () => {
     return (
         <nav className="navbar">
             <div className="navbar-brand">
@@ -13,36 +10,24 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage }) => {
             </div>
             <ul className="navbar-links">
                 <li>
-                    <a 
-                        href="/" 
-                        className={currentPage === 'home' ? 'active' : ''}
-                    >
+                    <NavLink to="/" end className={({isActive}) => isActive ? 'active' : ''}>
                         Home
-                    </a>
+                    </NavLink>
                 </li>
                 <li>
-                    <a 
-                        href="/notes" 
-                        className={currentPage === 'notes' ? 'active' : ''}
-                    >
+                    <NavLink to="/notes" className={({isActive}) => isActive ? 'active' : ''}>
                         Notes
-                    </a>
+                    </NavLink>
                 </li>
                 <li>
-                    <a 
-                        href="/about" 
-                        className={currentPage === 'about' ? 'active' : ''}
-                    >
+                    <NavLink to="/about" className={({isActive}) => isActive ? 'active' : ''}>
                         About
-                    </a>
+                    </NavLink>
                 </li>
                 <li>
-                    <a 
-                        href="/contact" 
-                        className={currentPage === 'contact' ? 'active' : ''}
-                    >
+                    <NavLink to="/contact" className={({isActive}) => isActive ? 'active' : ''}>
                         Contact
-                    </a>
+                    </NavLink>
                 </li>
             </ul>
         </nav>

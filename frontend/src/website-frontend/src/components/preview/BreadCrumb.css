@@ -1,0 +1,24 @@
+.breadcrumb-container {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.breadcrumb,        /* these two classes share these css contents.*/
+.breadcrumb-note { 
+    width: fit-content;
+    padding: 0px;
+    font-size: 2rem;
+    background-color: transparent;
+    text-align: left;
+}
+
+.breadcrumb-note {
+    cursor: default;
+    pointer-events: none; /* disables click and hover events. */
+}
+
+.divider {
+    font-size: 2rem;
+}

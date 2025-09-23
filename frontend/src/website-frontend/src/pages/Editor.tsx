@@ -19,6 +19,10 @@ import { UpsertPopUp } from '../components/editor/UpsertPopUp';
 import { DeletePopUp } from '../components/editor/DeletePopUp';
 import { notesService } from '../services/notesService';
 import { UpsertPopUpSubjects } from '../components/editor/UpsertPopUpSubjects';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import remarkGfm from 'remark-gfm';
+import remarkToc from 'remark-toc';
+import "katex/dist/katex.min.css";
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -690,14 +694,14 @@ const Editor: React.FC = () => {
             {/* Right Panel: Rendered Markdown */}
             <div style={{ width: '39%', padding: '10px', overflow: 'scroll'}}>
                 <ReactMarkdown
-                    remarkPlugins={[remarkMath]}
-                    rehypePlugins={[
-                        rehypeKatex,
-                        rehypeHighlight,
-                        [rehypeRaw, { allowDangerousHtml: true }]
-                    ]}
+                remarkPlugins={[remarkGfm, remarkToc, remarkMath]}
+                rehypePlugins={[
+                    [rehypeKatex, { throwOnError: false }],
+                    rehypeHighlight,
+                    rehypeAutolinkHeadings,
+                ]}
                 >
-                    {markdown}
+                {markdown}
                 </ReactMarkdown>
             </div>
         </div>
