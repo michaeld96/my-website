@@ -12,7 +12,7 @@ export const PreviewButton: React.FC<PreviewProps> = ({name, school, onClick}) =
         <button className='preview-button' onClick={onClick}>
                 {name}
                 <br></br>
-                ({school})
+                { school == "" ? <></> : <>({school})</>}
         </button>
         </>
     )
