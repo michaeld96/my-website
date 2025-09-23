@@ -29,3 +29,10 @@ li {
     display: flex;
     margin: 0 calc(100vw/2 - 580px);
 }
+
+.markdown-display {
+    margin: 5px;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #1d1d1d;
+}

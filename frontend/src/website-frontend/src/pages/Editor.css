@@ -52,3 +52,10 @@
     margin-top: 10px;
     gap: 10px;
 }
+
+.katex-display {
+  display: block;
+  margin: 1em 0;
+  overflow-x: auto; /* helpful for long equations */
+}
+p > .katex-display { display: block; }

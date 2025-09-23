@@ -6,6 +6,14 @@ import "./PreviewNotes.css"
 import BreadCrumb from "../components/preview/Breadcrumbs";
 import { Note } from "../types/note";
 import { Navbar } from "../components/navbar/Navbar";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import rehypeHighlight from "rehype-highlight";
+import rehypeRaw from "rehype-raw";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import remarkGfm from "remark-gfm";
+import remarkToc from "remark-toc";
 
 const PreviewNotes: React.FC = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -13,6 +21,7 @@ const PreviewNotes: React.FC = () => {
     const [crumbs, setCrumbs] = useState<string[]>([]);
     const [notes, setNotes] = useState<Note[] | null>(null);
     const [isLoadingNotes, setIsLoadingNotes] = useState<boolean>(false);
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     
     async function getSubjects() {
         try
@@ -59,28 +68,39 @@ const PreviewNotes: React.FC = () => {
     const handleSubjectClick = useCallback((subject: Subject) => {
         startTransition(() => {
             setSelectedSubject(subject);
-            setCrumbs(prevState => [...prevState, subject.title]); // appending to state and creating new array.
+            crumbs.push(subject.title);
+            setCrumbs(crumbs);
             setIsLoadingNotes(true);
             setNotes(null);
         });
     }, []);
 
     const handleNoteClick = useCallback((subject: Subject, note: Note) => {
-        alert("clicked note click.");
+        setSelectedNote(note);
+        crumbs.push(note.title);
+        setCrumbs(crumbs);  
     }, []);
 
     const handleSubjectCrumbClick = useCallback(() => { // using this kind of callback because it memoizes, this means no new function object each call
+        if (crumbs.length == 1) {
+            crumbs.pop();
+        }
         setCrumbs([]);
         setSelectedSubject(null);
         setNotes([]); // show the page cleanly.
     }, []); // [] means no new function object is created.
 
+    const handleNoteCrumbClick = useCallback(() => {
+        crumbs.pop();
+        setCrumbs(crumbs);
+        setSelectedNote(null);
+    }, []);
+
     return (
         <div className="app-layout">
             <Navbar/>
             <div className="main-content">
-                {selectedSubject == null ? 
-                (
+                {selectedSubject == null && (
                     <>
                     <h2 className="preview-h2">Welcome To My Notes!</h2>
                     <h3 className="preview-h3">Click on any of the subjects to see my notes</h3>
@@ -94,11 +114,10 @@ const PreviewNotes: React.FC = () => {
                         })}
                     </div>
                     </>
-                ) 
-                :
-                (
+                )}
+                {selectedSubject !== null && selectedNote == null && (
                     <>
-                    <BreadCrumb crumbs={crumbs} onClick={() => handleSubjectCrumbClick()}/>
+                    <BreadCrumb crumbs={crumbs} onClick={handleSubjectCrumbClick}/>
                     {isLoadingNotes || notes === null ? null : notes && notes.length > 0 ? (
                     <div className="button-container">
                         {notes.map(note => {
@@ -113,6 +132,32 @@ const PreviewNotes: React.FC = () => {
                         {(!notes || notes.length === 0) && <h1>There are no notes for this subject.</h1>}
                     </div>
                     )}
+                    </>
+                )}
+                {selectedSubject != null && selectedNote != null && selectedNote.markdown.length > 0 && (
+                    <>
+                        <BreadCrumb crumbs={crumbs} onClick={handleNoteCrumbClick}/>
+                        <div className="markdown-display">
+                        <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[
+                            rehypeKatex,
+                            rehypeHighlight,
+                            rehypeAutolinkHeadings,
+                            rehypeRaw, 
+                        ]}
+                        >
+                        {selectedNote.markdown}
+                        </ReactMarkdown>
+                        </div>
+                    </>
+                )}
+                {selectedSubject != null && selectedNote != null && selectedNote.markdown.length === 0 && (
+                    <>
+                        <BreadCrumb crumbs={crumbs} onClick={handleNoteCrumbClick}/>
+                        <div className="markdown-display">
+                            <h2 style={{margin: '0 calc(100vw/2 - 300px)'}}>Note has no content :(</h2>
+                        </div>
                     </>
                 )}
             </div>
