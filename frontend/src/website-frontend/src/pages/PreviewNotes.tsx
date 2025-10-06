@@ -30,11 +30,8 @@ const subjectSlugEq = (subject: Subject, schoolCode?: string, slug?: string) =>
 
 const PreviewNotes: React.FC = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
-    // const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-    // const [crumbs, setCrumbs] = useState<string[]>([]);
     const [notes, setNotes] = useState<Note[] | null>(null);
     const [isLoadingNotes, setIsLoadingNotes] = useState<boolean>(false);
-    // const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
     // URL is source of truth.
     const {schoolCode, subjectSlug, noteSlug} = useParams<{
@@ -103,22 +100,12 @@ const PreviewNotes: React.FC = () => {
     }, [notes, noteSlug]);
 
     const handleSubjectClick = useCallback((subject: Subject) => {
-        // startTransition(() => {
-        //     // setSelectedSubject(subject);
-        //     crumbs.push(subject.title);
-        //     setCrumbs(crumbs);
-        //     setIsLoadingNotes(true);
-        //     setNotes(null);
-        // });
         startTransition(() => {
             navigate(`/notes/${subject.code}/${slugify(subject.title)}`);
         });
     }, [navigate]);
 
     const handleNoteClick = useCallback((subject: Subject, note: Note) => {
-        // setSelectedNote(note);
-        // crumbs.push(note.title);
-        // setCrumbs(crumbs);  
         startTransition(() => {
             navigate(`/notes/${subject.code}/${slugify(subject.title)}/${slugify(note.title)}`)
         });
@@ -136,20 +123,10 @@ const PreviewNotes: React.FC = () => {
     }, [selectedSubject, selectedNote]);
 
     const handleSubjectCrumbClick = useCallback(() => { // using this kind of callback because it memoizes, this means no new function object each call
-        // if (crumbs.length == 1) {
-            // crumbs.pop();
-        // }
-        // setCrumbs([]);
-        // setSelectedSubject(null);
-        // setNotes([]); // show the page cleanly.
         navigate('/notes');
-        // return;
     }, [navigate]); // [] means no new function object is created.
 
     const handleNoteCrumbClick = useCallback(() => {
-        // crumbs.pop();
-        // setCrumbs(crumbs);
-        // setSelectedNote(null);
         if (!selectedSubject) {
             navigate('/notes');
             return;
