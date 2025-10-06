@@ -18,7 +18,9 @@ const App: React.FC = () => {
                 <Route path="/editor" element={ <Editor/> }/>
                 <Route path="/about" element={ <About/> }/>
                 <Route path="/contact" element={ <Contact/> } />
-                <Route path="/notes" element={ <PreviewNotes /> } />
+                <Route path="/notes" element={ <PreviewNotes /> } /> 
+                <Route path="/notes/:schoolCode/:subjectSlug" element={ <PreviewNotes /> } /> {/* when this url hits render this component. */}
+                <Route path="/notes/:schoolCode/:subjectSlug/:noteSlug" element={ <PreviewNotes /> } />
             </Routes>
         </Router>
     )
