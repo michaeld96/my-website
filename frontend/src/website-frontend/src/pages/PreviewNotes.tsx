@@ -3,7 +3,7 @@ import { PreviewButton } from "../components/preview/PreviewButton";
 import { notesService } from "../services/notesService";
 import { Subject } from "../types/subject";
 import "./PreviewNotes.css"
-import BreadCrumb from "../components/preview/Breadcrumbs";
+import BreadCrumb from "../components/preview/BreadCrumbs";
 import { Note } from "../types/note";
 import { Navbar } from "../components/navbar/Navbar";
 import ReactMarkdown from "react-markdown";
@@ -13,9 +13,8 @@ import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkGfm from "remark-gfm";
-import remarkToc from "remark-toc";
 import { useNavigate, useParams } from "react-router-dom";
-import { start } from "repl";
+import { School } from "../types/school";
 
 const slugify = (s: string) =>
     s.toLowerCase()
@@ -25,13 +24,14 @@ const slugify = (s: string) =>
 
 const noteSlugEq = (note: Note, slug?: string) => slugify(note.title) === slug;
 
-const subjectSlugEq = (subject: Subject, schoolCode?: string, slug?: string) => 
-    subject.code === schoolCode && slugify(subject.title) === slug;
+const subjectSlugEq = (subject: Subject, slug?: string) => 
+    slugify(subject.title) === slug;
 
 const PreviewNotes: React.FC = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [notes, setNotes] = useState<Note[] | null>(null);
     const [isLoadingNotes, setIsLoadingNotes] = useState<boolean>(false);
+    const [schools, setSchools] = useState<School[]>([]);
 
     // URL is source of truth.
     const {schoolCode, subjectSlug, noteSlug} = useParams<{
@@ -56,16 +56,34 @@ const PreviewNotes: React.FC = () => {
         }
     }
 
+    async function getSchools() {
+        try
+        {
+            const schools = await notesService.getSchools();
+            setSchools(schools);
+        }
+        catch (error)
+        {
+                alert("ERROR: Cannot get Schools!");
+            console.log(`ERROR: ${error}`);
+        }
+    }
+
+    const findSchoolForSubject = (subject: Subject, schools: School[]) => {
+        return schools.find(s => s.id == subject.schoolId)?.code ?? null;
+    }
+
     // Get the selected subject from URL and the subjects that are populated.
     const selectedSubject = useMemo(() => {
         if (!subjects.length || !schoolCode || !subjectSlug) {
             return null;
         }
-        return subjects.find((s) => subjectSlugEq(s, schoolCode, subjectSlug)) ?? null;
+        return subjects.find((s) => subjectSlugEq(s,subjectSlug)) ?? null;
     }, [subjects, schoolCode, subjectSlug]); // recompute selected subject when one of these values change.
     
     useEffect(() => {
         getSubjects();
+        getSchools();
     }, []);
 
     useEffect(() => {
@@ -100,14 +118,16 @@ const PreviewNotes: React.FC = () => {
     }, [notes, noteSlug]);
 
     const handleSubjectClick = useCallback((subject: Subject) => {
+        const schoolCode = findSchoolForSubject(subject, schools);
         startTransition(() => {
-            navigate(`/notes/${subject.code}/${slugify(subject.title)}`);
+            navigate(`/notes/${schoolCode}/${slugify(subject.title)}`);
         });
     }, [navigate]);
 
     const handleNoteClick = useCallback((subject: Subject, note: Note) => {
+        const schoolCode = findSchoolForSubject(subject, schools);
         startTransition(() => {
-            navigate(`/notes/${subject.code}/${slugify(subject.title)}/${slugify(note.title)}`)
+            navigate(`/notes/${schoolCode}/${slugify(subject.title)}/${slugify(note.title)}`)
         });
     }, [navigate]);
 
@@ -131,8 +151,9 @@ const PreviewNotes: React.FC = () => {
             navigate('/notes');
             return;
         }
-        navigate(`/notes/${selectedSubject.code}/${slugify(selectedSubject.title)}`)
-    }, [navigate, selectedSubject]);
+        const schoolCode = findSchoolForSubject(selectedSubject, schools);
+        navigate(`/notes/${schoolCode}/${slugify(selectedSubject.title)}`)
+    }, [navigate, selectedSubject, schools]);
 
     return (
         <div className="app-layout">
@@ -144,9 +165,10 @@ const PreviewNotes: React.FC = () => {
                     <h3 className="preview-h3">Click on any of the subjects to see my notes</h3>
                     <div className="button-container">
                         {subjects.map((subject) => {
+                            const schoolCode = findSchoolForSubject(subject, schools);
                             return (
                                 <li key={subject.id} className="button-item">
-                                    <PreviewButton name={subject.title} school={subject.code} onClick={() => handleSubjectClick(subject)}/>
+                                    <PreviewButton name={subject.title} school={schoolCode + ' - ' + subject.code} onClick={() => handleSubjectClick(subject)}/>
                                 </li>
                             )
                         })}
