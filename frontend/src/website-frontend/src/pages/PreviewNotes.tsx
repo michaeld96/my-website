@@ -3,7 +3,6 @@ import { PreviewButton } from "../components/preview/PreviewButton";
 import { notesService } from "../services/notesService";
 import { Subject } from "../types/subject";
 import "./PreviewNotes.css"
-import BreadCrumb from "../components/preview/BreadCrumbs";
 import { Note } from "../types/note";
 import { Navbar } from "../components/navbar/Navbar";
 import ReactMarkdown from "react-markdown";
@@ -15,6 +14,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkGfm from "remark-gfm";
 import { useNavigate, useParams } from "react-router-dom";
 import { School } from "../types/school";
+import BreadCrumb from "../components/preview/BreadCrumbs";
 
 const slugify = (s: string) =>
     s.toLowerCase()
@@ -69,8 +69,19 @@ const PreviewNotes: React.FC = () => {
         }
     }
 
-    const findSchoolForSubject = (subject: Subject, schools: School[]) => {
-        return schools.find(s => s.id == subject.schoolId)?.code ?? null;
+    const schoolSubjects = (schoolCode?: string) => {
+        const schoolId = schools.find(s => s.code == schoolCode)?.id;
+        if (!schoolId) {
+            return [];
+        }
+
+        const arr: Subject[] = [];
+        subjects.map((subject) => {
+            if (subject.schoolId == schoolId) {
+                arr.push(subject);
+            }
+        })
+        return arr;
     }
 
     // Get the selected subject from URL and the subjects that are populated.
@@ -117,22 +128,35 @@ const PreviewNotes: React.FC = () => {
         return notes.find((n) => noteSlugEq(n, noteSlug)) ?? null;
     }, [notes, noteSlug]);
 
-    const handleSubjectClick = useCallback((subject: Subject) => {
-        const schoolCode = findSchoolForSubject(subject, schools);
+    const selectedSchool = useMemo(() => {
+        if (!schoolCode) {
+            return null;
+        }
+        return schools.find((s) => (s.code === schoolCode));
+    }, [schoolCode, schools]);
+
+    const handleSchoolClick = useCallback((school: School) => {
+        navigate(`/notes/${school.code}`)
+    }, [navigate]);
+
+    const handleSubjectClick = useCallback((school: School, subject: Subject) => {
         startTransition(() => {
-            navigate(`/notes/${schoolCode}/${slugify(subject.title)}`);
+            setIsLoadingNotes(true);
+            navigate(`/notes/${school.code}/${subject.code}/${slugify(subject.title)}`);
         });
     }, [navigate]);
 
-    const handleNoteClick = useCallback((subject: Subject, note: Note) => {
-        const schoolCode = findSchoolForSubject(subject, schools);
+    const handleNoteClick = useCallback((school: School, subject: Subject, note: Note) => {
         startTransition(() => {
-            navigate(`/notes/${schoolCode}/${slugify(subject.title)}/${slugify(note.title)}`)
+            navigate(`/notes/${school.code}/${subject.code}/${slugify(subject.title)}/${slugify(note.title)}`)
         });
     }, [navigate]);
 
     const crumbLabels = useMemo(() => {
         const arr: string[] = [];
+        if (selectedSchool) {
+            arr.push(selectedSchool.name);
+        }
         if (selectedSubject) {
             arr.push(selectedSubject.title);
         }
@@ -140,7 +164,7 @@ const PreviewNotes: React.FC = () => {
             arr.push(selectedNote.title);
         }
         return arr;
-    }, [selectedSubject, selectedNote]);
+    }, [selectedSchool, selectedSubject, selectedNote]);
 
     const handleSubjectCrumbClick = useCallback(() => { // using this kind of callback because it memoizes, this means no new function object each call
         navigate('/notes');
@@ -151,31 +175,52 @@ const PreviewNotes: React.FC = () => {
             navigate('/notes');
             return;
         }
-        const schoolCode = findSchoolForSubject(selectedSubject, schools);
-        navigate(`/notes/${schoolCode}/${slugify(selectedSubject.title)}`)
-    }, [navigate, selectedSubject, schools]);
+        navigate(`/notes/${selectedSubject.code}/${slugify(selectedSubject.title)}`)
+    }, [navigate, selectedSubject]);
 
     return (
         <div className="app-layout">
             <Navbar/>
             <div className="main-content">
-                {selectedSubject == null && (
+                {selectedSubject == null && schoolCode == null &&  (
                     <>
                     <h2 className="preview-h2">Welcome To My Notes!</h2>
-                    <h3 className="preview-h3">Click on any of the subjects to see my notes</h3>
+                    <h3 className="preview-h3">Click on a Group of my Notes</h3>
                     <div className="button-container">
-                        {subjects.map((subject) => {
-                            const schoolCode = findSchoolForSubject(subject, schools);
+                        {schools.map((school) => {
                             return (
-                                <li key={subject.id} className="button-item">
-                                    <PreviewButton name={subject.title} school={schoolCode + ' - ' + subject.code} onClick={() => handleSubjectClick(subject)}/>
+                                <li key={school.id} className="button-item">
+                                    <PreviewButton name={school.name} school={""} onClick={() => handleSchoolClick(school)}/>
                                 </li>
                             )
                         })}
+                        {/* {subjects.map((subject) => {
+                            return (
+                                <li key={subject.id} className="button-item">
+                                    <PreviewButton name={subject.title} school={subject.code} onClick={() => handleSubjectClick(subject)}/>
+                                </li>
+                            )
+                        })} */}
                     </div>
                     </>
                 )}
-                {selectedSubject !== null && selectedNote == null && (
+                {selectedSchool && selectedSubject === null && (
+                    <>
+                    <BreadCrumb crumbs={crumbLabels} onClick={handleSubjectCrumbClick}/>
+                    <div className="button-container">
+                    {
+                        schoolSubjects(schoolCode).map((subject) => {
+                            return (
+                                <li key={subject.id} className="button-item">
+                                    <PreviewButton name={subject.title} school={subject.code} onClick={() => handleSubjectClick(selectedSchool, subject)}/>
+                                </li>
+                            )
+                        })
+                    }
+                    </div>
+                    </>   
+                )}
+                {selectedSchool && selectedSubject !== null && selectedNote === null && (
                     <>
                     <BreadCrumb crumbs={crumbLabels} onClick={handleSubjectCrumbClick}/>
                     {isLoadingNotes || notes === null ? null : notes && notes.length > 0 ? (
@@ -183,7 +228,7 @@ const PreviewNotes: React.FC = () => {
                         {notes.map(note => {
                             return(
                                 <li key={note.id} className="button-item">
-                                    <PreviewButton name={note.title} school={""} onClick={() => {handleNoteClick(selectedSubject, note)}}/>
+                                    <PreviewButton name={note.title} school={""} onClick={() => {handleNoteClick(selectedSchool, selectedSubject, note)}}/>
                                 </li>
                             )
                         })}
@@ -194,7 +239,7 @@ const PreviewNotes: React.FC = () => {
                     )}
                     </>
                 )}
-                {selectedSubject != null && selectedNote != null && selectedNote.markdown.length > 0 && (
+                {selectedSchool && selectedSubject != null && selectedNote != null && selectedNote.markdown.length > 0 && (
                     <>
                         <BreadCrumb crumbs={crumbLabels} onClick={handleNoteCrumbClick}/>
                         <div className="markdown-display">

@@ -19,8 +19,9 @@ const App: React.FC = () => {
                 <Route path="/about" element={ <About/> }/>
                 <Route path="/contact" element={ <Contact/> } />
                 <Route path="/notes" element={ <PreviewNotes /> } /> 
-                <Route path="/notes/:schoolCode/:subjectSlug" element={ <PreviewNotes /> } /> {/* when this url hits render this component. */}
-                <Route path="/notes/:schoolCode/:subjectSlug/:noteSlug" element={ <PreviewNotes /> } />
+                <Route path="/notes/:schoolCode" element={ <PreviewNotes /> } />
+                <Route path="/notes/:schoolCode/:subjectCode/:subjectSlug" element={ <PreviewNotes /> } /> {/* when this url hits render this component. */}
+                <Route path="/notes/:schoolCode/:subjectCode/:subjectSlug/:noteSlug" element={ <PreviewNotes /> } />
             </Routes>
         </Router>
     )
