@@ -1,12 +1,12 @@
 import './BreadCrumb.css'
-export default function BreadCrumb({ crumbs, onClick }: {crumbs: string[], onClick: () => void}) {
+export default function BreadCrumb({ crumbs, onClickSchool, onClickSubject }: {crumbs: string[], onClickSchool: () => void, onClickSubject: () => void}) {
     if (crumbs.length == 1) {
         return(
             <>
             <div className="breadcrumb-container">
                 <button
                     className="breadcrumb" 
-                    onClick={onClick}
+                    onClick={onClickSchool}
                 >
                     {crumbs[0]}
                 </button>
@@ -20,7 +20,7 @@ export default function BreadCrumb({ crumbs, onClick }: {crumbs: string[], onCli
             <div className="breadcrumb-container">
                 <button
                     className="breadcrumb" 
-                    onClick={onClick}
+                    onClick={onClickSchool}
                 >
                     {crumbs[0]}
                 </button>
@@ -31,6 +31,37 @@ export default function BreadCrumb({ crumbs, onClick }: {crumbs: string[], onCli
                     className="breadcrumb-note" 
                 >
                     {crumbs[1]}
+                </button>
+            </div>
+            </>
+        )
+    }
+    else if (crumbs.length == 3) {
+        return(
+            <>
+            <div className="breadcrumb-container">
+                <button
+                    className="breadcrumb" 
+                    onClick={onClickSchool}
+                >
+                    {crumbs[0]}
+                </button>
+                <div className="divider">
+                    &gt;
+                </div>
+                <button
+                    className="breadcrumb" 
+                    onClick={onClickSubject}
+                >
+                    {crumbs[1]}
+                </button>
+                <div className="divider">
+                    &gt;
+                </div>
+                <button
+                    className="breadcrumb-note" 
+                >
+                    {crumbs[2]}
                 </button>
             </div>
             </>
