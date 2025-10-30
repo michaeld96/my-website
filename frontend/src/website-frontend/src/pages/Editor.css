@@ -53,6 +53,16 @@
     gap: 10px;
 }
 
+.invalid-login 
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    font-size: ;
+}
+
 .katex-display {
   display: block;
   margin: 1em 0;

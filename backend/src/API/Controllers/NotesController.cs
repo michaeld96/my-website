@@ -16,6 +16,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class NotesController : ControllerBase
     {
         private readonly IUnitOfWork _uow;
@@ -35,6 +36,7 @@ namespace API.Controllers
         /// <returns>Returns the list of schools.</returns>
         // GET /api/notes/schools
         [HttpGet("schools")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetSchools(CancellationToken ct)
         {
             // Need await here so schools is an actual List<School>.
@@ -49,6 +51,7 @@ namespace API.Controllers
         /// <returns>A list of sublets associated with that school.</returns>
         // GET /api/notes/{school}/subjects
         [HttpGet("{schoolId:int}/subjects")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetSubjects(
             int schoolId,
             CancellationToken ct)
@@ -72,6 +75,7 @@ namespace API.Controllers
         /// <returns></returns>
         // GET /api/notes/{school}/{subject}/titles
         [HttpGet("{schoolId:int}/{subjectId:int}/notes")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetNotes(
             int schoolId,
             int subjectId,
@@ -91,6 +95,7 @@ namespace API.Controllers
 
         // GET /api/notes/{school}/{subject}/{title}
         [HttpGet("{schoolId}/{subjectId}/{noteId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetNote(
             int schoolId,
             int subjectId,
@@ -349,6 +354,7 @@ namespace API.Controllers
         }
 
         [HttpGet("all-subjects")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllSubjects()
         {
             List<Subject> subjects = new List<Subject>();
