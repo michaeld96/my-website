@@ -175,7 +175,7 @@ const PreviewNotes: React.FC = () => {
             navigate('/notes');
             return;
         }
-        navigate(`/notes/${selectedSchool?.code}/${selectedSubject?.code}/${slugify(selectedSubject?.title)}`);
+        navigate(`/notes/${selectedSchool?.code}/`); 
     }, [navigate, selectedSubject, selectedSchool]); // [] means no new function object is created.
 
     const handleNoteCrumbClick = useCallback(() => {
@@ -202,19 +202,12 @@ const PreviewNotes: React.FC = () => {
                                 </li>
                             )
                         })}
-                        {/* {subjects.map((subject) => {
-                            return (
-                                <li key={subject.id} className="button-item">
-                                    <PreviewButton name={subject.title} school={subject.code} onClick={() => handleSubjectClick(subject)}/>
-                                </li>
-                            )
-                        })} */}
                     </div>
                     </>
                 )}
                 {selectedSchool && selectedSubject === null && (
                     <>
-                    <BreadCrumb crumbs={crumbLabels} onClickSchool={handleSchoolCrumbClick} onClickSubject={() => {}}/>
+                    <BreadCrumb crumbs={crumbLabels} onClickSchool={handleSchoolCrumbClick} onClickSubject={() => {}} onNoteClick={() => {}}/>
                     <div className="button-container">
                     {
                         schoolSubjects(schoolCode).map((subject) => {
@@ -228,9 +221,9 @@ const PreviewNotes: React.FC = () => {
                     </div>
                     </>   
                 )}
-                {selectedSchool && selectedSubject !== null && selectedNote === null && (
+                {selectedSchool && selectedSubject && selectedNote === null && (
                     <>
-                    <BreadCrumb crumbs={crumbLabels} onClickSchool={handleSchoolCrumbClick} onClickSubject={handleSubjectCrumbClick}/>
+                    <BreadCrumb crumbs={crumbLabels} onClickSchool={handleSchoolCrumbClick} onClickSubject={handleSubjectCrumbClick} onNoteClick={() => {}}/>
                     {isLoadingNotes || notes === null ? null : notes && notes.length > 0 ? (
                     <div className="button-container">
                         {notes.map(note => {
@@ -249,7 +242,7 @@ const PreviewNotes: React.FC = () => {
                 )}
                 {selectedSchool && selectedSubject != null && selectedNote != null && selectedNote.markdown.length > 0 && (
                     <>
-                        <BreadCrumb crumbs={crumbLabels} onClickSchool={handleNoteCrumbClick} onClickSubject={handleSubjectCrumbClick}/>
+                        <BreadCrumb crumbs={crumbLabels} onClickSchool={handleSchoolCrumbClick} onClickSubject={handleSubjectCrumbClick} onNoteClick={handleNoteCrumbClick}/>
                         <div className="markdown-display">
                         <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath]}
@@ -267,7 +260,7 @@ const PreviewNotes: React.FC = () => {
                 )}
                 {selectedSubject != null && selectedNote != null && selectedNote.markdown.length === 0 && (
                     <>
-                        <BreadCrumb crumbs={crumbLabels} onClickSchool={handleNoteCrumbClick} onClickSubject={handleSubjectCrumbClick}/>
+                        {/* <BreadCrumb crumbs={crumbLabels} onClickSchool={handleSchoolCrumbClick} onClickSubject={handleSubjectCrumbClick} onNoteClick={handleNoteCrumbClick}/> */}
                         <div className="markdown-display">
                             <h2 style={{margin: '0 calc(100vw/2 - 300px)'}}>Note has no content :(</h2>
                         </div>
