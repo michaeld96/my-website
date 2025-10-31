@@ -22,6 +22,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import remarkGfm from 'remark-gfm';
 import remarkToc from 'remark-toc';
 import "katex/dist/katex.min.css";
+import { useNavigate } from 'react-router-dom';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -52,6 +53,7 @@ const Editor: React.FC = () => {
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isAuth, setIsAuth] = useState<boolean | null>(null);
+    const navigate = useNavigate();
     // const baseUrl = process.env.REACT_APP_API_URL;
 
     function check_school_subject_title_selected(): boolean
@@ -462,6 +464,11 @@ const Editor: React.FC = () => {
     // useDropzone hook.
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: true });
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/');
+    }
+
     return (
     <>
     {showCreateNotePopUp && (
@@ -573,6 +580,9 @@ const Editor: React.FC = () => {
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '22%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
+                <button onClick={handleLogout}>
+                        Logout
+                </button>
                 <div className='editor-header-alignment'>
                     <h3>Schools</h3>
                     <SidePanelButton 
