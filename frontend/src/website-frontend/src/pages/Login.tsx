@@ -9,10 +9,21 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // const token = localStorage.getItem('token');
+        // if (token)
+        // {
+        //     navigate('/editor');
+        // }
         const token = localStorage.getItem('token');
-        if (token)
-        {
-            navigate('/editor');
+        if (token) {
+            // Need to see if this token is valid.
+            axios.get('http://localhost:5003/api/auth/me', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            .then(() => navigate('/editor'))
+            .catch(() => localStorage.removeItem('token'))
         }
     }, [navigate]);
 
