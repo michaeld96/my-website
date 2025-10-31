@@ -11,7 +11,7 @@ export const NoteSelector: React.FC<{
                 <li 
                     key={note.id} 
                     onClick={() => handleNoteClick(note)}
-                    className={`list-item ${note == selectedNote ? 'active' : ''}`}
+                    className={`list-item ${note.id == selectedNote?.id ? 'active' : ''}`}
                 >
                     {note.title}
                 </li>

@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Core.Interfaces;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct)
         {
             if (request == null)
@@ -58,14 +60,37 @@ namespace API.Controllers
 
             // Create JWT.
             var token = GenerateJwtToken(user.Username);
-            return Ok(new { token });
+            if (token == null)
+            {
+                return StatusCode(500, "JWT Configuation mission (Issuer,Audience,Secret)");
+            }
+            else
+            {
+                return Ok(new { token });
+            }
 
         }
+        [HttpGet("me")]
+        [Authorize]
+        public IActionResult ValidateUser()
+        {
+            var username = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                            ?? User.Identity?.Name
+                            ?? string.Empty;
+            return Ok(new { username });
+        }
 
-        private string GenerateJwtToken(string username)
+        private string? GenerateJwtToken(string username)
         {
             var jwtSettings = _config.GetSection("JwtSettings");
-            string jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? String.Empty;
+            var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? String.Empty;
+            var issuer = _config["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("JWT_ISSUER");
+            var audience = _config["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+
+            if (string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience) || string.IsNullOrWhiteSpace(jwtSecret))
+            {
+                return null;
+            }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -76,14 +101,14 @@ namespace API.Controllers
             };
 
             var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds
             );
-
             return new JwtSecurityTokenHandler().WriteToken(token);
+            
         }
     }
 }

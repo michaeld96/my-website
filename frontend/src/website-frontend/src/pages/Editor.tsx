@@ -4,7 +4,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
-import rehypeRaw from 'rehype-raw';
 import { useDropzone } from 'react-dropzone';
 import './Editor.css'
 import { School } from '../types/school';
@@ -23,6 +22,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import remarkGfm from 'remark-gfm';
 import remarkToc from 'remark-toc';
 import "katex/dist/katex.min.css";
+import { useNavigate } from 'react-router-dom';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -52,6 +52,8 @@ const Editor: React.FC = () => {
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+    const [isAuth, setIsAuth] = useState<boolean | null>(null);
+    const navigate = useNavigate();
     // const baseUrl = process.env.REACT_APP_API_URL;
 
     function check_school_subject_title_selected(): boolean
@@ -129,6 +131,21 @@ const Editor: React.FC = () => {
                 console.log(`ERROR: ${error}`);
             }
     }
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setIsAuth(false);
+            return;
+        }
+        axios.get('http://localhost:5003/api/auth/me', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then(() => setIsAuth(true))
+        .catch(() => setIsAuth(false))
+    }, []);
 
     useEffect(() => {
         getSchools();
@@ -411,6 +428,11 @@ const Editor: React.FC = () => {
     // ---------------------------- //
     const onDrop = useCallback(async (acceptFiles: File[]) => {
         // handling multiple files, just in case.
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('You are not authenticated. Please log in.');
+            return;
+        }
         for (const file of acceptFiles)
         {
             try 
@@ -420,7 +442,10 @@ const Editor: React.FC = () => {
                 formData.append('file', file);
 
                 const response = await axios.post('http://localhost:5003/api/notes/uploadImage', formData, {
-                    headers: { 'Content-Type': `multipart/form-data` }
+                    headers: { 
+                        'Content-Type': `multipart/form-data`,
+                        ...(token ? { Authorization: `Bearer ${token}` } : {})
+                    }
                 });
                 // the response contains the public S3 URL.
                 const { url } = response.data;
@@ -438,6 +463,11 @@ const Editor: React.FC = () => {
 
     // useDropzone hook.
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: true });
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/');
+    }
 
     return (
     <>
@@ -546,9 +576,13 @@ const Editor: React.FC = () => {
             cancelLable='Cancel'
         />
     )}
+    { isAuth === true && ( // Checking JWT, and if it's 
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '22%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>
+                <button onClick={handleLogout}>
+                        Logout
+                </button>
                 <div className='editor-header-alignment'>
                     <h3>Schools</h3>
                     <SidePanelButton 
@@ -705,6 +739,12 @@ const Editor: React.FC = () => {
                 </ReactMarkdown>
             </div>
         </div>
+    )}
+    {isAuth === false && (
+        <div className='invalid-login'>
+            <h2>Invalid login. Please return to login page.</h2>
+        </div>
+    )}
     </>
     );
 };

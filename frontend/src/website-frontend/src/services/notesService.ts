@@ -6,6 +6,32 @@ import { Note } from "../types/note";
 
 const API_BASE = 'http://localhost:5003/api/notes';
 
+const api = axios.create();
+
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers = config.headers ?? {};
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (config.headers as any)['Authorization'] = `Bearer ${token}`;
+        }
+        return config; // IMPORTANT: return config
+    },
+    (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+    (r) => r,
+    (err) => {
+        if (err?.response?.status === 401) {
+            window.location.href = '/';
+            localStorage.removeItem('token'); // Token is no longer valid. Need to generate a new one.
+        }
+        return Promise.reject(err);
+    }
+)
+
 export const notesService = {
     async getSchools(): Promise<School[]>
     {
@@ -40,7 +66,7 @@ export const notesService = {
         }
         else
         {
-            await axios.post(`${API_BASE}/${schoolId}/${subjectId}`, 
+            await api.post(`${API_BASE}/${schoolId}/${subjectId}`, 
         {
                 title: newNoteTitle,
                 subjectId: subjectId,
@@ -50,7 +76,7 @@ export const notesService = {
     },
     async uploadSubject(schoolId: number | undefined, subjectTitle: string, subjectCode: string)
     {
-        await axios.post(`${API_BASE}/${schoolId}/create-subject`,
+        await api.post(`${API_BASE}/${schoolId}/create-subject`,
             {
                 schoolId: schoolId,
                 title: subjectTitle,
@@ -59,7 +85,7 @@ export const notesService = {
         );
     },
     async editSubject(schoolId: number | undefined, subjectTitle: string, subjectCode: string, subjectId: number| undefined) {
-        await axios.put(`${API_BASE}/${schoolId}/edit-subject`,
+        await api.put(`${API_BASE}/${schoolId}/edit-subject`,
             {
                 schoolId: schoolId,
                 title: subjectTitle,
@@ -69,7 +95,7 @@ export const notesService = {
         );
     },
     async deleteSubject(schoolId: number | undefined, subjectId: number | undefined) {
-        await axios.delete(`${API_BASE}/${schoolId}/delete-subject/${subjectId}`);
+        await api.delete(`${API_BASE}/${schoolId}/delete-subject/${subjectId}`);
     },
     async updateNotesMarkdown(schoolId: number | undefined, subjectId: number | undefined, noteId: number | undefined, markdown: string): Promise<void>
     {
@@ -77,7 +103,7 @@ export const notesService = {
         {
             alert("ERROR: SchoolId, SubjectId, or NoteID is undefined.");
         }
-        await axios.put(`${API_BASE}/${schoolId}/${subjectId}/${noteId}`, 
+        await api.put(`${API_BASE}/${schoolId}/${subjectId}/${noteId}`, 
         {
             updatedAt: new Date().toISOString(),   // Current UTC time.
             markdown: markdown,
@@ -91,7 +117,7 @@ export const notesService = {
         }
         else
         {
-            await axios.put(`${API_BASE}/edit-note/${noteId}`, 
+            await api.put(`${API_BASE}/edit-note/${noteId}`, 
             {
                 updatedAt: new Date().toISOString(),   // Current UTC time.
                 title: newNoteTitle
@@ -107,11 +133,11 @@ export const notesService = {
         }
         else
         {
-            await axios.delete(`${API_BASE}/${schoolId}/${subjectId}/${noteId}`);
+            await api.delete(`${API_BASE}/${schoolId}/${subjectId}/${noteId}`);
         }
     },
     async uploadSchool(schoolName: string, schoolCode: string): Promise<void> {
-        await axios.post(`${API_BASE}/create-school`, 
+        await api.post(`${API_BASE}/create-school`, 
             {
                 name: schoolName,
                 code: schoolCode
@@ -119,7 +145,7 @@ export const notesService = {
         );
     },
     async editSchool(schoolId: number | undefined, schoolName: string, schoolCode: string) {
-        await axios.put(`${API_BASE}/edit-school/${schoolId}`,
+        await api.put(`${API_BASE}/edit-school/${schoolId}`,
             {
                 name: schoolName,
                 code: schoolCode
@@ -127,6 +153,6 @@ export const notesService = {
         );
     },
     async deleteSchool(schoolId: number | undefined) {
-        await axios.delete(`${API_BASE}/delete-school/${schoolId}`);
+        await api.delete(`${API_BASE}/delete-school/${schoolId}`);
     }
 };

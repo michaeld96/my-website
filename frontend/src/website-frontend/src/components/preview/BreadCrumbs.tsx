@@ -1,5 +1,6 @@
 import './BreadCrumb.css'
-export default function BreadCrumb({ crumbs, onClickSchool, onClickSubject }: {crumbs: string[], onClickSchool: () => void, onClickSubject: () => void}) {
+export default function BreadCrumb({ crumbs, onClickSchool, onClickSubject, onNoteClick }: 
+    {crumbs: string[], onClickSchool: () => void, onClickSubject: () => void, onNoteClick: () => void}) {
     if (crumbs.length == 1) {
         return(
             <>
@@ -28,7 +29,8 @@ export default function BreadCrumb({ crumbs, onClickSchool, onClickSubject }: {c
                     &gt;
                 </div>
                 <button
-                    className="breadcrumb-note" 
+                    className="breadcrumb"
+                    onClick={onClickSubject}
                 >
                     {crumbs[1]}
                 </button>
@@ -59,7 +61,8 @@ export default function BreadCrumb({ crumbs, onClickSchool, onClickSubject }: {c
                     &gt;
                 </div>
                 <button
-                    className="breadcrumb-note" 
+                    className="breadcrumb"
+                    onClick={onNoteClick}
                 >
                     {crumbs[2]}
                 </button>
