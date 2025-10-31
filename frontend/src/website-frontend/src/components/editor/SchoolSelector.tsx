@@ -11,7 +11,7 @@ export const SchoolSelector: React.FC<{ // Props that are not defined with a int
                 {schools.map((school) => (
                     <li
                         key={school.code}
-                        className={`list-item ${school.code === selectedSchool?.code ? 'active' : ''}`}
+                        className={`list-item ${school.id === selectedSchool?.id ? 'active' : ''}`}
                         onClick={() => onSchoolSelect(school)}
                     >
                         {school.code}
