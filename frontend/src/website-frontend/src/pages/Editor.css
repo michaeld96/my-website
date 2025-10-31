@@ -62,6 +62,12 @@
     height: 100vh;
 }
 
+.preview-pane
+{
+    max-width: 100%;
+    word-break: break-word;
+}
+
 .katex-display {
   display: block;
   margin: 1em 0;
