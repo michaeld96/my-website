@@ -7,10 +7,13 @@ import Editor from './pages/Editor';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import PreviewNotes from './pages/PreviewNotes';
+import { Navbar } from './components/navbar/navbar';
 
 const App: React.FC = () => {
     return(
         <Router>
+            <div className="app-layout">
+            <Navbar/>
             <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/new-note" element={ <NewNote/> }/>
@@ -23,6 +26,7 @@ const App: React.FC = () => {
                 <Route path="/notes/:schoolCode/:subjectCode/:subjectSlug" element={ <PreviewNotes /> } /> {/* when this url hits render this component. */}
                 <Route path="/notes/:schoolCode/:subjectCode/:subjectSlug/:noteSlug" element={ <PreviewNotes /> } />
             </Routes>
+            </div>
         </Router>
     )
 }

@@ -1,12 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar } from '../components/navbar/Navbar';
 
 const LandingPage: React.FC = () => {
     return(
         <>
-        <div className='app-layout'>
-            <Navbar/>
             <div className="main-content">
                 <div style={{ textAlign: 'center', marginTop: '50px' }}>
                     <h1>Welcome to the Knowledge Hub</h1>
@@ -16,7 +13,6 @@ const LandingPage: React.FC = () => {
                     </Link>
                 </div>
             </div>
-        </div>
         </>
     );
 };

@@ -4,7 +4,6 @@ import { notesService } from "../services/notesService";
 import { Subject } from "../types/subject";
 import "./PreviewNotes.css"
 import { Note } from "../types/note";
-import { Navbar } from "../components/navbar/Navbar";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -187,9 +186,7 @@ const PreviewNotes: React.FC = () => {
     }, [navigate, selectedSubject, selectedSchool]);
 
     return (
-        <div className="app-layout">
-            <Navbar/>
-            <div className="main-content">
+            <div>
                 {selectedSubject == null && schoolCode == null &&  (
                     <>
                     <h2 className="preview-h2">Welcome To My Notes!</h2>
@@ -267,7 +264,6 @@ const PreviewNotes: React.FC = () => {
                     </>
                 )}
             </div>
-        </div>
     )
 }
 
