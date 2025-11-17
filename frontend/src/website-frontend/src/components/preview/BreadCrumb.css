@@ -22,3 +22,17 @@
 .divider {
     font-size: 2rem;
 }
+
+@media (max-width: 800px)
+{
+    .breadcrumb-container
+    {
+        
+    }
+    .breadcrumb,        /* these two classes share these css contents.*/
+    .breadcrumb-note
+    {
+        font-size: 1rem;
+        text-align: center;
+    }
+}
