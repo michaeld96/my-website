@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './navbar.css';
 import { NavLink } from 'react-router-dom';
 
 export const Navbar: React.FC = () => {
+    const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
     return (
-        <nav className="navbar">
+        <>
+        <div className={`hamburger mobile-only ${mobileNavOpen ? 'change' : ''}`}>
+            <button 
+            className='hamburger-buttons'
+            onClick={() => setMobileNavOpen((prev) => !prev)}>
+                <div className="bar1"></div>
+                <div className="bar2"></div>
+                <div className="bar3"></div> 
+            </button>
+        </div>
+        <nav className={`navbar ${mobileNavOpen ? 'navbar-mobile-open' : ''}`}>
             <div className="navbar-brand">
                 <h2>Michael's Website</h2>
             </div>
@@ -31,5 +42,6 @@ export const Navbar: React.FC = () => {
                 </li>
             </ul>
         </nav>
+        </>
     );
 };
