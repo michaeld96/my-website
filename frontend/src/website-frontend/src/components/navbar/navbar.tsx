@@ -8,7 +8,7 @@ export const Navbar: React.FC = () => {
         <>
         <div className={`hamburger mobile-only ${mobileNavOpen ? 'change' : ''}`}>
             <button 
-            className='hamburger-buttons'
+            className='hamburger-button'
             onClick={() => setMobileNavOpen((prev) => !prev)}>
                 <div className="bar1"></div>
                 <div className="bar2"></div>

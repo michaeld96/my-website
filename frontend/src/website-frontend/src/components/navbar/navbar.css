@@ -85,9 +85,9 @@
         left: 0px;
     }
 
-    .button-hamburger
+    .hamburger-button
     {
-        background-color: #3498db;   
+        background-color: rgba(0,0,0,0.1);
     }
 
     /* overlay panel: offscreen by default, slides in with transform */

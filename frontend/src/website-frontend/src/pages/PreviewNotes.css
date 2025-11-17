@@ -36,3 +36,25 @@ li {
     padding: 10px;
     background-color: #1d1d1d;
 }
+
+@media (max-width: 800px)
+{
+    .preview-h2 
+    {
+        margin: 0 auto;
+    }
+
+    .preview-h3 
+    {
+        margin: 0 auto;
+    }
+    .main-content
+    {
+        width: 100vw;
+    }
+    .button-container
+    {
+        margin: 0 auto;
+        width: 300px;
+    }
+}
