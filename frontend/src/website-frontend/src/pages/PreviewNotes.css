@@ -42,10 +42,12 @@ li {
     .preview-h2 
     {
         margin: 0 auto;
+        text-align: center;
     }
 
     .preview-h3 
     {
+        text-align: center;
         margin: 0 auto;
     }
     .main-content
