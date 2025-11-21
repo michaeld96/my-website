@@ -7,12 +7,11 @@ interface ProjectsTab {
     title: string;
     summary: string;
     tags: string[];
-    img_path: string;
     imgs: string[];
     git_link: string;
 }
 
-const ProjectsTab: React.FC<ProjectsTab> = ({title, summary, tags, img_path, imgs, git_link}) => {
+const ProjectsTab: React.FC<ProjectsTab> = ({title, summary, tags, imgs, git_link}) => {
     return(
         <div className="projects-container">
             <div className="left">

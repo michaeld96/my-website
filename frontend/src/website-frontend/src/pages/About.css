@@ -17,7 +17,7 @@
 
 .main-content 
 {
-    width: calc(100dvw - 250px);
+    /* width: calc(100dvw - 250px); */
     display: flex;
     flex-direction: column;
 }

@@ -23,14 +23,12 @@ const Projects: React.FC = () => {
                     summary={blog_website_summary}
                     tags={blog_tech_list}
                     imgs={blog_imgs}
-                    img_path={website_screenshot}
                     git_link={blog_link}
                 />
                 <ProjectsTab
                     title="Title2"
                     summary={blog_website_summary}
                     tags={[".NET", "TypeScript", "React", "EntityFramework", "Vite", "AWS"]}
-                    img_path="ij"
                     git_link="ij"
                     imgs={blog_imgs}
                 />
@@ -38,7 +36,6 @@ const Projects: React.FC = () => {
                     title="Title3"
                     summary={blog_website_summary}
                     tags={[".NET", "TypeScript", "React", "EntityFramework", "Vite", "AWS"]}
-                    img_path="ij"
                     git_link="ij"
                     imgs={blog_imgs}
                 />
@@ -46,7 +43,6 @@ const Projects: React.FC = () => {
                     title="Title4"
                     summary={blog_website_summary}
                     tags={[".NET", "TypeScript", "React", "EntityFramework", "Vite", "AWS"]}
-                    img_path="ij"
                     git_link="ij"
                     imgs={blog_imgs}
                 />
