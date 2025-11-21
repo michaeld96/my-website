@@ -1,0 +1,55 @@
+.projects-container
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 10px;
+    background-color: rgb(56, 56, 56);
+    padding: 10px;
+}
+
+.tag
+{
+    background-color: rgb(81, 81, 81);
+    /* TODO: FIX */
+}
+
+.img-preview
+{
+    width: 100%;
+}
+
+.tags
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag
+{
+    width: fit-content;
+    padding: 5px;
+    border-radius: 2px;
+    font-family: 'Courier New', Courier, monospace;
+    color: #ECB22E;
+    font-weight: bold;
+}
+
+.project-link-container
+{
+    text-align: center;
+}
+
+.project-link
+{
+    color: white;
+    background-color: rgb(114, 114, 114);
+    padding: 5px;
+    border-radius: 2px;
+}
+
+.project-link:hover
+{
+    color: white;
+}
