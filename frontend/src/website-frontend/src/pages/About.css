@@ -1,0 +1,41 @@
+.about-me
+{
+    margin: 0 auto;
+    font-size: 1.5rem;
+    width: 100%;
+    max-width: 800px;
+    overflow-wrap: anywhere;
+}
+
+.my-pic
+{
+    padding: 20px 0px 0px 0px ;
+    width: 400px;
+    margin: 0 auto;
+    border-radius: 100%;
+}
+
+.main-content 
+{
+    /* width: calc(100dvw - 250px); */
+    display: flex;
+    flex-direction: column;
+}
+
+.about-me-content
+{
+    padding: 20px;
+}
+
+@media (max-width: 800px)
+{
+    .my-pic
+    {
+        padding: 20px 0px 0px 0px ;
+        width: 200px;
+    }
+    .about-me
+    {
+        font-size: 1.3rem;
+    }
+}

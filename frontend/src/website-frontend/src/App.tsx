@@ -7,6 +7,7 @@ import Editor from './pages/Editor';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import PreviewNotes from './pages/PreviewNotes';
+import Projects from './pages/Projects';
 
 const App: React.FC = () => {
     return(
@@ -16,6 +17,7 @@ const App: React.FC = () => {
                 <Route path="/new-note" element={ <NewNote/> }/>
                 <Route path="/admin-login" element={ <Login/> }/>
                 <Route path="/editor" element={ <Editor/> }/>
+                <Route path="/projects" element={ <Projects/> }/>
                 <Route path="/about" element={ <About/> }/>
                 <Route path="/contact" element={ <Contact/> } />
                 <Route path="/notes" element={ <PreviewNotes /> } /> 

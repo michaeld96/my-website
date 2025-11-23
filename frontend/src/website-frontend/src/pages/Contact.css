@@ -1,0 +1,57 @@
+h1
+{
+    text-align: center;
+}
+
+.contact-content
+{
+    padding: 30px;
+    margin: 0 auto;
+}
+
+.contact-form
+{
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+label
+{
+    font-weight: bold;
+}
+
+textarea
+{
+    margin-bottom: 20px;
+    min-height: 150px;
+    resize: none;
+}
+
+.captcha
+{
+    margin: 20px auto;
+}
+
+.success-text
+{
+    color: rgb(6, 154, 6);
+    text-align: center;
+    font-size: large;
+    font-weight: bold;
+}
+
+.error-text
+{
+    color: red;
+    text-align: center;
+    font-size: large;
+    font-weight: bold;
+}
+
+@media (max-width: 800px)
+{
+    h1
+    {
+        font-size: xx-large;
+    }
+}

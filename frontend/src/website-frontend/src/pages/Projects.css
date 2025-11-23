@@ -1,0 +1,15 @@
+.content 
+{
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 10px;
+    row-gap: 10px;
+}
+
+@media (max-width: 800px) 
+{
+    .content
+    {
+        padding: 0px;
+    }    
+}
