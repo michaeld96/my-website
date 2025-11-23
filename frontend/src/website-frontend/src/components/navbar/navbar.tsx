@@ -48,14 +48,14 @@ export const Navbar: React.FC = () => {
                     </NavLink>
                 </li>
             </ul>
-            {/* <div className="socials">
-                <a href="https://www.linkedin.com/in/michaeld96/" target='_blank' className='social-icon'>
+            <div className="socials">
+                <a href="https://www.linkedin.com/in/michaeld96/" target='_blank' className='socials-icon'>
                     <FontAwesomeIcon icon={faLinkedin} />
                 </a>
-                <a href="https://github.com/michaeld96" target='_blank'>
+                <a href="https://github.com/michaeld96" target='_blank' className='socials-icon'>
                     <FontAwesomeIcon icon={faSquareGithub} />
                 </a>
-            </div> */}
+            </div>
         </nav>
         </>
     );

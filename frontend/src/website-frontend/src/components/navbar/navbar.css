@@ -64,7 +64,13 @@
 .socials
 {
     margin: 0 auto;
-    /* margin-top: auto; */
+    margin-top: auto;
+}
+
+.socials-icon
+{
+    font-size: 30px;
+    color: white;
 }
 
 
@@ -123,7 +129,8 @@
         transform: translateX(0);
     }
 
-    .bar1, .bar2, .bar3 {
+    .bar1, .bar2, .bar3 
+    {
         width: 35px;
         height: 5px;
         background-color: white;
@@ -132,15 +139,32 @@
     }
 
     /* Rotate first bar */
-    .change .bar1 {
+    .change .bar1 
+    {
         transform: translate(0, 11px) rotate(-45deg);
     }
 
     /* Fade out the second bar */
-    .change .bar2 {opacity: 0;}
+    .change .bar2 
+    {
+        opacity: 0;
+    }
 
     /* Rotate last bar */
-    .change .bar3 {
+    .change .bar3 
+    {
         transform: translate(0, -11px) rotate(45deg);
+    }
+    .socials
+    {
+        z-index: 1100;
+        margin: 0 auto;
+        margin-top: 70%;
+    }
+
+    .socials-icon
+    {
+        font-size: 50px;
+        color: white;
     }
 }
