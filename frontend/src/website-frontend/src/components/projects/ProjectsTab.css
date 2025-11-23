@@ -66,11 +66,14 @@
     }
     h3
     {
+        font-size: xx-large;
         padding: 5px;
     }
     .summary
     {
         padding: 5px;
+        font-size: large;
+        margin: 0 auto;
     }
     .project-link-container
     {

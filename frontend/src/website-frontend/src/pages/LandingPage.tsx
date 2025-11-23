@@ -12,7 +12,7 @@ const notesSummary = `
     To see the things I've written, click on the "Notes" link. This will show all the schools or categories that subjects
     belong to. This is rendered in a Markdown style. Please note that these notes are my own and my interpretation of the topic.
     If you believe there was an incorrect statement, please feel free to open a issue on the project's GitHub page
-    <a href='https://github.com/michaeld96/my-website/issues'> here</a>. 
+    <a href='https://github.com/michaeld96/my-website/issues' target='_blank'> here</a>. 
 `
 const projectsSummary = `
     My "Projects" page is a high-level overview with some pictures of the projects I have worked on. There are two sections; 
