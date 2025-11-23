@@ -15,8 +15,8 @@ const ProjectsTab: React.FC<ProjectsTab> = ({title, summary, tags, imgs, git_lin
     return(
         <div className="projects-container">
             <div className="left">
-                <h3>{title}</h3>
-                <p className='summary'>
+                <h2 className='project-title'>{title}</h2>
+                <p className='project-summary'>
                     {summary}
                 </p>
                 <ul className="tags">

@@ -20,7 +20,7 @@ const Projects: React.FC = () => {
             <div className="content">
                 <h1 className='project-headings'>Personal Projects</h1>
                 <ProjectsTab
-                    title="Title1"
+                    title="Blog Website"
                     summary={blog_website_summary}
                     tags={blog_tech_list}
                     imgs={blog_imgs}
@@ -40,7 +40,7 @@ const Projects: React.FC = () => {
                     git_link="ij"
                     imgs={blog_imgs}
                 />
-                <h1>School Projects</h1>
+                <h1 className='project-headings'>School Projects</h1>
                 <ProjectsTab
                     title="Title4"
                     summary={blog_website_summary}

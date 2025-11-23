@@ -47,6 +47,10 @@
     padding: 5px;
     border-radius: 2px;
 }
+.project-summary
+{
+    font-size: large;
+}
 
 .project-link:hover
 {
@@ -55,6 +59,7 @@
 
 @media (max-width: 800px)
 {
+    
     .projects-container
     {
         grid-template-columns: 1fr;
@@ -64,12 +69,18 @@
         padding: 0px;
         overflow-y: hidden;
     }
-    h3
+    .project-headings
+    {
+        font-size: 45px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+    .project-title
     {
         font-size: xx-large;
         padding: 5px;
     }
-    .summary
+    .project-summary
     {
         padding: 5px;
         font-size: large;
