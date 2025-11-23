@@ -53,13 +53,40 @@
     gap: 10px;
 }
 
+.invalid-login-icon
+{
+    margin: 0 auto;
+    font-size: 200px;
+}
+
 .invalid-login 
 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-top: 100px;
+    display: grid;
+    grid-template-columns: 1fr;
     width: 100vw;
-    height: 100vh;
+}
+
+.landing-page-button
+{
+    background-color: grey;
+    width: fit-content;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 0 auto;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.landing-page-button > a
+{
+    color: white;
+    
+}
+
+.landing-page-button:hover
+{
+    background-color: #007BFF;
 }
 
 .preview-pane

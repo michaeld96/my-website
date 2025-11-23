@@ -8,6 +8,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import PreviewNotes from './pages/PreviewNotes';
 import Projects from './pages/Projects';
+import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
     return(
@@ -15,7 +16,7 @@ const App: React.FC = () => {
             <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/new-note" element={ <NewNote/> }/>
-                <Route path="/admin-login" element={ <Login/> }/>
+                <Route path="/admin" element={ <Login/> }/>
                 <Route path="/editor" element={ <Editor/> }/>
                 <Route path="/projects" element={ <Projects/> }/>
                 <Route path="/about" element={ <About/> }/>
@@ -24,6 +25,7 @@ const App: React.FC = () => {
                 <Route path="/notes/:schoolCode" element={ <PreviewNotes /> } />
                 <Route path="/notes/:schoolCode/:subjectCode/:subjectSlug" element={ <PreviewNotes /> } /> {/* when this url hits render this component. */}
                 <Route path="/notes/:schoolCode/:subjectCode/:subjectSlug/:noteSlug" element={ <PreviewNotes /> } />
+                <Route path='*' element={ <NotFound/>} />
             </Routes>
         </Router>
     )
