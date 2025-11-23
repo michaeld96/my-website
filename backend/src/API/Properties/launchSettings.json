@@ -21,7 +21,8 @@
         "JWT_ISSUER": "Michael Dick",
         "JWT_AUDIENCE": "Admin",
         "JWT_SECRET": "SuperSecretKeyThatIsLongEnough1234567890",
-        "AWS_BUCKET_NAME": "aws-myblog-images-bucket"
+        "AWS_BUCKET_NAME": "aws-myblog-images-bucket",
+        "RECAPTCHA_SECRET": "6LfKYxUsAAAAAHGrHrh5XY-ZUeRPSy1gu5aWtw5V"
       }
     },
     "https": {
@@ -36,7 +37,8 @@
         "JWT_ISSUER": "Michael Dick",
         "JWT_AUDIENCE": "Admin",
         "JWT_SECRET": "ThisIsA32CharacterLongSecretKeykdkajsndkasjdnaaldkgjadoigsdogisdjg",
-        "AWS_BUCKET_NAME": "aws-myblog-images-bucket"
+        "AWS_BUCKET_NAME": "aws-myblog-images-bucket",
+        "RECAPTCHA_SECRET": "6LfKYxUsAAAAAHGrHrh5XY-ZUeRPSy1gu5aWtw5V"
       }
     },
     "IIS Express": {
@@ -46,6 +48,6 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    }
+    },
   }
 }

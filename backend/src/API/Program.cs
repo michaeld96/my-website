@@ -2,6 +2,7 @@ using System.Text;
 using Amazon.S3;
 using AutoMapper;
 using Core.Interfaces;
+using Core.Models;
 using DotNetEnv;
 using Infrastructure.Data;
 using Infrastructure.Services;
@@ -84,6 +85,8 @@ builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp =>
     return new S3FileUploader(s3Client, Environment.GetEnvironmentVariable("AWS_BUCKET_NAME") ?? String.Empty);
 
 });
+// For Contact Controller.
+builder.Services.AddHttpClient();
 // Register NotesRepository (DI).
 builder.Services.AddScoped<INotesRepository, NotesRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
