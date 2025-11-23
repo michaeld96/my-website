@@ -15,8 +15,8 @@ const ProjectsTab: React.FC<ProjectsTab> = ({title, summary, tags, imgs, git_lin
     return(
         <div className="projects-container">
             <div className="left">
-                <h3>{title}</h3>
-                <p className='summary'>
+                <h2 className='project-title'>{title}</h2>
+                <p className='project-summary'>
                     {summary}
                 </p>
                 <ul className="tags">
@@ -26,14 +26,13 @@ const ProjectsTab: React.FC<ProjectsTab> = ({title, summary, tags, imgs, git_lin
                 </ul>
             </div>
             <div className="right">
-                {/* <img src={img_path} className='img-preview'/> */}
                 <Carousel slides={imgs}/>
                 {git_link != "" && (
                     <div className="project-link-container">
                     <a className='project-link' target= '_blank' href={git_link}>Check it out on GitHub! <FontAwesomeIcon icon={faGithub} /></a>
                     </div>
                 )}
-            </div>
+        </div>
         </div>
     )
 }

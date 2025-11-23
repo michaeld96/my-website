@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './navbar.css';
 import { NavLink } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLinkedin, faSquareGithub } from '@fortawesome/free-brands-svg-icons';
 
 export const Navbar: React.FC = () => {
     const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
@@ -46,6 +48,14 @@ export const Navbar: React.FC = () => {
                     </NavLink>
                 </li>
             </ul>
+            <div className="socials">
+                <a href="https://www.linkedin.com/in/michaeld96/" target='_blank' className='socials-icon'>
+                    <FontAwesomeIcon icon={faLinkedin} />
+                </a>
+                <a href="https://github.com/michaeld96" target='_blank' className='socials-icon'>
+                    <FontAwesomeIcon icon={faSquareGithub} />
+                </a>
+            </div>
         </nav>
         </>
     );

@@ -1,0 +1,48 @@
+.summary-container
+{
+    display: grid;
+    margin: 0 20px;
+    grid-template-columns: 150px 1fr;
+    margin-bottom: 10px;
+    background-color: rgb(56, 56, 56);
+    border-radius: 10px;
+}
+.summary-left
+{
+    font-size: 90px;
+    display: flex;           /* keeps icon centered vertically */
+    align-items: center;
+    justify-content: center;
+    margin: 10px ;
+    border-right: 2px solid rgba(255,255,255,0.2); /* the line */
+    padding-right: 20px;     /* space between line and icon */
+}
+.summary-right
+{
+    display: flex;
+    padding: 10px;
+    margin: 0 auto;
+    font-size: x-large;
+    justify-content: left;
+    width: 98%;
+}
+
+@media (max-width: 800px)
+{
+    .summary-container
+    {
+        grid-template-columns: 1fr;
+        grid-template-rows: 150px 1fr;
+    }
+    .summary-left
+    {
+        border-right: none;
+        border-bottom: 2px solid rgba(255,255,255,0.2);
+        height: 150px;
+        margin: 0px;
+    }
+    .summary-right
+    {
+        width: 95%;
+    }
+}

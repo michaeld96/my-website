@@ -23,6 +23,8 @@ import remarkGfm from 'remark-gfm';
 import remarkToc from 'remark-toc';
 import "katex/dist/katex.min.css";
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -742,7 +744,13 @@ const Editor: React.FC = () => {
     )}
     {isAuth === false && (
         <div className='invalid-login'>
-            <h2>Invalid login. Please return to login page.</h2>
+            <FontAwesomeIcon icon={faEyeSlash} className='invalid-login-icon'/>
+            <h1>Invalid credentials. Please return to login page.</h1>
+            <div className="landing-page-button">
+            <a href='/'>
+                Return to Landing Page
+            </a>
+            </div>
         </div>
     )}
     </>
