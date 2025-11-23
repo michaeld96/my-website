@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navbar } from "../components/navbar/Navbar";
 import ReCAPTCHA from "react-google-recaptcha";
+import './Contact.css'
 
 type FormData = {
     sender: string;
@@ -67,8 +68,8 @@ const Contact: React.FC = () => {
         <div className="app-layout">
             <Navbar/>
             <div className="contact-content">
-                <h1>Send me an Email</h1>
-                <form onSubmit={handleSubmit}>
+                <h1>Send Me an Email</h1>
+                <form onSubmit={handleSubmit} className="contact-form">
                     <label>Your Email</label>
                     <input 
                         id="sender"
@@ -93,6 +94,7 @@ const Contact: React.FC = () => {
                     <ReCAPTCHA
                         sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY as string}
                         onChange={handleCAPTCHA}
+                        className="captcha"
                      />
                      <button
                         type="submit"
