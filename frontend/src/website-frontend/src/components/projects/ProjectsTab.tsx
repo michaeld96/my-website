@@ -26,7 +26,6 @@ const ProjectsTab: React.FC<ProjectsTab> = ({title, summary, tags, imgs, git_lin
                 </ul>
             </div>
             <div className="right">
-                {/* <img src={img_path} className='img-preview'/> */}
                 <Carousel slides={imgs}/>
                 {git_link != "" && (
                     <div className="project-link-container">

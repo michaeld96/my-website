@@ -18,6 +18,7 @@ const Projects: React.FC = () => {
         <div className="app-layout">
             <Navbar />
             <div className="content">
+                <h1>Personal Projects</h1>
                 <ProjectsTab
                     title="Title1"
                     summary={blog_website_summary}
@@ -39,11 +40,12 @@ const Projects: React.FC = () => {
                     git_link="ij"
                     imgs={blog_imgs}
                 />
+                <h1>School Projects</h1>
                 <ProjectsTab
                     title="Title4"
                     summary={blog_website_summary}
                     tags={[".NET", "TypeScript", "React", "EntityFramework", "Vite", "AWS"]}
-                    git_link="ij"
+                    git_link=""
                     imgs={blog_imgs}
                 />
             </div>

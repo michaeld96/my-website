@@ -1,3 +1,9 @@
+h1
+{
+    margin-top: -5px;
+    text-align: left;
+    margin-bottom: -5px;
+}
 .content 
 {
     display: grid;
