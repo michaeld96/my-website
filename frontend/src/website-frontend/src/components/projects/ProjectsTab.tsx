@@ -33,7 +33,7 @@ const ProjectsTab: React.FC<ProjectsTab> = ({title, summary, tags, imgs, git_lin
                     <a className='project-link' target= '_blank' href={git_link}>Check it out on GitHub! <FontAwesomeIcon icon={faGithub} /></a>
                     </div>
                 )}
-            </div>
+        </div>
         </div>
     )
 }
