@@ -18,7 +18,7 @@ const Projects: React.FC = () => {
         <div className="app-layout">
             <Navbar />
             <div className="content">
-                <h1>Personal Projects</h1>
+                <h1 className='project-headings'>Personal Projects</h1>
                 <ProjectsTab
                     title="Title1"
                     summary={blog_website_summary}
