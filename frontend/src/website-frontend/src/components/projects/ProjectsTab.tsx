@@ -16,9 +16,7 @@ const ProjectsTab: React.FC<ProjectsTab> = ({title, summary, tags, imgs, git_lin
         <div className="projects-container">
             <div className="left">
                 <h2 className='project-title'>{title}</h2>
-                <p className='project-summary'>
-                    {summary}
-                </p>
+                <p className='project-summary' dangerouslySetInnerHTML={{ __html: summary}} />
                 <ul className="tags">
                     {tags.map((tag) => {
                         return <li key={tag} className='tag'>{tag}</li>

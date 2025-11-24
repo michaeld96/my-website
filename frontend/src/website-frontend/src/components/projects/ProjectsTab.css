@@ -50,6 +50,7 @@
 .project-summary
 {
     font-size: large;
+    padding: 5px;
 }
 
 .project-link:hover
