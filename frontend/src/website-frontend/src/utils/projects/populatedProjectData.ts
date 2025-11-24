@@ -1,18 +1,16 @@
 import { ProjectData } from "../../types/ProjectData"
-import { loadAssets } from "./loadAssets"
 const getPopulatedProjectData = ():ProjectData[] => {
-    const assets = loadAssets();
     return [
         {
             // Blog
             name: 'Personal Website and Knowledge Hub',
-            category: 'person',
+            category: 'personal',
             summary: `This website serves two purposes, first, it serves as my portfolio, second, it holds all of my notes
             that I have kept over the years. These notes are from school, industry, or things I found interesting. This site has
             an admin portal where the admin has an editor at their disposal. These notes are then saved and displayed in the "Notes"
             section of this site. I wanted to learn more about full-stack develop and infrastructure`,
             tags: [".NET", "TypeScript", "React", "EntityFramework", "Vite", "AWS", "Terraform"],
-            imgs: assets['blog-website'],
+            assetKey: 'blog-website',
             gitHubLink: 'https://github.com/michaeld96/my-website'
         },
         {
@@ -24,7 +22,7 @@ const getPopulatedProjectData = ():ProjectData[] => {
             done with SDL2, and Box2D is used for the physics system. Check out the demo 
             <a href='https://www.youtube.com/watch?v=iQhokAynH5I' target='_blank'>here</a>!`,
             tags: ['C++', 'DearImGUI', 'SDL2', 'Lua', 'JSON', 'glm', 'Box2D'],
-            imgs: assets['eMgine'],
+            assetKey: 'eMgine',
             gitHubLink: 'https://github.com/michaeld96/eMgine'
         },
         {
@@ -36,8 +34,18 @@ const getPopulatedProjectData = ():ProjectData[] => {
             software was written in R. The link to the CRAN package is 
             <a href='https://cran.r-project.org/web/packages/apmx/index.html' target='_blank'>here</a>.`,
             tags: ['R'],
-            imgs: assets['apmx'],
+            assetKey: 'apmx',
             gitHubLink: 'https://github.com/stephen-amori/apmx'
+        },
+        {
+            name: 'Ray Tracer',
+            category: 'school',
+            summary: `Created a distributed ray tracer that could handle any number of light sources, used BVH (bounding volume 
+            hierarchy) to accelerate the program, handle reflections and refractions, the ability for focusing, used Phong Shading,
+            and could handle diffuse surfaces. This project used the Processing library for the rendering portion.`,
+            tags: ['Java', 'Processing'],
+            assetKey: 'cs6491',
+            gitHubLink: '' // no link for school projects.
         }
     ];
 };
