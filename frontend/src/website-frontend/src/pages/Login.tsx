@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ForgotPassword } from '../components/login/ForgotPassword';
 
 const API_BASE: string = import.meta.env.VITE_API_BASE; // importing from .env file. Vite know when to read .evn.development vs prod.
 
@@ -8,6 +9,7 @@ const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [forgotPopup, setForgotPopup] = useState<boolean>(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -46,6 +48,8 @@ const Login: React.FC = () => {
     }
 
     return (
+        <>
+        {forgotPopup && (<ForgotPassword/>)}
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
             <h1>Admin Login</h1>
             {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -67,10 +71,11 @@ const Login: React.FC = () => {
                 <div className="options" style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                     {/* Don't forget the type! If the type is not here both buttons will fire! */}
                     <button type='submit' onClick={handleLogin} style={{ padding: '10px 20px' }}>Login</button>
-                    <button type='button' onClick={() => alert('ok')}>Forgot Password?</button>
+                    <button type='button' onClick={() => setForgotPopup(true)}>Forgot Password?</button>
                 </div>
             </form>
         </div>
+        </>
     );
 };
 
