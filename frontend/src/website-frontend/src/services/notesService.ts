@@ -2,9 +2,8 @@ import axios from "axios";
 import { School } from "../types/school";
 import { Subject } from "../types/subject";
 import { Note } from "../types/note";
-// import { title } from "process";
 
-const API_BASE = 'http://localhost:5003/api/notes';
+const API_BASE = import.meta.env.VITE_API_BASE + '/notes';
 
 const api = axios.create();
 

@@ -2,7 +2,6 @@ import { ProjectData } from "../../types/ProjectData"
 const getPopulatedProjectData = ():ProjectData[] => {
     return [
         {
-            // Blog
             name: 'Personal Website and Knowledge Hub',
             category: 'personal',
             summary: `This website serves two purposes, first, it serves as my portfolio, second, it holds all of my notes

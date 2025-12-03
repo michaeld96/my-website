@@ -486,3 +486,5 @@ $RECYCLE.BIN/
 # env files.
 appsettings.json
 launchSettings.json
+.env.development
+.env.production

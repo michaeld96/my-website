@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const API_BASE: string = import.meta.env.VITE_API_BASE; // importing from .env file. Vite know when to read .evn.development vs prod.
+
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -9,15 +11,10 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // const token = localStorage.getItem('token');
-        // if (token)
-        // {
-        //     navigate('/editor');
-        // }
         const token = localStorage.getItem('token');
         if (token) {
             // Need to see if this token is valid.
-            axios.get('http://localhost:5003/api/auth/me', {
+            axios.get(`${API_BASE}/auth/me`, { 
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -29,7 +26,7 @@ const Login: React.FC = () => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://localhost:5003/api/auth', {
+            const response = await axios.post(`${API_BASE}/auth`, {
                 username,
                 password,
             });
@@ -67,7 +64,11 @@ const Login: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     style={{ display: 'block', margin: '10px auto', padding: '10px', width: '300px' }}
                 />
-                <button onClick={handleLogin} style={{ padding: '10px 20px' }}>Login</button>
+                <div className="options" style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                    {/* Don't forget the type! If the type is not here both buttons will fire! */}
+                    <button type='submit' onClick={handleLogin} style={{ padding: '10px 20px' }}>Login</button>
+                    <button type='button' onClick={() => alert('ok')}>Forgot Password?</button>
+                </div>
             </form>
         </div>
     );
