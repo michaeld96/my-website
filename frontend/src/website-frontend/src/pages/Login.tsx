@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ForgotPassword } from '../components/login/ForgotPassword';
 
 const API_BASE: string = import.meta.env.VITE_API_BASE; // importing from .env file. Vite know when to read .evn.development vs prod.
 
 const Login: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [username, setUsername] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
     const [forgotPopup, setForgotPopup] = useState<boolean>(false);
     const navigate = useNavigate();
 
@@ -47,9 +47,60 @@ const Login: React.FC = () => {
         await handleLogin();
     }
 
+    const handleForgotPasswordOn = () => {
+        setForgotPopup(true);
+    }
+
+    const handleForgotPasswordOff = () => {
+        setForgotPopup(false);
+    }
+
+    const handlePasswordReset = () => {
+        alert('TODO: Implement backend.')
+    }
+
     return (
         <>
-        {forgotPopup && (<ForgotPassword/>)}
+        {forgotPopup && (        
+            <div className="forgot-password-container"
+            style={{position: 'fixed', 
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dimmed background.
+                    display: 'flex',
+                    justifyContent: 'center', // Centers everything horizontally.
+                    alignItems: 'center',     // Center everything vertically.
+                    zIndex: 1000
+            }}>
+            <div className="modal-content"
+                    style={{
+                        backgroundColor: 'rgba(0,0,0,0.4)',
+                        padding: '30px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                        textAlign: 'center',
+                        minWidth: '300px',
+                        color: 'white'
+                    }}
+                >
+                    <h2>Reset Password</h2>
+                    <p>Enter your email to receive a reset link.</p>
+                    <form onSubmit={handlePasswordReset}>
+                        <input type="text"
+                         onChange={(e) => setEmail(e.target.value)}
+                         value={email}
+                         style={{width: '100%', height: '20px'}}
+                         />
+                    <div className="options" style={{ justifyContent: 'center', gap: '20px'}}>
+                        <button type='submit' style={{margin: '0 20px 0 0 '}}>Submit</button>
+                        <button type='button' onClick={handleForgotPasswordOff} style={{ marginTop: '15px' }}>Close</button> 
+                    </div>
+                </form>
+                </div>
+            </div>
+        )}
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
             <h1>Admin Login</h1>
             {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -71,7 +122,7 @@ const Login: React.FC = () => {
                 <div className="options" style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                     {/* Don't forget the type! If the type is not here both buttons will fire! */}
                     <button type='submit' onClick={handleLogin} style={{ padding: '10px 20px' }}>Login</button>
-                    <button type='button' onClick={() => setForgotPopup(true)}>Forgot Password?</button>
+                    <button type='button' onClick={handleForgotPasswordOn}>Forgot Password?</button>
                 </div>
             </form>
         </div>
