@@ -578,7 +578,7 @@ const Editor: React.FC = () => {
             cancelLable='Cancel'
         />
     )}
-    { isAuth === true && ( // Checking JWT, and if it's 
+    { isAuth === true && ( // Checking JWT, and if it's valid, render the rest.
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
             {/* Left Panel: Collapsible Menu */}
             <div style={{ width: '22%', padding: '10px', borderRight: '1px solid #ccc', overflow: `scroll` }}>

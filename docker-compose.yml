@@ -1,13 +1,28 @@
 services:
-  website-mssql:
+  db:
     image: mcr.microsoft.com/azure-sql-edge
     environment:
       ACCEPT_EULA: "1"
-      MSSQL_SA_PASSWORD: "Password@1"
+      MSSQL_SA_PASSWORD: ${MSSQL_PASSWORD}
     ports:
       - "1433:1433"
     volumes:
       - db_data:/var/opt/mssql
-
+  
+  api:
+    build:
+      context: ./backend/src
+      dockerfile: "Dockerfile"
+    container_name: notes-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "${CONNECTION_STRING}"
+      JwtSettings__Issuer: "https://michaeldick.io"
+      JwtSettings__Audience: "https://michaeldick.io"
+      JwtSettings__Secret: "${JWT_SECRET}"
+    ports:
+      - "5003:8080"
+    depends_on:
+      - db
 volumes:
   db_data:

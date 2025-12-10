@@ -13,6 +13,7 @@ public class NotesContext : DbContext
     public DbSet<Note> Notes { get; set; } = null!;
     public DbSet<Tag> Tags { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
+    public DbSet<PasswordResetRequest> PasswordResetRequests { get; set; } = null!;
 
     public NotesContext(DbContextOptions<NotesContext> options) : base(options)
     {
@@ -33,6 +34,18 @@ public class NotesContext : DbContext
             .HasMany(n => n.Tags)
             .WithMany(t => t.Notes)
             .UsingEntity("NoteTag");
+        
+        // Defining the relationship for user to password reset request.
+        b.Entity<PasswordResetRequest>()
+            .HasOne(r => r.User)
+            .WithMany(u => u.PasswordResetRequests)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Fast lookup by token and ensures no dupes.
+        b.Entity<PasswordResetRequest>()
+            .HasIndex(r => r.TokenHash)
+            .IsUnique();
 
         b.Entity<School>().HasData(
             new School { Id = 1, Code = "UM", Name = "University of Michigan" },

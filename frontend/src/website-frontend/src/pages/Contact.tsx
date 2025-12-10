@@ -9,8 +9,6 @@ type FormData = {
     message: string;
 };
 
-
-
 const Contact: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({subject: '', message: '', sender: ''});
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
