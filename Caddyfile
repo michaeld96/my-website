@@ -2,20 +2,21 @@
 	# List to any port on port 80.
 	# root folder foy static files, the frontend.
 	root * /srv/site # * here means all requests go to these react files.
-	file_server # enables static file serving from the root directory.
 
-	# when the path starts with /api/ do things in this block.
-	@api path /api/*
-	# routes us to the container named api and to it's port 8080.
-	reverse_proxy @api api:8080 {
-		header_up Host {http.request.host}
-		header_up X-Real-IP {http.request.remote}
-		header_up X-Forwarded-For {http.request.remote}
-		header_up X-Forwarded-Proto {http.request.scheme}
+	# Handle API requests exclusively
+	handle /api/* {
+		# routes us to the container named api and to it's port 8080.
+		reverse_proxy api:8080 {
+			header_up Host {http.request.host}
+			header_up X-Real-IP {http.request.remote}
+			header_up X-Forwarded-For {http.request.remote}
+			header_up X-Forwarded-Proto {http.request.scheme}
+		}
 	}
 
-	# This runs anything that is not handled by the handle above.
+	# Handle everything else (Frontend static files + SPA fallback)
 	handle {
+		file_server # enables static file serving from the root directory.
 		try_files {path} /index.html
 	}
 }
