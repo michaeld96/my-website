@@ -25,7 +25,7 @@ import "katex/dist/katex.min.css";
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import 'highlight.js/styles/github.css'; 
+import 'highlight.js/styles/atom-one-dark.css';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.

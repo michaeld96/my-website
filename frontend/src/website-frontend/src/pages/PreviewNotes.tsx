@@ -9,12 +9,12 @@ import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
-import rehypeRaw from "rehype-raw";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkGfm from "remark-gfm";
 import { useNavigate, useParams } from "react-router-dom";
 import { School } from "../types/school";
 import BreadCrumb from "../components/preview/BreadCrumbs";
+// import 'highlight.js/styles/atom-one-dark.css';
 
 const slugify = (s: string) =>
     s.toLowerCase()
@@ -248,9 +248,8 @@ const PreviewNotes: React.FC = () => {
                         remarkPlugins={[remarkGfm, remarkMath]}
                         rehypePlugins={[
                             rehypeKatex,
-                            rehypeHighlight,
-                            rehypeAutolinkHeadings,
-                            rehypeRaw, 
+                            [rehypeHighlight, { ignoreMissing: true }],
+                            rehypeAutolinkHeadings 
                         ]}
                         >
                         {selectedNote.markdown}

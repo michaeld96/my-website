@@ -31,16 +31,13 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct)
         {
-            
             if (request == null)
             {
-                
                 return BadRequest("Auth: request was empty");
             }
             var user = await _uow.NotesRepo.GetUserOrNullAsync(request.Username, ct);
             if (user == null)
             {
-                
                 return BadRequest("Auth: Cannot find user to assign JWT to.");
             }
 
@@ -49,7 +46,6 @@ namespace API.Controllers
 
             if (!isPasswordValid)
             {
-                
                 return Unauthorized("Invalid username or password.");
             }
 
@@ -57,8 +53,7 @@ namespace API.Controllers
             var token = GenerateJwtToken(user.Username);
             if (token == null)
             {
-                
-                return StatusCode(500, "JWT ConfigConfigurationuation missing (Issuer,Audience,Secret)");
+                return StatusCode(500, "JWT Config: Configuration missing (Issuer, Audience, Secret)");
             }
             else
             {
@@ -79,13 +74,9 @@ namespace API.Controllers
         private string? GenerateJwtToken(string username)
         {
             var jwtSettings = _config.GetSection("JwtSettings");
-            
             var jwtSecret = _config["JwtSettings:Secret"] ?? Environment.GetEnvironmentVariable("JWT_SECRET");
-            
             var issuer = _config["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("JWT_ISSUER");
-            
             var audience = _config["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE");
-            
 
             if (string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience) || string.IsNullOrWhiteSpace(jwtSecret))
             {
