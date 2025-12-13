@@ -25,6 +25,7 @@ import "katex/dist/katex.min.css";
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import 'highlight.js/styles/atom-one-dark.css';
 
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
@@ -56,7 +57,7 @@ const Editor: React.FC = () => {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isAuth, setIsAuth] = useState<boolean | null>(null);
     const navigate = useNavigate();
-    // const baseUrl = process.env.REACT_APP_API_URL;
+    const API_BASE = import.meta.env.VITE_API_BASE + '/auth';
 
     function check_school_subject_title_selected(): boolean
      {
@@ -140,7 +141,7 @@ const Editor: React.FC = () => {
             setIsAuth(false);
             return;
         }
-        axios.get('http://localhost:5003/api/auth/me', {
+        axios.get(`${API_BASE}/me`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

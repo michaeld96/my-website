@@ -24,5 +24,18 @@ services:
       - "5003:8080"
     depends_on:
       - db
+  
+  web: 
+    image: caddy:2 # Offical Caddy web server from Docker Hub.
+    container_name: notes-web
+    ports:
+      - "80:80"
+    volumes: 
+      # Caddy configurations. ro means read only, container cannot modify this file.
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # static files for the frontend build.
+      - ./frontend/src/website-frontend/dist:/srv/site:ro
+    depends_on:
+      - api
 volumes:
   db_data:
