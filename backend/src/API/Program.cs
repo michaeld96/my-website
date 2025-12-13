@@ -9,7 +9,8 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Data.SqlClient; // make sure this is at the top
+using Microsoft.Data.SqlClient;
+using System.IdentityModel.Tokens.Jwt; // make sure this is at the top
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -38,6 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtIssuer,
             ValidAudience = jwtAudience,
+            NameClaimType = JwtRegisteredClaimNames.Sub,  // TODO: need this?
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 jwtSecret ?? throw new ArgumentNullException("JWT secret not configured")
             )),
