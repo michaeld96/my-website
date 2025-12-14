@@ -488,3 +488,10 @@ appsettings.json
 launchSettings.json
 .env.development
 .env.production
+
+# Terraform files.
+*.tfstate*
+*.tfvars
+*.terraform/
+terraform.tfstate.d/
+crash.log&
