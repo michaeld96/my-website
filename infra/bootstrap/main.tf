@@ -1,3 +1,4 @@
+# This file is to create a remote backend.
 terraform {
   required_version = ">= 1.6.0"
   required_providers {
@@ -45,22 +46,12 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "tf_state" {
 
 # Ensure the state doesn't get destroyed.
 resource "aws_s3_bucket_lifecycle_configuration" "tf_state" {
-    bucket = aws_s3_bucket.tf_state.id
-    rule {
-        id = "keep-noncurrent-versions"
-        status = "Enabled"
-        noncurrent_version_expiration {
-          noncurrent_days = 90
-        }
+  bucket = aws_s3_bucket.tf_state.id
+  rule {
+    id     = "keep-noncurrent-versions"
+    status = "Enabled"
+    noncurrent_version_expiration {
+      noncurrent_days = 90
     }
-}
-
-resource "aws_dynamodb_table" "tf_lock" {
-    name = var.lock_table_name
-    billing_mode = "PAY_PER_REQUEST"
-    hash_key = "LockId"
-    attribute {
-      name = "LockId"
-      type = "S"
-    }
+  }
 }

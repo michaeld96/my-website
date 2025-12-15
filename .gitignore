@@ -494,4 +494,4 @@ launchSettings.json
 *.tfvars
 *.terraform/
 terraform.tfstate.d/
-crash.log&
+crash.log

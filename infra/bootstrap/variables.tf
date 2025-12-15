@@ -9,6 +9,6 @@ variable "state_bucket_name" {
 }
 
 variable "lock_table_name" {
-  type = string
+  type    = string
   default = "michaeldickio_lock_table"
 }
