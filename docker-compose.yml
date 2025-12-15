@@ -20,11 +20,20 @@ services:
       JwtSettings__Issuer: "https://michaeldick.io"
       JwtSettings__Audience: "https://michaeldick.io"
       JwtSettings__Secret: "${JWT_SECRET}"
+      Recaptcha__SecretKey: "${RECAPTCHA_SECRET}"
+      AWS__Region: "us-east-2"
+      AWS__Profile: "default"
     ports:
       - "5003:8080"
     depends_on:
       - db
-  
+  frontend_builder:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./frontend/src/website-frontend:/app:cached
+      - frontend_dist:/srv/site
+    command: /bin/sh -lc "npm ci && npm run build && cp -r ./dist/* /srv/site/"
   web: 
     image: caddy:2 # Offical Caddy web server from Docker Hub.
     container_name: notes-web
@@ -37,5 +46,7 @@ services:
       - ./frontend/src/website-frontend/dist:/srv/site:ro
     depends_on:
       - api
+      - frontend_builder
 volumes:
   db_data:
+  frontend_dist:
