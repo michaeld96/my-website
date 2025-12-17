@@ -1,9 +1,0 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0
-WORKDIR /src
-COPY . .
-ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
-ENV PATH="/root/.dotnet/tools:${PATH}"
-# install into a tool-path and specify a version (adjust version if needed)
-RUN dotnet tool install --tool-path /root/.dotnet/tools dotnet-ef --version 9.0.0 || \
-    dotnet tool install --tool-path /root/.dotnet/tools dotnet-ef
-ENTRYPOINT ["sh", "-c", "dotnet ef database update --project Infrastructure/Infrastructure.csproj --startup-project API/API.csproj"]
