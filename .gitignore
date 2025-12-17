@@ -495,3 +495,4 @@ launchSettings.json
 *.terraform/
 terraform.tfstate.d/
 crash.log
+.vscode
