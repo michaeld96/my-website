@@ -55,6 +55,7 @@ services:
     container_name: notes-web
     ports:
       - "80:80"
+      - "443:443"
     volumes: 
       # Caddy configurations. ro means read only, container cannot modify this file.
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
