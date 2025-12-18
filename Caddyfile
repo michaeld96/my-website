@@ -2,6 +2,7 @@
 	# List to any port on port 80.
 	# root folder foy static files, the frontend.
 	root * /srv/site # * here means all requests go to these react files.
+	encode gzip # compresses html, css, and js before sending to the browser.
 
 	# Handle API requests exclusively
 	handle /api/* {
