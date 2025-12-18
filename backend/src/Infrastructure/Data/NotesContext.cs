@@ -123,7 +123,7 @@ public class NotesContext : DbContext
         );
 
         b.Entity<User>().HasData(
-            new User { Id = 1, Username = "mike", PasswordHash = "mikedick1" }
+            new User { Id = 1, Username = "mike", PasswordHash = "$2a$12$58lIBD9ybdFElYutT9Bp9.MHDgInFH5BRpofb6XMOm31uqx5mKnMe" }
         );
     }
 }

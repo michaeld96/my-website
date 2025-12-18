@@ -27,6 +27,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import 'highlight.js/styles/atom-one-dark.css';
 
+const API_AUTH_BASE = import.meta.env.VITE_API_BASE + '/auth';
+const API_NOTES_BASE = import.meta.env.VITE_API_BASE + '/notes';
+
 const Editor: React.FC = () => {
     // returns state value, and a function to update the state.
     const [schools, setSchools] = useState<School[]>([]);
@@ -57,7 +60,6 @@ const Editor: React.FC = () => {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isAuth, setIsAuth] = useState<boolean | null>(null);
     const navigate = useNavigate();
-    const API_BASE = import.meta.env.VITE_API_BASE + '/auth';
 
     function check_school_subject_title_selected(): boolean
      {
@@ -141,7 +143,7 @@ const Editor: React.FC = () => {
             setIsAuth(false);
             return;
         }
-        axios.get(`${API_BASE}/me`, {
+        axios.get(`${API_AUTH_BASE}/me`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -443,8 +445,7 @@ const Editor: React.FC = () => {
                 // upload the file to the backend.
                 const formData = new FormData();
                 formData.append('file', file);
-
-                const response = await axios.post('http://localhost:5003/api/notes/uploadImage', formData, {
+                const response = await axios.post(`${API_NOTES_BASE}/uploadImage`, formData, {
                     headers: { 
                         'Content-Type': `multipart/form-data`,
                         ...(token ? { Authorization: `Bearer ${token}` } : {})

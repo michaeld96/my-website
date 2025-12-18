@@ -8,7 +8,14 @@ services:
       - "1433:1433"
     volumes:
       - db_data:/var/opt/mssql
-  
+  migrator:
+    build:
+      context: ./backend/src
+      dockerfile: Dockerfile.migrator
+    environment:
+      ConnectionStrings__DefaultConnection: "${CONNECTION_STRING}"
+    depends_on:
+      - db
   api:
     build:
       context: ./backend/src
@@ -20,11 +27,29 @@ services:
       JwtSettings__Issuer: "https://michaeldick.io"
       JwtSettings__Audience: "https://michaeldick.io"
       JwtSettings__Secret: "${JWT_SECRET}"
+      Recaptcha__SecretKey: "${RECAPTCHA_SECRET}"
+      RECAPTCHA_SECRET: "${RECAPTCHA_SECRET}"
+      AWS_REGION: "${AWS_REGION}"
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_BUCKET_NAME: "${AWS_BUCKET_NAME}"
     ports:
       - "5003:8080"
     depends_on:
-      - db
-  
+      db:
+        condition: service_started
+      migrator:
+        condition: service_completed_successfully
+  frontend_builder:
+    image: node:20
+    working_dir: /app
+    environment:
+      - VITE_API_BASE=/api
+      - VITE_RECAPTCHA_SITE_KEY=6LciRBYsAAAAAJDsjziEAaMDCntCmTc1YmJLNQJG
+    volumes:
+      - ./frontend/src/website-frontend:/app:cached
+      - frontend_dist:/srv/site
+    command: /bin/sh -lc "npm ci --prefer-offline --no-audit --network-timeout=600000 || (sleep 2 && npm ci --prefer-offline --no-audit --network-timeout=600000) && npm run build && cp -r ./dist/* /srv/site/"
   web: 
     image: caddy:2 # Offical Caddy web server from Docker Hub.
     container_name: notes-web
@@ -34,8 +59,12 @@ services:
       # Caddy configurations. ro means read only, container cannot modify this file.
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       # static files for the frontend build.
-      - ./frontend/src/website-frontend/dist:/srv/site:ro
+      - frontend_dist:/srv/site:ro
     depends_on:
-      - api
+      api:
+        condition: service_started
+      frontend_builder:
+        condition: service_completed_successfully
 volumes:
   db_data:
+  frontend_dist:

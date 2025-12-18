@@ -32,7 +32,9 @@ namespace API.Controllers
             }
 
             // Ping Google and see if the CAPTCHA is the same.
-            var recaptchaSecret = _config["RECAPTCHA_SECRET"]; // Getting variable from launchSettings.json
+            var recaptchaSecret = _config["RECAPTCHA_SECRET"] // Getting variable from launchSettings.json
+                ?? Environment.GetEnvironmentVariable("RECAPTCHA_SECRET");
+            
             if (string.IsNullOrEmpty(recaptchaSecret))
             {
                 return StatusCode(500, new { message = "CAPTCHA not configured." });
