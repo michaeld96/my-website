@@ -58,8 +58,8 @@ services:
       - "443:443"
     volumes: 
       # Caddy configurations. ro means read only, container cannot modify this file.
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       # static files for the frontend build.
+      # Caddyfile volume le will be inserted in here when running the command `docker compose -f docker-compose.yml -f docker-compose.<env>.yml up -d --build`
       - frontend_dist:/srv/site:ro
       - caddy_data:/data    # Stores certificates.
       - caddy_config:/config # Stores config JSON.

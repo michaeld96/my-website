@@ -1,0 +1,8 @@
+services:
+  api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+  web:
+    volumes:
+      # Caddy configurations. ro means read only, container cannot modify this file.
+      - ./caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro

@@ -17,4 +17,4 @@ jobs:
                     cd my-website
                     git pull
                     docker compose down
-                    docker compose up -d --build
+                    make run-prod
