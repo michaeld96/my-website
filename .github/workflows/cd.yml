@@ -1,23 +1,23 @@
-name: CD
-on:
-    pull_request:
-        branches: [ "main" ]
-    push: 
-        branches: [ "main" ]
-jobs:
-    deploy:
-        name: deploy
-        runs-on: ubuntu-latest
-        steps: 
-            - name: Deploy over SSH
-              uses: appleboy/ssh-action@v1.2.4
-              with:
-                host: ${{ secrets.LIGHTSAIL_HOST }}
-                username: ${{ secrets.LIGHTSAIL_USER }}
-                key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
-                script: |
-                    cd my-website
-                    git pull
-                    docker compose down
-                    docker compose up -d --build
+# name: CD
+# on:
+#     pull_request:
+#         branches: [ "main" ]
+#     push: 
+#         branches: [ "main" ]
+# jobs:
+#     deploy:
+#         name: deploy
+#         runs-on: ubuntu-latest
+#         steps: 
+#             - name: Deploy over SSH
+#               uses: appleboy/ssh-action@v1.2.4
+#               with:
+#                 host: ${{ secrets.LIGHTSAIL_HOST }}
+#                 username: ${{ secrets.LIGHTSAIL_USER }}
+#                 key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+#                 script: |
+#                     cd my-website
+#                     git pull
+#                     docker compose down
+#                     docker compose up -d --build
 
