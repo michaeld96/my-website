@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './navbar.css';
+import './Navbar.css';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLinkedin, faSquareGithub } from '@fortawesome/free-brands-svg-icons';
