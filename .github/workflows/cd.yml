@@ -17,4 +17,4 @@ jobs:
                     cd my-website
                     git pull
                     docker compose down
-                    make run-prod
+                    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
