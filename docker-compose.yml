@@ -45,7 +45,7 @@ services:
     working_dir: /app
     environment:
       - VITE_API_BASE=/api
-      - VITE_RECAPTCHA_SITE_KEY=6LciRBYsAAAAAJDsjziEAaMDCntCmTc1YmJLNQJG
+      - VITE_RECAPTCHA_SITE_KEY=6LckEDQsAAAAAClvRNXI2ddvIZlkK-Zs3hIMC3yq
     volumes:
       - ./frontend/src/website-frontend:/app:cached
       - frontend_dist:/srv/site
