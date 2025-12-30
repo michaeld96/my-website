@@ -1,6 +1,9 @@
+using Core.Interfaces;
 using Core.Models;
+using Infrastructure.Services.Email;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
@@ -10,12 +13,17 @@ namespace API.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
-        public ContactController(IHttpClientFactory httpClientFactory, IConfiguration config)
+        private readonly IEmailService _ses;
+        private readonly EmailOptions _emailOptions;
+        public ContactController(IHttpClientFactory httpClientFactory, IConfiguration config, EmailOptions emailOptions, IEmailService ses)
         {
             _httpClientFactory = httpClientFactory;
             _config = config;
+            _emailOptions = emailOptions;
+            _ses = ses;
         }
 
+        [EnableRateLimiting("contact")]
         [HttpPost]
         public async Task<IActionResult> VerifyCaptcha([FromBody] ContactRequest request)
         {
@@ -62,9 +70,24 @@ namespace API.Controllers
                 return BadRequest(new {message = "CAPTCHA validation failed."});
             }
 
-            // TODO: Send email.
+            var email = new ContactEmail(
+                request.Sender,
+                _emailOptions.ToAddress,
+                request.Subject,
+                request.Message,
+                Request.Headers.UserAgent.ToString(),
+                Request.HttpContext.Connection.RemoteIpAddress?.ToString()
+            );
 
-            return Ok( new { message = "Message sent successfully." });
+            try
+            {
+                await _ses.SendContactEmailAsync(email, HttpContext.RequestAborted);
+                return Ok(new {message = "Message sent successfully"});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"ERROR: Sending Email Via SES. Exception is: {ex.Message}");
+            }
         }
     }
 }

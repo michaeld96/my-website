@@ -11,7 +11,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
-using Infrastructure.Services.S3; // make sure this is at the top
+using Infrastructure.Services.S3;
+using Infrastructure.Services.Email;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.SimpleEmail;
+using Microsoft.Extensions.Options;
+using System.Threading.RateLimiting; // make sure this is at the top
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -78,10 +83,11 @@ builder.Services.AddCors(options =>
     });
 });
 
+// AWS Options.
 var awsOptions = builder.Configuration.GetAWSOptions("AWS");
 builder.Services.AddDefaultAWSOptions(awsOptions);
+// S3 bucket.
 builder.Services.AddAWSService<IAmazonS3>();
-
 var bucketSettings = Environment.GetEnvironmentVariable("AWS_BUCKET_NAME");
 builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp => 
 {
@@ -89,6 +95,39 @@ builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp =>
     return new S3FileUploader(s3Client, Environment.GetEnvironmentVariable("AWS_BUCKET_NAME") ?? String.Empty);
 
 });
+// SES.
+builder.Services.AddSingleton(sp =>
+{
+    return new EmailOptions
+    {
+        FromAddress = Environment.GetEnvironmentVariable("EMAIL_FROM") ?? "",
+        ToAddress = Environment.GetEnvironmentVariable("EMAIL_TO") ?? "",
+        SubjectPrefix = Environment.GetEnvironmentVariable("EMAIL_SUBJECT_PREFIX") ?? ""
+    };
+});
+builder.Services.AddAWSService<IAmazonSimpleEmailService>();
+builder.Services.AddScoped<IEmailService, SESService>();
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("contact", httpContext =>
+    {
+        // 
+        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: ip,
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,                    // 5 requests
+                Window = TimeSpan.FromMinutes(1),   // per minute
+                QueueLimit = 0,                     // don't queue request, just reject.
+                AutoReplenishment = true     
+            });
+    });
+    // When limit is reached, return this status code.
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
+
 // For Contact Controller.
 builder.Services.AddHttpClient();
 // Register NotesRepository (DI).
@@ -102,6 +141,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 app.UseCors("AllowReactApp");
 app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
