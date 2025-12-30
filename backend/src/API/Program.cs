@@ -10,7 +10,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Data.SqlClient;
-using System.IdentityModel.Tokens.Jwt; // make sure this is at the top
+using System.IdentityModel.Tokens.Jwt;
+using Infrastructure.Services.S3; // make sure this is at the top
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
