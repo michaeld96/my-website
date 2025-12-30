@@ -27,8 +27,21 @@ const Contact: React.FC = () => {
         setError(null);
         setSuccess(null);
 
-        if (!captchaToken) {
+        if (!formData.sender.includes('@')) {
+            setError(`Sender's email does not include @`);
+            return;
+        }
+        else if (formData.message === '') {
+            setError('Message is empty!');
+            return;
+        }
+        else if (formData.subject === '') {
+            setError('Subject is empty!');
+            return;
+        }
+        else if (!captchaToken) {
             setError('Please complete the CAPTCHA first!');
+            return;
         }
 
         try {

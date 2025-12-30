@@ -5,7 +5,7 @@ using Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.Services.S3;
 
 public class S3FileUploader : IFileUploader
 {
