@@ -60,7 +60,7 @@ public class SESService : IEmailService
         }
         catch (Exception e)
         {
-            Console.WriteLine($"ERROR: SendEmailAsync failed with the following exception: {e.Message}");
+            throw new Exception($"ERROR: SendEmailAsync failed with the following exception: {e.Message}");
         }
     }
 }
