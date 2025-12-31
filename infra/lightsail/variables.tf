@@ -39,7 +39,7 @@ variable "bundle_id" {
 }
 
 variable "availability_zone" {
-  type = string
-  default = "us-east-2a"
+  type        = string
+  default     = "us-east-2a"
   description = "AZ for lightsail instance."
 }
