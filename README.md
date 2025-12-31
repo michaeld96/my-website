@@ -3,21 +3,40 @@
 ## EER
 ![EER](dev-blog/imgs/EER.svg)
 
-## Development
+## Local Development
 
-To run frontend
+### Frontend
+
+To run the frontend there is a Makefile command that handles this. 
+
 ```
-cd frontend/src/website-frontend
-npm run dev
+make run-frontend
+```
+This will run the Vite server in development mode.
+
+### Backend
+
+#### Database 
+
+First, we must run the database for the backend to talk to. We run the Makefile command:
+
+```
+make run-db
 ```
 
-To run database and populate it
+This will run the database and run the migrator as well to populate the database with initial data.
+
+To stop the database, run the Makefile command:
+
 ```
-docker compose up db migrator
+make stop
 ```
 
-To run backend
+#### Server
+
+To run the server, type the Makefile command:
+
 ```
-cd backend/src/API
-dotnet run
+make run-backend
 ```
+
