@@ -9,7 +9,15 @@
     flex-direction: column;
 }
 
-/* .button-item {
-    width: 100%;
-    overflow: scroll;
-} */
+/* Forces the color to be white for the lettering. Had issue om iOS devices.*/
+.preview-button a,
+.preview-button a:visited,
+.preview-button a:hover,
+.preview-button a:active {
+  color: #fff;
+  text-decoration: none;
+}
+
+.preview-button a {
+  -webkit-text-fill-color: #fff;
+}
