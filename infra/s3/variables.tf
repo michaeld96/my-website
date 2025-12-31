@@ -9,8 +9,8 @@ variable "bucket_name" {
   description = "Bucket to store images."
 }
 
-variable "uploader_name" {
-  type = string
-  default = "admin_uploader"
-  description = "Name of IAM account."
-}
+# variable "uploader_name" {
+#   type = string
+#   default = "admin_uploader"
+#   description = "Name of IAM account."
+# }

@@ -76,7 +76,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // Vite dev server
+        policy.WithOrigins(
+            "http://localhost:5173",
+            "https://michaeldick.io",
+            "https://www.michaeldick.io"
+            ) 
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
