@@ -2,6 +2,7 @@
     background-color: rgb(10, 104, 236);
     width: 300px;
     overflow-x: auto;
+    color: #fff;
 }
 
 .button-container {
