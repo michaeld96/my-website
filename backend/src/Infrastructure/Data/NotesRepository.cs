@@ -25,6 +25,12 @@ public class NotesRepository : INotesRepository
                              .AsNoTracking()
                              .SingleOrDefaultAsync(u => u.Username == username, ct);
     }
+    public Task<User?> GetUserByIdOrNullAsync(int userId, CancellationToken ct)
+    {
+        return _context.Users
+                        .Where(u => u.Id == userId)
+                        .FirstOrDefaultAsync(ct);
+    }
     public Task<List<School>> GetListOfSchoolsOrNullAsync(CancellationToken ct)
     {
         return _context.Schools
@@ -134,5 +140,10 @@ public class NotesRepository : INotesRepository
         var entity = await _context.PasswordResetRequests.AddAsync(prr, ct);
         return entity.Entity;
     }
-    
+
+    public Task<PasswordResetRequest?> GetPasswordResetRequestAsync(string tokenSelector, CancellationToken ct)
+    {
+        return _context.PasswordResetRequests
+                        .FirstOrDefaultAsync(prr => prr.Selector == tokenSelector, ct);
+    }
 }   

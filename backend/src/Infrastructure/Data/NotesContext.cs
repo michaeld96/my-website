@@ -44,8 +44,12 @@ public class NotesContext : DbContext
 
         // Fast lookup by token and ensures no dupes.
         b.Entity<PasswordResetRequest>()
-            .HasIndex(r => r.TokenHash)
+            .HasIndex(r => r.Selector)
             .IsUnique();
+            
+        // query support.
+        b.Entity<PasswordResetRequest>()
+            .HasIndex(r => r.UserId);
 
         b.Entity<School>().HasData(
             new School { Id = 1, Code = "UM", Name = "University of Michigan" },

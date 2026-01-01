@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Sockets;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Amazon.Runtime;
 using API.Mapping;
 using Core.Interfaces;
 using Core.Models;
@@ -95,14 +97,18 @@ namespace API.Controllers
                 return Ok("If username is found a link to reset password has been sent!");
             }
             // Creating token to be stored and sent to the user.
-            var tokenBytes = System.Security.Cryptography.RandomNumberGenerator.GetBytes(32);
-            var token = Convert.ToBase64String(tokenBytes);
-            var tokenHash = BCrypt.Net.BCrypt.HashPassword(token);
+            // Need to use selector and validator pattern.
+            var selectorBytes = System.Security.Cryptography.RandomNumberGenerator.GetBytes(12);
+            var selector = Convert.ToHexString(selectorBytes);
+            var validatorBytes = System.Security.Cryptography.RandomNumberGenerator.GetBytes(32);
+            var validator = Microsoft.IdentityModel.Tokens.Base64UrlEncoder.Encode(validatorBytes);
+            var validatorHash = BCrypt.Net.BCrypt.HashPassword(validator);
             // Going to create the password reset and save it to the db.
             PasswordResetRequest passwordResetRequest = new PasswordResetRequest
             {
                 UserId = user.Id,
-                TokenHash = tokenHash,
+                Selector = selector,
+                TokenHash = validatorHash,
                 CreatedAtUtc = DateTime.UtcNow,
                 ExpiresAtUtc = DateTime.UtcNow.AddMinutes(15)
             };
@@ -113,9 +119,74 @@ namespace API.Controllers
             {
                 return StatusCode(500, "Auth: Error with resetPasswordUrl! Is null or empty.");
             }
-            string resetPasswordUrl = $"{resetBaseUrl}?token={Uri.EscapeDataString(token)}";
+            string combinedToken = $"{selector}.{validator}";
+            string resetPasswordUrl = $"{resetBaseUrl}?token={Uri.EscapeDataString(combinedToken)}";
             await _ses.SendPasswordResetAsync(username.Email, resetPasswordUrl, ct);
             return Ok("If username is found a link to reset password has been sent!");
+        }
+        [HttpPost("reset-password/{token}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string token, [FromBody] ResetPasswordDTO body, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(body.Password))
+            {
+                return BadRequest("Auth: New password is required");
+            }
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return BadRequest("Auth: Token is required.");
+            }
+
+            // Token format: <selector>.<validator>
+            string[] tokenParts = token.Split('.', 2);
+            if (tokenParts == null || tokenParts.Length != 2)
+            {
+                return BadRequest("Auth: Invalid token format");
+            }
+
+            string selector = tokenParts[0];
+            string validator = tokenParts[1];
+            
+            PasswordResetRequest? passwordResetRequest = await _uow.NotesRepo.GetPasswordResetRequestAsync(selector, ct);
+            if (passwordResetRequest == null)
+            {
+                return NotFound("Auth: No PasswordResetRequest exists with the provided token.");
+            }
+
+            bool tokenValid = BCrypt.Net.BCrypt.Verify(validator, passwordResetRequest.TokenHash);
+            if (!tokenValid)
+            {
+                return NotFound("Auth: No PasswordResetRequest exists with the provided token.");
+            }
+
+            if (passwordResetRequest.IsUsed)
+            {
+                return BadRequest("Auth: Token has already been used.");
+            }
+
+            DateTime timeNowUtc = DateTime.UtcNow;
+            if (timeNowUtc >= passwordResetRequest.ExpiresAtUtc)
+            {
+                // 410 -> Gone.
+                return StatusCode(410, "Auth: Token has expired.");
+            }
+
+            var user = await _uow.NotesRepo.GetUserByIdOrNullAsync(passwordResetRequest.UserId, ct);
+            if (user == null)
+            {
+                return NotFound("Auth: Associated user with token was not found.");
+            }
+            
+            if (BCrypt.Net.BCrypt.Verify(body.Password, user.PasswordHash))
+            {
+                return BadRequest("Auth: Password not valid");
+            }
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(body.Password);
+            passwordResetRequest.UsedAtUtc = timeNowUtc;
+
+            await _uow.CommitAsync(ct);
+
+            return Ok("Password has successfully changed!");
         }
 
         private Task<User?> GetUser(string username, CancellationToken ct)
