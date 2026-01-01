@@ -128,4 +128,11 @@ public class NotesRepository : INotesRepository
     {
         return _context.Subjects.ToListAsync();
     }
+
+    public async Task<PasswordResetRequest> AddPasswordResetRequestAsync(PasswordResetRequest prr, CancellationToken ct)
+    {
+        var entity = await _context.PasswordResetRequests.AddAsync(prr, ct);
+        return entity.Entity;
+    }
+    
 }   

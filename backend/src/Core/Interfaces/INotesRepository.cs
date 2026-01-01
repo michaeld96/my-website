@@ -23,4 +23,5 @@ public interface INotesRepository
     public Task<School?> GetSchoolWithTrackingAsync(int schoolId, CancellationToken ct);
     public void DeleteSchool(School school);
     public Task<List<Subject>> GetAllSubjects();
+    public Task<PasswordResetRequest> AddPasswordResetRequestAsync(PasswordResetRequest prr, CancellationToken ct);
 }

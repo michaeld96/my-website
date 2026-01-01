@@ -8,8 +8,10 @@ const Login: React.FC = () => {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
+    const [email, setEmail] = useState<string>(''); // used for forgot password.
     const [forgotPopup, setForgotPopup] = useState<boolean>(false);
+    const [passwordResetError, setPasswordResetError] = useState<string>('');
+    const [passwordResetSuccess, setPasswordResetSuccess] = useState<string>('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -51,12 +53,34 @@ const Login: React.FC = () => {
         setForgotPopup(true);
     }
 
+    const resetPasswordErrors = () => {
+        setPasswordResetError('');
+        setPasswordResetSuccess('');
+    }
+
     const handleForgotPasswordOff = () => {
+        resetPasswordErrors();
+        setEmail('');
         setForgotPopup(false);
     }
 
-    const handlePasswordReset = () => {
-        alert('TODO: Implement backend.')
+    const handlePasswordReset = async (e: React.FormEvent<HTMLFormElement>) => {
+        resetPasswordErrors();
+        e.preventDefault();
+        if (!email.includes('@') || !email.includes('.')) {
+            setPasswordResetError('Please use a valid email address!');
+            return;
+        }
+        try {
+            await axios.post(`${API_BASE}/auth/reset-password`, {
+                email
+            });
+        } catch (error) {
+            setPasswordResetError('Error sending request to backend!')
+            console.log('ERROR:', error);
+            return;
+        }
+        setPasswordResetSuccess('Password reset sent!\nPlease check your email for the password reset link.')
     }
 
     return (
@@ -97,6 +121,8 @@ const Login: React.FC = () => {
                         <button type='submit' style={{margin: '0 20px 0 0 '}}>Submit</button>
                         <button type='button' onClick={handleForgotPasswordOff} style={{ marginTop: '15px' }}>Close</button> 
                     </div>
+                    {passwordResetError && <p style={{ color: 'red' }}>{passwordResetError}</p>}
+                    {passwordResetSuccess && <p style={{ color: 'green', whiteSpace: 'pre-line' }}>{passwordResetSuccess}</p>}
                 </form>
                 </div>
             </div>

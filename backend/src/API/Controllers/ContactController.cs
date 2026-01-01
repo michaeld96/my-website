@@ -14,12 +14,10 @@ namespace API.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
         private readonly IEmailService _ses;
-        private readonly EmailOptions _emailOptions;
-        public ContactController(IHttpClientFactory httpClientFactory, IConfiguration config, EmailOptions emailOptions, IEmailService ses)
+        public ContactController(IHttpClientFactory httpClientFactory, IConfiguration config, IEmailService ses)
         {
             _httpClientFactory = httpClientFactory;
             _config = config;
-            _emailOptions = emailOptions;
             _ses = ses;
         }
 
@@ -70,9 +68,16 @@ namespace API.Controllers
                 return BadRequest(new {message = "CAPTCHA validation failed."});
             }
 
+            string? toAddress = Environment.GetEnvironmentVariable("DOMAIN_NAME");
+            if (toAddress == null)
+            {
+                return StatusCode(500, "Contact: toAddress is not configured.");
+            }
+            toAddress = $"me@{toAddress}";
+
             var email = new ContactEmail(
                 request.Sender,
-                _emailOptions.ToAddress,
+                toAddress,
                 request.Subject,
                 request.Message,
                 Request.Headers.UserAgent.ToString(),
