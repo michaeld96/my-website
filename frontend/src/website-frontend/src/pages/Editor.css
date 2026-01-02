@@ -101,3 +101,18 @@
   overflow-x: auto; /* helpful for long equations */
 }
 p > .katex-display { display: block; }
+
+/* Code inside blocks. */
+pre code {
+  background: none;             
+  color: inherit;
+  font-size: 0.95em;
+}
+
+/* Inline code. */
+code {
+  background-color: #2a2a2a;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
