@@ -13,7 +13,7 @@ const About: React.FC = () => {
                 <p className="about-me-content">
                     Hello! I am a software engineer that likes to explore computer systems, 
                     graphics, and artificial intelligence. Currently I am a graduate student
-                    at Georgia Tech focusing on Computer Graphics. When I am not programming
+                    at Georgia Tech focusing on Computer Graphics and Systems. When I am not programming
                     I am running trails, taking photos with my analog cameras, or 
                     hanging out with friends.
                 </p>

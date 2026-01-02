@@ -12,7 +12,7 @@ const NotFound: React.FC = () => {
             <h1>The page you are looking for doesn't exist</h1>
             <div className="landing-page-button">
                     <a href='/'>
-                        Return to Landing Page
+                        Return to the Homepage
                     </a>
             </div>
         </div>

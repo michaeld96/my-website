@@ -4,20 +4,20 @@ import './LandingPage.css'
 import { faBookOpen, faCode, faEnvelope, faMugSaucer, faUser } from '@fortawesome/free-solid-svg-icons';
 import Summary from '../components/landing-page/Summary';
 const websiteSummary: string = `
-    This website acts as my blog and a overview of my portfolio. This site's purpose was to 
+    This website acts as my blog and as my portfolio. This site's purpose is to 
     showcase my notes from classes and topics I've encountered while studying and working that 
-    I thought others would found useful (also for my own reference). 
+    I thought others would find useful (also for my own reference). 
 `
 const notesSummary = `
-    To see the things I've written, click on the "Notes" link. This will show all the schools or categories that subjects
+    To see the things I've written, click on the "Notes" link. This will show all the schools and categories that subjects
     belong to. This is rendered in a Markdown style. Please note that these notes are my own and my interpretation of the topic.
-    If you believe there was an incorrect statement, please feel free to open a issue on the project's GitHub page
+    If you believe there was an incorrect statement, please feel free to open an issue on the project's GitHub page
     <a href='https://github.com/michaeld96/my-website/issues' target='_blank'> here</a>. 
 `
 const projectsSummary = `
     My "Projects" page is a high-level overview with some pictures of the projects I have worked on. There are two sections; 
     The first section is my personal projects and you may have full access to the source code. The second section are projects from school. 
-    Unfortunately, the source code to the school projects cannot be reviled to the public.
+    Unfortunately, the source code to the school projects cannot be released to the public.
 `
 const aboutMeSummary = `
     The "About" page shares a bit about who I am, what I do, and what I am interested in!

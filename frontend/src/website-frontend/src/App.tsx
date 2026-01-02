@@ -8,6 +8,7 @@ import Contact from './pages/Contact';
 import PreviewNotes from './pages/PreviewNotes';
 import Projects from './pages/Projects';
 import NotFound from './pages/NotFound';
+import ResetPassword from './pages/ResetPassword';
 
 const App: React.FC = () => {
     return(
@@ -23,6 +24,7 @@ const App: React.FC = () => {
                 <Route path="/notes/:schoolCode" element={ <PreviewNotes /> } />
                 <Route path="/notes/:schoolCode/:subjectCode/:subjectSlug" element={ <PreviewNotes /> } /> {/* when this url hits render this component. */}
                 <Route path="/notes/:schoolCode/:subjectCode/:subjectSlug/:noteSlug" element={ <PreviewNotes /> } />
+                <Route path="/reset-password" element= {<ResetPassword />} />
                 <Route path='*' element={ <NotFound/>} />
             </Routes>
         </Router>

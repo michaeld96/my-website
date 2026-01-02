@@ -100,15 +100,6 @@ builder.Services.AddScoped<IFileUploader, S3FileUploader>(sp =>
 
 });
 // SES.
-builder.Services.AddSingleton(sp =>
-{
-    return new EmailOptions
-    {
-        FromAddress = Environment.GetEnvironmentVariable("EMAIL_FROM") ?? "",
-        ToAddress = Environment.GetEnvironmentVariable("EMAIL_TO") ?? "",
-        SubjectPrefix = Environment.GetEnvironmentVariable("EMAIL_SUBJECT_PREFIX") ?? ""
-    };
-});
 builder.Services.AddAWSService<IAmazonSimpleEmailService>();
 builder.Services.AddScoped<IEmailService, SESService>();
 builder.Services.AddRateLimiter(options =>

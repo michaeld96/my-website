@@ -8,6 +8,14 @@ public interface IEmailService
     /// Sends email to the recipient specified in the <c>ContactEmail</c>.
     /// </summary>
     Task SendContactEmailAsync(ContactEmail contactEmail, CancellationToken ct);
+    /// <summary>
+    /// Sends an email via AWS SES.
+    /// </summary>
+    /// <param name="email">The username of the user. Username is an email.</param>
+    /// <param name="resetUrl">URL that the user will use to reset their password.</param>
+    /// <param name="ct">Cancellation Token.</param>
+    /// <returns></returns>
+    Task SendPasswordResetAsync(string email, string resetUrl, CancellationToken ct);
 }
 
 /// <summary>
