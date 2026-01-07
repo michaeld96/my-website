@@ -103,10 +103,13 @@
 p > .katex-display { display: block; }
 
 /* Code inside blocks. */
+
 pre code {
-  background: none;             
+  background: none;
   color: inherit;
   font-size: 0.95em;
+  display: block;
+  white-space: pre;
 }
 
 /* Inline code. */
@@ -115,4 +118,16 @@ code {
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 0.95em;
+}
+
+blockquote {
+  background-color: #2a2a2a;
+  border-left: 8px solid #444;
+  padding: 10px 16px;
+  margin: 0 0 1em;
+  border-radius: 4px;
+}
+
+blockquote p {
+  margin: 0;
 }
