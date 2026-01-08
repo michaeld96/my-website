@@ -1,3 +1,6 @@
+h1.welcome-banner {
+    text-align: center;
+}
 @media (max-width: 800px) 
 {
     .main-content

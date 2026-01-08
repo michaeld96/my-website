@@ -32,7 +32,7 @@ const LandingPage: React.FC = () => {
         <div className='app-layout'>
             <Navbar/>
             <div className="main-content">
-                <h1>Welcome to my Website!</h1>
+                <h1 className='welcome-banner'>Welcome to my Website!</h1>
                 <Summary 
                     icon={faMugSaucer}
                     desc={websiteSummary}
