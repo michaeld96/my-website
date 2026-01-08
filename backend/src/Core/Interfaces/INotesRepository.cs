@@ -13,7 +13,18 @@ public interface INotesRepository
     /// <param name="ct">Cancellation Token.</param>
     /// <returns><c>User</c> or <c>null</c>.</returns>
     public Task<User?> GetUserByIdOrNullAsync(int userId, CancellationToken ct);
+    /// <summary>
+    /// Returns a list of schools alphabetically.
+    /// </summary>
+    /// <param name="ct"></param>
+    /// <returns>List of type <c>School</c>.</returns>
     public Task<List<School>> GetListOfSchoolsOrNullAsync(CancellationToken ct);
+    /// <summary>
+    /// Returns the list of subjects that are associated with a school. Subjects are ordered alphabetically.
+    /// </summary>
+    /// <param name="schoolId"></param>
+    /// <param name="ct"></param>
+    /// <returns>List of type <c>Subject</c>.</returns>
     public Task<List<Subject>> GetListOfSubjectsOrNullAsync(int schoolId, CancellationToken ct);
     public Task<bool> DoesSchoolExistAsync(int schoolId, CancellationToken ct);
     public Task<bool> DoesSchoolExistForSubjectAsync(int schoolId, CancellationToken ct);
