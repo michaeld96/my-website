@@ -14,6 +14,7 @@ import remarkGfm from "remark-gfm";
 import { useNavigate, useParams } from "react-router-dom";
 import { School } from "../types/school";
 import BreadCrumb from "../components/preview/BreadCrumbs";
+import NotFound from "./NotFound";
 // import 'highlight.js/styles/atom-one-dark.css';
 
 const slugify = (s: string) =>
@@ -36,8 +37,8 @@ const PreviewNotes: React.FC = () => {
     // URL is source of truth.
     const {schoolCode, subjectSlug, noteSlug} = useParams<{
         schoolCode?: string;
-        subjectSlug?: string;
-        noteSlug?: string;
+        subjectSlug?: string; // title of the subject
+        noteSlug?: string; // title of the note.
     }>();
 
     const navigate = useNavigate();
@@ -81,7 +82,7 @@ const PreviewNotes: React.FC = () => {
                 arr.push(subject);
             }
         })
-        return arr;
+        return arr.sort((a, b) => (a.code ?? '').localeCompare(b.code ?? '', undefined, { sensitivity: 'base'}));
     }
 
     // Get the selected subject from URL and the subjects that are populated.
@@ -92,6 +93,7 @@ const PreviewNotes: React.FC = () => {
         return subjects.find((s) => subjectSlugEq(s,subjectSlug)) ?? null;
     }, [subjects, schoolCode, subjectSlug]); // recompute selected subject when one of these values change.
     
+    // TODO: Don't want to do this on every render...
     useEffect(() => {
         getSubjects();
         getSchools();
@@ -185,6 +187,19 @@ const PreviewNotes: React.FC = () => {
         }
         navigate(`/notes/${selectedSchool?.code}/${selectedSubject.code}/${slugify(selectedSubject.title)}`)
     }, [navigate, selectedSubject, selectedSchool]);
+
+    useEffect(() => {
+        if (!schools.find(s => s.code === schoolCode)) {
+            return () => {
+                <NotFound />
+            }
+        }
+    }, [schoolCode, schools])
+
+    // Need to check bad URL paths since when using React Router, anything past notes/* is valid.
+    if (schools.length > 0 && schoolCode && !selectedSchool) {
+        return <NotFound />
+    }
 
     return (
         <div className="app-layout">

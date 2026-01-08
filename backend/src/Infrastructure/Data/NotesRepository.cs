@@ -35,6 +35,7 @@ public class NotesRepository : INotesRepository
     {
         return _context.Schools
                        .AsNoTracking()
+                       .OrderBy(s => s.Name)
                        .ToListAsync(ct);
     }
 
@@ -43,6 +44,7 @@ public class NotesRepository : INotesRepository
         return _context.Subjects
                        .AsNoTracking()
                        .Where(s => s.School.Id == schoolId)
+                       .OrderBy(s => s.Code)
                        .ToListAsync(ct);
     }
     public Task<bool> DoesSchoolExistAsync(int schoolId, CancellationToken ct)
@@ -63,6 +65,7 @@ public class NotesRepository : INotesRepository
         return _context.Notes
                        .AsNoTracking()
                        .Where(n => n.Subject.Id == subjectId && n.Subject.School.Id == schoolId)
+                       .OrderBy(n => n.Title)
                        .ToListAsync();
     }
     public Task<List<Note>> GetAllNotesAssociatedWithSubjectAndSchoolAsync(string schoolCode, string subjectCode, CancellationToken ct)

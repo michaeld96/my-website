@@ -79,7 +79,7 @@ const Contact: React.FC = () => {
         <div className="app-layout">
             <Navbar/>
             <div className="contact-content">
-                <h1>Send Me an Email</h1>
+                <h1 className='send-email-heading'>Send Me an Email</h1>
                 <form onSubmit={handleSubmit} className="contact-form">
                     <label>Your Email</label>
                     <input 

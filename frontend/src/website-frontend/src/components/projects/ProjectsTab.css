@@ -59,6 +59,10 @@
     color: white;
 }
 
+ul.tags {
+    list-style: none;
+}
+
 @media (max-width: 800px)
 {
     

@@ -1,4 +1,4 @@
-h1
+h1.send-email-heading
 {
     text-align: center;
 }
@@ -50,7 +50,7 @@ textarea
 
 @media (max-width: 800px)
 {
-    h1
+    h1.send-email-heading
     {
         font-size: xx-large;
     }

@@ -339,6 +339,13 @@ const Editor: React.FC = () => {
             }
         }
     };
+
+    const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+            e.preventDefault(); // stops the browser "save page" dialog
+            void updateNote();
+        }
+    }
     
     const handleCreateNote = async () => {
         if (check_school_subject_selected())
@@ -709,6 +716,7 @@ const Editor: React.FC = () => {
                             style={{ width: '100%', height: '100%', border: 'none', resize: 'none', background: 'inherit' }}
                             value={markdown}
                             onChange={(e) => setMarkdown(e.target.value)}
+                            onKeyDown={handleTextareaKeyDown}
                         />
                     ) : (
                         <div style={{ 
