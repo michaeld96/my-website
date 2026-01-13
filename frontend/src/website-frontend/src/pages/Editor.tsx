@@ -26,6 +26,7 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import 'highlight.js/styles/atom-one-dark.css';
+import rehypeRaw from 'rehype-raw';
 
 const API_AUTH_BASE = import.meta.env.VITE_API_BASE + '/auth';
 const API_NOTES_BASE = import.meta.env.VITE_API_BASE + '/notes';
@@ -745,6 +746,7 @@ const Editor: React.FC = () => {
                     [rehypeKatex, { throwOnError: false }],
                     rehypeHighlight,
                     rehypeAutolinkHeadings,
+                    rehypeRaw
                 ]}
                 >
                 {markdown}
