@@ -15,7 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { School } from "../types/school";
 import BreadCrumb from "../components/preview/BreadCrumbs";
 import NotFound from "./NotFound";
-// import 'highlight.js/styles/atom-one-dark.css';
+import rehypeRaw from 'rehype-raw';
 
 const slugify = (s: string) =>
     s.toLowerCase()
@@ -264,7 +264,8 @@ const PreviewNotes: React.FC = () => {
                         rehypePlugins={[
                             rehypeKatex,
                             [rehypeHighlight, { ignoreMissing: true }],
-                            rehypeAutolinkHeadings 
+                            rehypeAutolinkHeadings,
+                            rehypeRaw
                         ]}
                         >
                         {selectedNote.markdown}
