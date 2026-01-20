@@ -218,7 +218,7 @@ namespace API.Controllers
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
+                expires: DateTime.UtcNow.AddHours(24),
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);

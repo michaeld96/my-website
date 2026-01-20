@@ -755,7 +755,7 @@ const Editor: React.FC = () => {
         </div>
     )}
     {isAuth === false && (
-        <div className='invalid-login'>
+        <div className='invalid-login' style={{ textAlign: 'center' }}>
             <FontAwesomeIcon icon={faEyeSlash} className='invalid-login-icon'/>
             <h1>Invalid credentials. Please return to login page.</h1>
             <div className="landing-page-button">
